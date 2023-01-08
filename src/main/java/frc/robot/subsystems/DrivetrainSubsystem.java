@@ -235,12 +235,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
 // TODO - An attempt to get this all to work with the 2023 WPILib
-
 // "Inspired" from: https://github.com/Spectrum3847/Flash-2023/blob/main/src/main/java/frc/robot/swerve/SwerveModule.java
 
     private static final double MK4i_L2_angleGearRatio = (50.0 / 14.0) * (60.0 / 10.0);
-    private static final double wheelDiameter = Units.inchesToMeters(3.8195);
-    private static final double wheelCircumference = wheelDiameter * Math.PI;
 
     private double falconToRPM(double velocityCounts, double gearRatio) {
         double motorRPM = velocityCounts * (600.0 / 2048.0);
@@ -269,7 +266,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         double velocity =
                 falconToMPS(
                         driveMotor.getSelectedSensorVelocity(),
-                        wheelCircumference,
+                        SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI,
                         MK4i_L2_angleGearRatio);
         Rotation2d angle =
                 Rotation2d.fromDegrees(
@@ -285,7 +282,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         double position =
                 falconToMeters(
                         driveMotor.getSelectedSensorPosition(),
-                        wheelCircumference,
+                        SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI,
                         MK4i_L2_angleGearRatio);
         return new SwerveModulePosition(position, moduleState.angle);
     }
