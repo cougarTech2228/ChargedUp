@@ -97,20 +97,25 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SwerveModule m_backLeftModule;
     private final SwerveModule m_backRightModule;
 
-    private final TalonFX m_frontLeftDriveMotor = new TalonFX(Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR_ID);
-    private final TalonFX m_frontRightDriveMotor = new TalonFX(Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID);
-    private final TalonFX m_backLeftDriveMotor = new TalonFX(Constants.BACK_LEFT_MODULE_DRIVE_MOTOR_ID);
-    private final TalonFX m_backRightDriveMotor = new TalonFX(Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR_ID);
+    // private final TalonFX m_frontLeftDriveMotor = new TalonFX(Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR_ID);
+    // private final TalonFX m_frontRightDriveMotor = new TalonFX(Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID);
+    // private final TalonFX m_backLeftDriveMotor = new TalonFX(Constants.BACK_LEFT_MODULE_DRIVE_MOTOR_ID);
+    // private final TalonFX m_backRightDriveMotor = new TalonFX(Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR_ID);
 
-    private final TalonFX m_frontLeftSteerMotor = new TalonFX(Constants.FRONT_LEFT_MODULE_STEER_MOTOR_ID);
-    private final TalonFX m_frontRightSteerMotor = new TalonFX(Constants.FRONT_RIGHT_MODULE_STEER_MOTOR_ID);
-    private final TalonFX m_backLeftSteerMotor = new TalonFX(Constants.BACK_LEFT_MODULE_STEER_MOTOR_ID);
-    private final TalonFX m_backRightSteerMotor = new TalonFX(Constants.BACK_RIGHT_MODULE_STEER_MOTOR_ID);
+    // private final TalonFX m_frontLeftSteerMotor = new TalonFX(Constants.FRONT_LEFT_MODULE_STEER_MOTOR_ID);
+    // private final TalonFX m_frontRightSteerMotor = new TalonFX(Constants.FRONT_RIGHT_MODULE_STEER_MOTOR_ID);
+    // private final TalonFX m_backLeftSteerMotor = new TalonFX(Constants.BACK_LEFT_MODULE_STEER_MOTOR_ID);
+    // private final TalonFX m_backRightSteerMotor = new TalonFX(Constants.BACK_RIGHT_MODULE_STEER_MOTOR_ID);
 
-    // private final CANCoder m_frontLeftCANCoder = new CANCoder(Constants.FRONT_LEFT_MODULE_STEER_MOTOR_ID);
-    // private final CANCoder m_frontRightCANCoder = new CANCoder(Constants.FRONT_RIGHT_MODULE_STEER_MOTOR_ID);
-    // private final CANCoder m_backLeftCANCoder = new CANCoder(Constants.BACK_LEFT_MODULE_STEER_MOTOR_ID);
-    // private final CANCoder m_backRightCANCoder = new CANCoder(Constants.BACK_RIGHT_MODULE_STEER_MOTOR_ID);
+    private final TalonFX m_frontLeftDriveMotor;
+    private final TalonFX m_frontRightDriveMotor;
+    private final TalonFX m_backLeftDriveMotor;
+    private final TalonFX m_backRightDriveMotor;
+
+    private final TalonFX m_frontLeftSteerMotor;
+    private final TalonFX m_frontRightSteerMotor;
+    private final TalonFX m_backLeftSteerMotor;
+    private final TalonFX m_backRightSteerMotor;
 
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
@@ -182,6 +187,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 Constants.BACK_RIGHT_MODULE_STEER_MOTOR_ID,
                 Constants.BACK_RIGHT_MODULE_STEER_ENCODER_ID,
                 Constants.BACK_RIGHT_MODULE_STEER_OFFSET);
+
+        m_frontLeftDriveMotor = (TalonFX) m_frontLeftModule.getDriveMotor();
+        m_frontRightDriveMotor = (TalonFX) m_frontRightModule.getDriveMotor();
+        m_backLeftDriveMotor = (TalonFX) m_backLeftModule.getDriveMotor();
+        m_backRightDriveMotor = (TalonFX) m_backRightModule.getDriveMotor();
+    
+        m_frontLeftSteerMotor = (TalonFX) m_frontLeftModule.getSteerMotor();
+        m_frontRightSteerMotor = (TalonFX) m_frontRightModule.getSteerMotor();
+        m_backLeftSteerMotor = (TalonFX) m_backLeftModule.getSteerMotor();
+        m_backRightSteerMotor = (TalonFX) m_backRightModule.getSteerMotor();
 
         configureDriveMotor(m_frontLeftDriveMotor);
         configureDriveMotor(m_frontRightDriveMotor);
