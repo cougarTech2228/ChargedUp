@@ -14,10 +14,12 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.DockWithAprilTagCommand;
 import frc.robot.commands.DockWithAprilTagPIDCommand;
 import frc.robot.commands.FollowTrajectoryCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
+import frc.robot.subsystems.AprilTagPVSubsystem;
 import frc.robot.subsystems.AprilTagSubsystem;
 
 /**
@@ -36,6 +38,8 @@ public class RobotContainer {
     private final XboxController m_controller = new XboxController(0);
 
     private final static AprilTagSubsystem m_aprilTagSubsystem = new AprilTagSubsystem();
+
+    private final static AprilTagPVSubsystem m_aprilTagPVSubsystem = new AprilTagPVSubsystem();
 
     private final static LEDStripSubsystem m_ledStripSubsystem = new LEDStripSubsystem();
 
@@ -76,8 +80,11 @@ public class RobotContainer {
                 // No requirements because we don't need to interrupt anything
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
 
+        // new Trigger(m_controller::getYButton)
+        //         .onTrue(new DockWithAprilTagPIDCommand(m_drivetrainSubsystem, m_aprilTagSubsystem, 13.0));
+        
         new Trigger(m_controller::getYButton)
-                .onTrue(new DockWithAprilTagPIDCommand(m_drivetrainSubsystem, m_aprilTagSubsystem, 13.0));
+                .onTrue(new DockWithAprilTagCommand(m_drivetrainSubsystem, m_aprilTagPVSubsystem, 1.0));
 
         new Trigger(m_controller::getBButton)
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::stopMotors, m_drivetrainSubsystem));
@@ -128,6 +135,10 @@ public class RobotContainer {
 
     public static AprilTagSubsystem getAprilTagSubsystem() {
         return m_aprilTagSubsystem;
+    }
+
+    public static AprilTagPVSubsystem getAprilTagPVSubsystem() {
+        return m_aprilTagPVSubsystem;
     }
 
     public static LEDStripSubsystem getLEDStripSubsystem() {
