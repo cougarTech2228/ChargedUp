@@ -34,7 +34,7 @@ public class AprilTagSubsystem extends SubsystemBase {
     public double getTagID() {
         double tagId = m_tagIdEntry.getDouble(2228);
 
-        if (tagId == 13) {
+        if (tagId == 1) {
             RobotContainer.getLEDStripSubsystem().glow(GlowColor.Green);
         } else {
             RobotContainer.getLEDStripSubsystem().glow(GlowColor.Red);

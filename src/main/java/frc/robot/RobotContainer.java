@@ -80,11 +80,11 @@ public class RobotContainer {
                 // No requirements because we don't need to interrupt anything
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
 
-        // new Trigger(m_controller::getYButton)
-        //         .onTrue(new DockWithAprilTagPIDCommand(m_drivetrainSubsystem, m_aprilTagSubsystem, 13.0));
-        
         new Trigger(m_controller::getYButton)
-                .onTrue(new DockWithAprilTagCommand(m_drivetrainSubsystem, m_aprilTagPVSubsystem, 1.0));
+                .onTrue(new DockWithAprilTagPIDCommand(m_drivetrainSubsystem, m_aprilTagSubsystem, 1.0));
+        
+        // new Trigger(m_controller::getYButton)
+        //         .onTrue(new DockWithAprilTagCommand(m_drivetrainSubsystem, m_aprilTagPVSubsystem, 1.0));
 
         new Trigger(m_controller::getBButton)
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::stopMotors, m_drivetrainSubsystem));
