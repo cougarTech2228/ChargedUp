@@ -24,9 +24,9 @@ public class FollowTrajectoryCommand extends SequentialCommandGroup {
                 traj, 
                 drivetrain::getPose, // Pose supplier
                 drivetrain.getKinematics(), // SwerveDriveKinematics
-                new PIDController(0, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
-                new PIDController(0, 0, 0), // Y controller (usually the same values as X controller)
-                new PIDController(0, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+                new PIDController(0.1, 0, 0), // X controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
+                new PIDController(0.12, 0, 0), // Y controller (usually the same values as X controller)
+                new PIDController(2, 0, 0), // Rotation controller. Tune these values for your robot. Leaving them 0 will only use feedforwards.
                 drivetrain::setModuleStates, // Module states consumer
                 drivetrain // Requires the drive subsystem
             )

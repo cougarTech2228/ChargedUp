@@ -62,40 +62,40 @@ public class AprilTagPVSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        var result  = camera.getLatestResult();
+        // var result  = camera.getLatestResult();
 
-        if (result.hasTargets()) {
+        // if (result.hasTargets()) {
 
-            m_missedTagDetections = 0;
+        //     m_missedTagDetections = 0;
 
-            PhotonTrackedTarget bestTarget = result.getBestTarget();
+        //     PhotonTrackedTarget bestTarget = result.getBestTarget();
 
-            m_tagId = bestTarget.getFiducialId();
+        //     m_tagId = bestTarget.getFiducialId();
 
-            // This is the value for "X" shown on the PV Dashboard
-            double calc_range = PhotonUtils.calculateDistanceToTargetMeters(CAMERA_HEIGHT_METERS,
-                    m_targetHeightMeters,
-                    CAMERA_PITCH_RADIANS,
-                    Units.degreesToRadians(bestTarget.getPitch()));
+        //     // This is the value for "X" shown on the PV Dashboard
+        //     double calc_range = PhotonUtils.calculateDistanceToTargetMeters(CAMERA_HEIGHT_METERS,
+        //             m_targetHeightMeters,
+        //             CAMERA_PITCH_RADIANS,
+        //             Units.degreesToRadians(bestTarget.getPitch()));
 
-            Transform3d transform3d = bestTarget.getBestCameraToTarget();
+        //     Transform3d transform3d = bestTarget.getBestCameraToTarget();
 
-            // These should get the values from the Translation Vector
-            m_range = transform3d.getX();
-            m_sidewaysOffset = -transform3d.getY();
+        //     // These should get the values from the Translation Vector
+        //     m_range = transform3d.getX();
+        //     m_sidewaysOffset = -transform3d.getY();
 
-            // Only dump the debug once per second
-            if (m_periodicDebugCounter++ > 50) {
-                m_periodicDebugCounter = 0;
+        //     // Only dump the debug once per second
+        //     if (m_periodicDebugCounter++ > 50) {
+        //         m_periodicDebugCounter = 0;
 
-                //System.out.printf("ID: %d Range: %.2f Yaw: %.2f\n", m_tagId, m_range, m_yaw);
-                System.out.printf("ID: %d Range: %.2f CalcRange: %.2f Offset: %.2f\n", m_tagId, calc_range, m_range, m_sidewaysOffset);
-            }           
-        } else {
-            if (m_missedTagDetections++ > 25) {
-                // m_missedTagDetections gets reset when a good tag is found
-                m_tagId = 2228;
-            }
-        }
+        //         //System.out.printf("ID: %d Range: %.2f Yaw: %.2f\n", m_tagId, m_range, m_yaw);
+        //         System.out.printf("ID: %d Range: %.2f CalcRange: %.2f Offset: %.2f\n", m_tagId, calc_range, m_range, m_sidewaysOffset);
+        //     }           
+        // } else {
+        //     if (m_missedTagDetections++ > 25) {
+        //         // m_missedTagDetections gets reset when a good tag is found
+        //         m_tagId = 2228;
+        //     }
+        // }
     }
 }

@@ -93,7 +93,7 @@ public class RobotContainer {
                 .onTrue(new SequentialCommandGroup(new InstantCommand(m_drivetrainSubsystem::setDoingTeleOpAuto),
                         new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
                         new FollowTrajectoryCommand(m_drivetrainSubsystem,
-                                PathPlanner.loadPath("Path2", new PathConstraints(3, 1.5)), true)
+                                PathPlanner.loadPath("New New Path", new PathConstraints(3, 1.5)), true)
                                 .andThen(() -> m_drivetrainSubsystem.setNotDoingTeleOpAuto(), m_drivetrainSubsystem)));
     }
 
