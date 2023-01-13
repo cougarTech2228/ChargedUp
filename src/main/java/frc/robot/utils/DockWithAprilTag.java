@@ -6,6 +6,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.XboxController;
+import frc.robot.Constants;
 import frc.robot.subsystems.AprilTagSubsystem;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
@@ -44,10 +45,15 @@ public class DockWithAprilTag implements Runnable {
     private final ProfiledPIDController m_sidewaysController =
         new ProfiledPIDController(SIDEWAYS_P, 0.0, SIDEWAYS_D, m_sidewaysConstraints, kDt);
 
-    private static final double DOCKING_DISTANCE_GOAL_METERS = Units.inchesToMeters(16.0);
+    // We'll make this a little larger to give the AprilTag detector some time to process
+    private static final double DOCKING_DISTANCE_GOAL_METERS = Units.inchesToMeters(20.0);
 
     private static final double MIN_FORWARD_VELOCITY = 0.2;
     private static final double MIN_SIDEWAYS_VELOCITY = 0.2;
+
+    // If the AprilTag detection loss lasts this amount of time, then we give up
+    // trying to reacquire the AprilTag
+    private static final double MAX_DETECTION_LOST_TIME_SEC = 0.2;
 
     private double m_startTime = 0;
 
@@ -65,13 +71,11 @@ public class DockWithAprilTag implements Runnable {
     public void run() {
         m_hasStartedMoving = false;
 
-        m_drivetrainSubsystem.zeroGyroscope();
-
         if (m_aprilTagSubsystem.getTagID() == m_aprilTagId) {
 
             m_startTime = Timer.getFPGATimestamp();
 
-            m_forwardController.setGoal(0.0);
+            m_forwardController.setGoal(DOCKING_DISTANCE_GOAL_METERS);//0.0);
             m_sidewaysController.setGoal(0.0);
 
             double detectionLostTime = 0.0;
@@ -81,7 +85,7 @@ public class DockWithAprilTag implements Runnable {
                 // If the AprilTag comes up as 2228 that means the detector can't see a 
                 // tag. We should wait a bit to see if the detection loss is just transitory
                 // before giving up on it.
-                if ((m_aprilTagSubsystem.getTagID() == 2228) &&
+                if ((m_aprilTagSubsystem.getTagID() == Constants.BAD_APRIL_TAG_ID) &&
                     (detectionLostTime == 0.0)) {
                     detectionLostTime = Timer.getFPGATimestamp();
                 }
@@ -89,7 +93,8 @@ public class DockWithAprilTag implements Runnable {
                     detectionLostTime = 0.0;
                 }
 
-                if ((detectionLostTime != 0.0) && (Timer.getFPGATimestamp() - detectionLostTime > 0.2)) {
+                if ((detectionLostTime != 0.0) && 
+                    ((Timer.getFPGATimestamp() - detectionLostTime) > MAX_DETECTION_LOST_TIME_SEC)) {
                     System.out.println("Completely Lost April Tag Detection...");
                     break;
                 }

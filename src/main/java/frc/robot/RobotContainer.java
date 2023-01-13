@@ -77,7 +77,7 @@ public class RobotContainer {
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
 
         new Trigger(m_controller::getYButton)
-                .onTrue(new DockWithAprilTagCommand(m_controller, m_drivetrainSubsystem, m_aprilTagSubsystem, 1.0));
+                .onTrue(new DockWithAprilTagCommand(m_controller, m_drivetrainSubsystem, m_aprilTagSubsystem, true, 1.0));
 
         new Trigger(m_controller::getBButton)
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::stopMotors, m_drivetrainSubsystem));

@@ -97,16 +97,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private final SwerveModule m_backLeftModule;
     private final SwerveModule m_backRightModule;
 
-    // private final TalonFX m_frontLeftDriveMotor = new TalonFX(Constants.FRONT_LEFT_MODULE_DRIVE_MOTOR_ID);
-    // private final TalonFX m_frontRightDriveMotor = new TalonFX(Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID);
-    // private final TalonFX m_backLeftDriveMotor = new TalonFX(Constants.BACK_LEFT_MODULE_DRIVE_MOTOR_ID);
-    // private final TalonFX m_backRightDriveMotor = new TalonFX(Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR_ID);
-
-    // private final TalonFX m_frontLeftSteerMotor = new TalonFX(Constants.FRONT_LEFT_MODULE_STEER_MOTOR_ID);
-    // private final TalonFX m_frontRightSteerMotor = new TalonFX(Constants.FRONT_RIGHT_MODULE_STEER_MOTOR_ID);
-    // private final TalonFX m_backLeftSteerMotor = new TalonFX(Constants.BACK_LEFT_MODULE_STEER_MOTOR_ID);
-    // private final TalonFX m_backRightSteerMotor = new TalonFX(Constants.BACK_RIGHT_MODULE_STEER_MOTOR_ID);
-
     private final TalonFX m_frontLeftDriveMotor;
     private final TalonFX m_frontRightDriveMotor;
     private final TalonFX m_backLeftDriveMotor;
@@ -215,8 +205,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         zeroGyroscope();
 
         m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation(), getSwerveModulePositions(), new Pose2d());
-
-        //m_odometry = new SwerveDriveOdometry(m_kinematics, Rotation2d.fromDegrees(0));
 
         // Add widgets to adjust controller input values and robot-v-field orientation
         m_forwardAdjustmentTableEntry = tab.add("Forward Adj", INITIAL_INPUT_ADJUSTMENT)
@@ -465,10 +453,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
             m_encoderUpdateCounter = 0;
         }
 
-        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
         m_odometry.update(Rotation2d.fromDegrees(getYaw()), getSwerveModulePositions());
 
         if(!m_doingTeleOpAuto) {
+            SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
             setModuleStates(states);
         }
     }

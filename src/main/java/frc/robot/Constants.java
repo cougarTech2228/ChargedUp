@@ -61,13 +61,5 @@ public final class Constants {
                                                                                                                                                          
     public static final int DRIVETRAIN_PIGEON_ID = 61; // Set Pigeon ID
 
-    public static final double APRIL_TAG_COARSE_FORWARD_DRIVE_SPEED_IN_M_PER_S = 0.8;
-    public static final double APRIL_TAG_FINE_FORWARD_DRIVE_SPEED_IN_M_PER_S = 0.5;
-    public static final double APRIL_TAG_SIMULTANEOUS_FORWARD_DRIVE_SPEED_IN_M_PER_S = 0.5;
-
-    public static final double APRIL_TAG_COARSE_SIDEWAYS_DRIVE_SPEED_IN_M_PER_S = 0.5;
-    public static final double APRIL_TAG_FINE_SIDEWAYS_DRIVE_SPEED_IN_M_PER_S = 0.4;
-
-    public static final double APRIL_TAG_COARSE_TURN_SPEED_IN_M_PER_S = 0.4;
-    public static final double APRIL_TAG_FINE_TURN_SPEED_IN_M_PER_S = 0.4;
+    public static final double BAD_APRIL_TAG_ID = 2228;
 }
