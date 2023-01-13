@@ -1,8 +1,6 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
-import frc.robot.utils.CT_LEDStrip.GlowColor;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -32,18 +30,7 @@ public class AprilTagSubsystem extends SubsystemBase {
     }
 
     public double getTagID() {
-        double tagId = m_tagIdEntry.getDouble(2228);
-
-        if (tagId == 1) {
-            RobotContainer.getLEDStripSubsystem().glow(GlowColor.Green);
-        } else {
-            RobotContainer.getLEDStripSubsystem().glow(GlowColor.Red);
-        }
-        return tagId;
-    }
-
-    public long getLastChanged() {
-        return m_tagIdEntry.getLastChange();
+        return m_tagIdEntry.getDouble(2228);
     }
 
     @Override

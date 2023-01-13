@@ -134,7 +134,14 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private SwerveDriveOdometry m_odometry;
 
-    private boolean doingTeleOpAuto;
+    private boolean m_doingTeleOpAuto;
+
+    private double m_tempEncoderCount = 0;
+    private int m_encoderIteration = 0;
+    private double m_encoderRateOfChange = 0;
+    private int m_encoderUpdateCounter = 0;
+
+    private static final double ROC_DT_SECONDS = 0.02;
 
     public DrivetrainSubsystem() {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -203,7 +210,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         configureDriveMotor(m_backLeftDriveMotor);
         configureDriveMotor(m_backRightDriveMotor);
 
-        doingTeleOpAuto = false;
+        m_doingTeleOpAuto = false;
                        
         zeroGyroscope();
 
@@ -248,8 +255,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 15, 0.5));
     }
 
-// TODO - An attempt to get this all to work with the 2023 WPILib
-// "Inspired" from: https://github.com/Spectrum3847/Flash-2023/blob/main/src/main/java/frc/robot/swerve/SwerveModule.java
+    // The following code is "inspired" from Team Spectrum 3847 to get swerve to work with
+    // the 2023 WPILib changes. The original code can be found here:
+    // https://github.com/Spectrum3847/Flash-2023/blob/main/src/main/java/frc/robot/swerve/SwerveModule.java
 
     private static final double MK4i_L2_angleGearRatio = (50.0 / 14.0) * (60.0 / 10.0);
 
@@ -299,6 +307,34 @@ public class DrivetrainSubsystem extends SubsystemBase {
                         SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI,
                         MK4i_L2_angleGearRatio);
         return new SwerveModulePosition(position, moduleState.angle);
+    }
+
+    /*
+     * This method is used to determine if the robot has stopped moving
+     * during an autonomous command being run inside a thread. We need
+     * a way of killing the tread if the robot is obstructed for some
+     * unforseen reason. We'll just pick one of the drive motors to
+     * monitor its movement.
+     */
+    private double getEncoderCount() {
+        return m_backLeftDriveMotor.getSelectedSensorPosition();
+    }
+
+    private void calculateEncoderRoC() {
+        if(m_encoderIteration == (ROC_DT_SECONDS * 50)) {
+
+            double encoderCount = getEncoderCount();
+
+            m_encoderRateOfChange = (encoderCount - m_tempEncoderCount) / ROC_DT_SECONDS;
+            m_encoderIteration = 0;
+            m_tempEncoderCount = encoderCount;
+        } else {
+            m_encoderIteration++;
+        }
+    }
+
+    public double getEncoderRateOfChange() {
+        return m_encoderRateOfChange;
     }
 
     public SwerveModulePosition[] getSwerveModulePositions() {
@@ -404,11 +440,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void setDoingTeleOpAuto() {
-        this.doingTeleOpAuto = true;
+        m_doingTeleOpAuto = true;
     }
 
     public void setNotDoingTeleOpAuto() {
-        this.doingTeleOpAuto = false;
+        m_doingTeleOpAuto = false;
     }
 
     public SwerveDriveOdometry getOdometry() {
@@ -421,10 +457,18 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
+
+        // Calling calculateEncoderRoc every period causes loop overruns
+        // so we'll only do it once a second.
+        if (m_encoderUpdateCounter > 50) {
+            calculateEncoderRoC();
+            m_encoderUpdateCounter = 0;
+        }
+
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
         m_odometry.update(Rotation2d.fromDegrees(getYaw()), getSwerveModulePositions());
 
-        if(!doingTeleOpAuto) {
+        if(!m_doingTeleOpAuto) {
             setModuleStates(states);
         }
     }

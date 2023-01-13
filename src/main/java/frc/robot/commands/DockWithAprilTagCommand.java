@@ -1,128 +1,59 @@
 package frc.robot.commands;
 
-import frc.robot.subsystems.DrivetrainSubsystem;
-import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.AprilTagPVSubsystem;
+import frc.robot.subsystems.AprilTagSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.utils.DockWithAprilTag;
 
 public class DockWithAprilTagCommand extends CommandBase {
+    private XboxController m_xboxController;
+    private DrivetrainSubsystem m_drivetrainSubsystem;
+    private AprilTagSubsystem m_aprilTagSubsystem;
+    private double m_aprilTagId;
 
-    private static double kDt = 0.02;
+    private Runnable m_dockWithAprilTagRunnable;
+    private Thread m_dockWithAprilTagThread;
 
-    private final DrivetrainSubsystem m_drivetrainSubsystem;
-    private final AprilTagPVSubsystem m_aprilTagSubsystem;
-    private final double m_aprilTagId;
-
-    // Distance to Target Correction
-    private static final double MAX_FORWARD_DOCKING_VELOCITY = 0.5; //1.2;
-    private static final double MAX_FORWARD_DOCKING_ACCELERATION = 0.3; 
-
-    private final TrapezoidProfile.Constraints m_forwardConstraints = 
-        new TrapezoidProfile.Constraints(MAX_FORWARD_DOCKING_VELOCITY, MAX_FORWARD_DOCKING_ACCELERATION);
-
-    private final double FORWARD_P = 0.5; 
-    private final double FORWARD_D = 0.0; 
-    private final ProfiledPIDController m_forwardController =
-        new ProfiledPIDController(FORWARD_P, 0.0, FORWARD_D, m_forwardConstraints, kDt);
-
-    // Sideways Correction
-    private static final double MAX_SIDEWAYS_DOCKING_VELOCITY = 0.5; //1.0;
-    private static final double MAX_SIDEWAYS_DOCKING_ACCELERATION = 0.3;
-
-    private final TrapezoidProfile.Constraints m_sidewaysConstraints = 
-        new TrapezoidProfile.Constraints(MAX_SIDEWAYS_DOCKING_VELOCITY, MAX_SIDEWAYS_DOCKING_ACCELERATION);
-    
-    private final double SIDEWAYS_P = 0.5; 
-    private final double SIDEWAYS_D = 0.0;
-    private final ProfiledPIDController m_sidewaysController =
-        new ProfiledPIDController(SIDEWAYS_P, 0.0, SIDEWAYS_D, m_sidewaysConstraints, kDt);
-
-    // TODO - CHANGE THIS
-    private static final double DOCKING_DISTANCE_GOAL_METERS = 0.75; //Units.inchesToMeters(15.0);
-
-    private static final double MIN_FORWARD_VELOCITY = 0.2;
-    private static final double MIN_SIDEWAYS_VELOCITY = 0.2;
-
-    private double m_start_time = 0;
-
-    public DockWithAprilTagCommand(DrivetrainSubsystem drivetrainSubsystem,
-            AprilTagPVSubsystem aprilTagSubsystem,
+    /** Creates a new ThreadedDockWithAprilTagCommand. */
+    public DockWithAprilTagCommand(XboxController xboxController, DrivetrainSubsystem drivetrainSubsystem,
+            AprilTagSubsystem aprilTagSubsystem,
             double aprilTagId) {
-        this.m_drivetrainSubsystem = drivetrainSubsystem;
-        this.m_aprilTagSubsystem = aprilTagSubsystem;
-        this.m_aprilTagId = aprilTagId;
+        m_xboxController = xboxController;
+        m_drivetrainSubsystem = drivetrainSubsystem;
+        m_aprilTagSubsystem = aprilTagSubsystem;
+        m_aprilTagId = aprilTagId;
 
-        addRequirements(drivetrainSubsystem, aprilTagSubsystem);
+        m_dockWithAprilTagRunnable = new DockWithAprilTag(m_xboxController,
+                m_drivetrainSubsystem,
+                m_aprilTagSubsystem,
+                m_aprilTagId);
     }
 
+    // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        m_drivetrainSubsystem.zeroGyroscope();
+        System.out.println("Running auto dock with AprilTag command");
 
-        if (m_aprilTagSubsystem.getTagID() == m_aprilTagId) {
-    
-            m_start_time = Timer.getFPGATimestamp();
-
-            m_forwardController.setGoal(0.0);
-            m_sidewaysController.setGoal(0.0);
-        } 
+        m_dockWithAprilTagThread = new Thread(m_dockWithAprilTagRunnable, "DockWithAprilTagThread");
+        m_dockWithAprilTagThread.start();
     }
 
+    // Called every time the scheduler runs while the command is scheduled.
     @Override
-    public boolean isFinished() {
-        if (m_aprilTagSubsystem.getTagID() == m_aprilTagId) {
-
-            double distanceToTarget = m_aprilTagSubsystem.getRange();
-
-            // Check to see if we're within docking distance
-            if (distanceToTarget < DOCKING_DISTANCE_GOAL_METERS) {
-                System.out.println("Docked with target. Yipee!!!!!");
-                System.out.println("Command completed in " + (Timer.getFPGATimestamp() - m_start_time) + " seconds");
-                return true;
-            } else { // Keep driving
-                double offsetTargetDistance = m_aprilTagSubsystem.getSidewaysOffset();
-
-                double forwardSpeed = -m_forwardController.calculate(distanceToTarget);
-                double sidewaysSpeed = m_sidewaysController.calculate(offsetTargetDistance);
-
-                double forwardVelocity = forwardSpeed * MAX_FORWARD_DOCKING_VELOCITY;
-                double sidewaysVelocity = sidewaysSpeed * MAX_SIDEWAYS_DOCKING_VELOCITY;
-
-                // Need to ensure minimum velocities that are high enough to move the robot
-                if (forwardVelocity < MIN_FORWARD_VELOCITY) {
-                    forwardVelocity = MIN_FORWARD_VELOCITY;
-                }
-
-                if ((sidewaysVelocity > 0.0) && (sidewaysVelocity < MIN_SIDEWAYS_VELOCITY)) {
-                    sidewaysVelocity = MIN_SIDEWAYS_VELOCITY;
-                }
-
-                if ((sidewaysVelocity < 0.0) && (sidewaysVelocity > -MIN_SIDEWAYS_VELOCITY)) {
-                    sidewaysVelocity = -MIN_SIDEWAYS_VELOCITY;
-                }
-
-                ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
-                        sidewaysVelocity,
-                        0.0,
-                        m_drivetrainSubsystem.getGyroscopeRotation());
-
-                //System.out.println("F: " + forwardVelocity + " S: " + sidewaysVelocity);
-
-                m_drivetrainSubsystem.drive(chassisSpeeds);
-                
-                return false;
-            }
-          } else {
-            System.out.println("AprilTag with ID = " + m_aprilTagId + " not detected. Stopping command.");
-            return true;
-        }
+    public void execute() {
+        // do nothing ... code is running in a thread
     }
 
+    // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        m_drivetrainSubsystem.stopMotors();
+        System.out.println("ending auto dock with AprilTag command");
+    }
+
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return (!m_dockWithAprilTagThread.isAlive());
     }
 }
