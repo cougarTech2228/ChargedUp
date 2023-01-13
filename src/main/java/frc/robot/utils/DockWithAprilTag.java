@@ -75,7 +75,7 @@ public class DockWithAprilTag implements Runnable {
 
             m_startTime = Timer.getFPGATimestamp();
 
-            m_forwardController.setGoal(DOCKING_DISTANCE_GOAL_METERS);//0.0);
+            m_forwardController.setGoal(0.0); //DOCKING_DISTANCE_GOAL_METERS?
             m_sidewaysController.setGoal(0.0);
 
             double detectionLostTime = 0.0;
