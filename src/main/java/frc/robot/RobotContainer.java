@@ -4,13 +4,17 @@
 
 package frc.robot;
 
+import java.util.HashMap;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.auto.BaseAutoBuilder;
 
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.DefaultDriveCommand;
@@ -71,6 +75,11 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
+        BaseAutoBuilder b;
+        HashMap<String, Command> eventMap = new HashMap<>();
+        eventMap.put("marker1", new InstantCommand(() -> {
+            m_ledStripSubsystem.rainbow();
+        }));
         // Back button zeros the gyroscope
         new Trigger(m_controller::getBackButton)
                 // No requirements because we don't need to interrupt anything
@@ -83,11 +92,17 @@ public class RobotContainer {
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::stopMotors, m_drivetrainSubsystem));
 
         new Trigger(m_controller::getAButton)
-                .onTrue(new SequentialCommandGroup(new InstantCommand(m_drivetrainSubsystem::setDoingTeleOpAuto),
-                        new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
-                        new FollowTrajectoryCommand(m_drivetrainSubsystem,
-                                PathPlanner.loadPath("New New Path", new PathConstraints(3, 1.5)), true)
-                                .andThen(() -> m_drivetrainSubsystem.setNotDoingTeleOpAuto(), m_drivetrainSubsystem)));
+                .onTrue(new SequentialCommandGroup(
+                            new InstantCommand(m_drivetrainSubsystem::setDoingTeleOpAuto),
+                            new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
+                            new FollowTrajectoryCommand(m_drivetrainSubsystem, "NewStraight", eventMap,4.0, 3.0, true),
+                            new FollowTrajectoryCommand(m_drivetrainSubsystem, "NewStraightBack", eventMap,4.0, 3.0, true),
+                                
+                            new InstantCommand(() -> {
+                                m_drivetrainSubsystem.setNotDoingTeleOpAuto();
+                            }, m_drivetrainSubsystem)
+                        )     
+                );
     }
 
     /**
