@@ -11,7 +11,7 @@ public class DockWithAprilTagCommand extends CommandBase {
     private DrivetrainSubsystem m_drivetrainSubsystem;
     private AprilTagSubsystem m_aprilTagSubsystem;
     private double m_aprilTagId;
-    private boolean m_zeroGyro;
+    private boolean m_isCameraForward;
 
     private Runnable m_dockWithAprilTagRunnable;
     private Thread m_dockWithAprilTagThread;
@@ -19,17 +19,18 @@ public class DockWithAprilTagCommand extends CommandBase {
     /** Creates a new ThreadedDockWithAprilTagCommand. */
     public DockWithAprilTagCommand(XboxController xboxController, DrivetrainSubsystem drivetrainSubsystem,
             AprilTagSubsystem aprilTagSubsystem,
-            boolean zeroGyro,
+            boolean isCameraForward,
             double aprilTagId) {
         m_xboxController = xboxController;
         m_drivetrainSubsystem = drivetrainSubsystem;
         m_aprilTagSubsystem = aprilTagSubsystem;
         m_aprilTagId = aprilTagId;
-        m_zeroGyro = zeroGyro;
+        m_isCameraForward = isCameraForward;
 
         m_dockWithAprilTagRunnable = new DockWithAprilTag(m_xboxController,
                 m_drivetrainSubsystem,
                 m_aprilTagSubsystem,
+                m_isCameraForward,
                 m_aprilTagId);
     }
 
@@ -37,10 +38,6 @@ public class DockWithAprilTagCommand extends CommandBase {
     @Override
     public void initialize() {
         System.out.println("Running auto dock with AprilTag command");
-
-        if (m_zeroGyro) {
-            m_drivetrainSubsystem.zeroGyroscope();
-        }
 
         m_dockWithAprilTagThread = new Thread(m_dockWithAprilTagRunnable, "DockWithAprilTagThread");
         m_dockWithAprilTagThread.start();

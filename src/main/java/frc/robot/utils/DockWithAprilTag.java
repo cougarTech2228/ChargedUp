@@ -16,6 +16,7 @@ public class DockWithAprilTag implements Runnable {
     private DrivetrainSubsystem m_drivetrainSubsystem;
     private AprilTagSubsystem m_aprilTagSubsystem;
     private double m_aprilTagId;
+    private boolean m_isCameraForward;
 
     private boolean m_hasStartedMoving;
 
@@ -53,18 +54,20 @@ public class DockWithAprilTag implements Runnable {
 
     // If the AprilTag detection loss lasts this amount of time, then we give up
     // trying to reacquire the AprilTag
-    private static final double MAX_DETECTION_LOST_TIME_SEC = 0.2;
+    private static final double MAX_DETECTION_LOST_TIME_SEC = 0.3;
 
     private double m_startTime = 0;
 
     public DockWithAprilTag(XboxController xboxController,
             DrivetrainSubsystem drivetrainSubsystem,
             AprilTagSubsystem aprilTagSubsystem,
+            boolean isCameraForward,
             double aprilTagId) {
                 
         m_xboxController = xboxController;
         m_drivetrainSubsystem = drivetrainSubsystem;
         m_aprilTagSubsystem = aprilTagSubsystem;
+        m_isCameraForward = isCameraForward;
         m_aprilTagId = aprilTagId;
     }
     
@@ -152,12 +155,21 @@ public class DockWithAprilTag implements Runnable {
                     sidewaysVelocity = -MIN_SIDEWAYS_VELOCITY;
                 }
 
-                ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
-                        sidewaysVelocity,
-                        0.0,
-                        m_drivetrainSubsystem.getGyroscopeRotation());
+                if (m_isCameraForward) {
+                    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
+                            sidewaysVelocity,
+                            0.0,
+                            m_drivetrainSubsystem.getGyroscopeRotation());
 
-                m_drivetrainSubsystem.drive(chassisSpeeds);
+                    m_drivetrainSubsystem.drive(chassisSpeeds);
+                } else {
+                    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
+                            -sidewaysVelocity,
+                            0.0,
+                            m_drivetrainSubsystem.getGyroscopeRotation());
+
+                    m_drivetrainSubsystem.drive(chassisSpeeds);
+                }
 
                 // Check to see if we're within docking distance
                 if (distanceToTarget < DOCKING_DISTANCE_GOAL_METERS) {
