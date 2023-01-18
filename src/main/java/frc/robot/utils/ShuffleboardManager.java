@@ -9,7 +9,6 @@ public class ShuffleboardManager {
 
     private static ShuffleboardTab m_autoConfigTab;
 
-    private static SendableChooser<Constants.AutoPosition> m_positionChooser = new SendableChooser<>();
     private static SendableChooser<Constants.PlacePosition> m_preloadedPieceLevelChooser = new SendableChooser<>();
     private static SendableChooser<Constants.PlacePosition> m_stagedPieceLevelChooser = new SendableChooser<>();
     private static SendableChooser<Constants.ConeOffsetPosition> m_preloadedPieceConeOffsetChooser = new SendableChooser<>();
@@ -22,14 +21,6 @@ public class ShuffleboardManager {
 
     public void configureShuffleboard() {
 
-        m_positionChooser.setDefaultOption("Position 3", Constants.AutoPosition.Position3);
-        m_positionChooser.addOption("Position 2", Constants.AutoPosition.Position2);
-        m_positionChooser.addOption("Position 1", Constants.AutoPosition.Position1);
-        m_autoConfigTab.add("Auto: Position", m_positionChooser)
-                .withWidget(BuiltInWidgets.kSplitButtonChooser)
-                .withSize(3, 1)
-                .withPosition(0, 0);
-
         m_preloadedPieceLevelChooser.setDefaultOption("High Cone", Constants.PlacePosition.HighCone);
         m_preloadedPieceLevelChooser.addOption("Middle Cone", Constants.PlacePosition.MiddleCone);
         m_preloadedPieceLevelChooser.addOption("Low Cone", Constants.PlacePosition.LowCone);
@@ -39,14 +30,14 @@ public class ShuffleboardManager {
         m_autoConfigTab.add("Preloaded Piece Level", m_preloadedPieceLevelChooser)
                 .withWidget(BuiltInWidgets.kSplitButtonChooser)
                 .withSize(5, 1)
-                .withPosition(0, 1);
+                .withPosition(0, 0);
 
         m_preloadedPieceConeOffsetChooser.setDefaultOption("Left", Constants.ConeOffsetPosition.Left);
         m_preloadedPieceConeOffsetChooser.addOption("Right", Constants.ConeOffsetPosition.Right);
         m_autoConfigTab.add("Preloaded Cone Offset", m_preloadedPieceConeOffsetChooser)
                 .withWidget(BuiltInWidgets.kSplitButtonChooser)
                 .withSize(2, 1)
-                .withPosition(5, 1);
+                .withPosition(5, 0);
 
         m_stagedPieceLevelChooser.setDefaultOption("High Cone", Constants.PlacePosition.HighCone);
         m_stagedPieceLevelChooser.addOption("Middle Cone", Constants.PlacePosition.MiddleCone);
@@ -57,18 +48,14 @@ public class ShuffleboardManager {
         m_autoConfigTab.add("Staged Piece Level", m_stagedPieceLevelChooser)
                 .withWidget(BuiltInWidgets.kSplitButtonChooser)
                 .withSize(5, 1)
-                .withPosition(0, 2);
+                .withPosition(0, 1);
 
         m_stagedPieceConeOffsetChooser.setDefaultOption("Left", Constants.ConeOffsetPosition.Left);
         m_stagedPieceConeOffsetChooser.addOption("Right", Constants.ConeOffsetPosition.Right);
         m_autoConfigTab.add("Staged Cone Offset", m_stagedPieceConeOffsetChooser)
                 .withWidget(BuiltInWidgets.kSplitButtonChooser)
                 .withSize(2, 1)
-                .withPosition(5, 2);
-    }
-
-    public Constants.AutoPosition getAutoPosition() {
-        return m_positionChooser.getSelected();
+                .withPosition(5, 1);
     }
 
     public Constants.PlacePosition getPreloadedPieceLevel() {

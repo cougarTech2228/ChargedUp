@@ -124,7 +124,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private SwerveDriveOdometry m_odometry;
 
-    private boolean m_doingTeleOpAuto;
+    private boolean m_pathPlannerDriving;
 
     private double m_tempEncoderCount = 0;
     private int m_encoderIteration = 0;
@@ -200,7 +200,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         configureDriveMotor(m_backLeftDriveMotor);
         configureDriveMotor(m_backRightDriveMotor);
 
-        m_doingTeleOpAuto = false;
+        m_pathPlannerDriving = false;
                        
         zeroGyroscope();
 
@@ -425,12 +425,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 states[3].angle.getRadians());
     }
 
-    public void setDoingTeleOpAuto() {
-        m_doingTeleOpAuto = true;
+    public void setPathPlannerDriving() {
+        m_pathPlannerDriving = true;
     }
 
-    public void setNotDoingTeleOpAuto() {
-        m_doingTeleOpAuto = false;
+    public void setNotPathPlannerDriving() {
+        m_pathPlannerDriving = false;
     }
 
     public SwerveDriveOdometry getOdometry() {
@@ -457,7 +457,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         m_odometry.update(getGyroscopeRotation(), getSwerveModulePositions());
 
-        if(!m_doingTeleOpAuto) {
+        if(!m_pathPlannerDriving) {
             SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
             setModuleStates(states);
         }

@@ -79,9 +79,6 @@ public final class Constants {
 
     public static final double BAD_APRIL_TAG_ID = 2228;
 
-    public static final double MAX_AUTO_VELOCITY = 1.2;
-    public static final double MAX_AUTO_ACCELERATION = 0.3;
-
     public enum PlacePosition {
         HighCone,
         MiddleCone,
@@ -108,6 +105,6 @@ public final class Constants {
         Position3
     }
 
-    public static final double DOUBLE_SUBSTATION_SHELF_OFFSET_CM = 46;
-    public static final double GRID_OFFSET_CM = 61;
+    public static final double MAX_AUTO_VELOCITY = 4.0;
+    public static final double MAX_AUTO_ACCELERATION = 3.0;
 }

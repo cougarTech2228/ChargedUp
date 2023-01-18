@@ -1,20 +1,16 @@
 package frc.robot.utils;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.Constants;
-import frc.robot.subsystems.AprilTagSubsystem;
-import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.RobotContainer;
 
 public class DockWithAprilTag implements Runnable {
 
-    private XboxController m_xboxController;
-    private DrivetrainSubsystem m_drivetrainSubsystem;
-    private AprilTagSubsystem m_aprilTagSubsystem;
     private double m_aprilTagId;
     private boolean m_isCameraForward;
 
@@ -24,29 +20,34 @@ public class DockWithAprilTag implements Runnable {
 
     // Distance to Target Correction
     private static final double MAX_FORWARD_DOCKING_VELOCITY = 1.2;
-    private static final double MAX_FORWARD_DOCKING_ACCELERATION = 0.3; 
+    private static final double MAX_FORWARD_DOCKING_ACCELERATION = 0.3;
 
-    private final TrapezoidProfile.Constraints m_forwardConstraints = 
-        new TrapezoidProfile.Constraints(MAX_FORWARD_DOCKING_VELOCITY, MAX_FORWARD_DOCKING_ACCELERATION);
+    private final TrapezoidProfile.Constraints m_forwardConstraints = new TrapezoidProfile.Constraints(
+            MAX_FORWARD_DOCKING_VELOCITY, MAX_FORWARD_DOCKING_ACCELERATION);
 
-    private final double FORWARD_P = 0.6; 
-    private final double FORWARD_D = 0.0; 
-    private final ProfiledPIDController m_forwardController =
-        new ProfiledPIDController(FORWARD_P, 0.0, FORWARD_D, m_forwardConstraints, kDt);
+    private final double FORWARD_P = 0.6;
+    private final double FORWARD_D = 0.0;
+    private final ProfiledPIDController m_forwardController = new ProfiledPIDController(FORWARD_P, 0.0, FORWARD_D,
+            m_forwardConstraints, kDt);
 
     // Sideways Correction
     private static final double MAX_SIDEWAYS_DOCKING_VELOCITY = 1.0;
     private static final double MAX_SIDEWAYS_DOCKING_ACCELERATION = 0.3;
 
-    private final TrapezoidProfile.Constraints m_sidewaysConstraints = 
-        new TrapezoidProfile.Constraints(MAX_SIDEWAYS_DOCKING_VELOCITY, MAX_SIDEWAYS_DOCKING_ACCELERATION);
-    
-    private final double SIDEWAYS_P = 0.6; 
-    private final double SIDEWAYS_D = 0.0;
-    private final ProfiledPIDController m_sidewaysController =
-        new ProfiledPIDController(SIDEWAYS_P, 0.0, SIDEWAYS_D, m_sidewaysConstraints, kDt);
+    private final TrapezoidProfile.Constraints m_sidewaysConstraints = new TrapezoidProfile.Constraints(
+            MAX_SIDEWAYS_DOCKING_VELOCITY, MAX_SIDEWAYS_DOCKING_ACCELERATION);
 
-    // We'll make this a little larger to give the AprilTag detector some time to process
+    private final double SIDEWAYS_P = 0.6;
+    private final double SIDEWAYS_D = 0.0;
+    private final ProfiledPIDController m_sidewaysController = new ProfiledPIDController(SIDEWAYS_P, 0.0, SIDEWAYS_D,
+            m_sidewaysConstraints, kDt);
+
+    private final double TURN_P = 0.05;
+    private final double TURN_D = 0.0;
+    private final PIDController m_turnController = new PIDController(TURN_P, 0.0, TURN_D);
+
+    // We'll make this a little larger to give the AprilTag detector some time to
+    // process
     private static final double DOCKING_DISTANCE_GOAL_METERS = Units.inchesToMeters(20.0);
 
     private static final double MIN_FORWARD_VELOCITY = 0.2;
@@ -58,69 +59,63 @@ public class DockWithAprilTag implements Runnable {
 
     private double m_startTime = 0;
 
-    public DockWithAprilTag(XboxController xboxController,
-            DrivetrainSubsystem drivetrainSubsystem,
-            AprilTagSubsystem aprilTagSubsystem,
+    public DockWithAprilTag(
             boolean isCameraForward,
             double aprilTagId) {
-                
-        m_xboxController = xboxController;
-        m_drivetrainSubsystem = drivetrainSubsystem;
-        m_aprilTagSubsystem = aprilTagSubsystem;
+
         m_isCameraForward = isCameraForward;
         m_aprilTagId = aprilTagId;
     }
-    
+
     public void run() {
         m_hasStartedMoving = false;
 
-        if (m_aprilTagSubsystem.getTagID() == m_aprilTagId) {
+        if (RobotContainer.getAprilTagSubsystem().getTagID() == m_aprilTagId) {
 
             m_startTime = Timer.getFPGATimestamp();
 
-            m_forwardController.setGoal(0.0); //DOCKING_DISTANCE_GOAL_METERS?
+            m_forwardController.setGoal(0.0); // DOCKING_DISTANCE_GOAL_METERS?
             m_sidewaysController.setGoal(0.0);
 
             double detectionLostTime = 0.0;
 
             while (true) {
-                
-                // If the AprilTag comes up as 2228 that means the detector can't see a 
+
+                // If the AprilTag comes up as 2228 that means the detector can't see a
                 // tag. We should wait a bit to see if the detection loss is just transitory
                 // before giving up on it.
-                if ((m_aprilTagSubsystem.getTagID() == Constants.BAD_APRIL_TAG_ID) &&
-                    (detectionLostTime == 0.0)) {
+                if ((RobotContainer.getAprilTagSubsystem().getTagID() == Constants.BAD_APRIL_TAG_ID) &&
+                        (detectionLostTime == 0.0)) {
                     detectionLostTime = Timer.getFPGATimestamp();
-                }
-                else if (m_aprilTagSubsystem.getTagID() == m_aprilTagId) {
+                } else if (RobotContainer.getAprilTagSubsystem().getTagID() == m_aprilTagId) {
                     detectionLostTime = 0.0;
                 }
 
-                if ((detectionLostTime != 0.0) && 
-                    ((Timer.getFPGATimestamp() - detectionLostTime) > MAX_DETECTION_LOST_TIME_SEC)) {
+                if ((detectionLostTime != 0.0) &&
+                        ((Timer.getFPGATimestamp() - detectionLostTime) > MAX_DETECTION_LOST_TIME_SEC)) {
                     System.out.println("Completely Lost April Tag Detection...");
                     break;
                 }
 
-                if (m_xboxController.getBButton()) {
+                if (RobotContainer.getXboxController().getBButton()) {
                     System.out.println("Driver cancelled command...");
                     break;
                 }
 
-                if (m_drivetrainSubsystem.getEncoderRateOfChange() > 0) {
+                if (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() > 0) {
                     m_hasStartedMoving = true;
                 }
 
                 // If we've started moving but then stop moving due to some unforseen issue
                 // like being blocked by another robot or field element, we need to kill the
                 // thread.
-                if (m_hasStartedMoving && m_drivetrainSubsystem.getEncoderRateOfChange() == 0) {
+                if (m_hasStartedMoving && (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() == 0)) {
                     System.out.println("Robot has stopped moving...");
                     break;
                 }
 
-                double distanceToTarget = m_aprilTagSubsystem.getTZ();
-                double offsetTargetDistance = m_aprilTagSubsystem.getTX();
+                double distanceToTarget = RobotContainer.getAprilTagSubsystem().getTZ();
+                double offsetTargetDistance = RobotContainer.getAprilTagSubsystem().getTX();
 
                 double forwardSpeed = -m_forwardController.calculate(distanceToTarget);
                 double sidewaysSpeed = m_sidewaysController.calculate(offsetTargetDistance);
@@ -155,20 +150,38 @@ public class DockWithAprilTag implements Runnable {
                     sidewaysVelocity = -MIN_SIDEWAYS_VELOCITY;
                 }
 
-                if (m_isCameraForward) {
-                    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
-                            sidewaysVelocity,
-                            0.0,
-                            m_drivetrainSubsystem.getGyroscopeRotation());
+                ChassisSpeeds chassisSpeeds;
 
-                    m_drivetrainSubsystem.drive(chassisSpeeds);
+                if (!m_isCameraForward) {
+
+                    // When we're within a meter, try to correct for pitch
+                    if (distanceToTarget < 1.0) {
+                        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
+                                sidewaysVelocity,
+                                m_turnController.calculate(RobotContainer.getAprilTagSubsystem().getPitch(), 0),
+                                RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
+                    } else {
+                        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
+                                sidewaysVelocity,
+                                0.0,
+                                RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
+                    }
+
+                    RobotContainer.getDrivetrainSubsystem().drive(chassisSpeeds);
                 } else {
-                    ChassisSpeeds chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
-                            -sidewaysVelocity,
-                            0.0,
-                            m_drivetrainSubsystem.getGyroscopeRotation());
+                    if (distanceToTarget < 1.0) {
+                        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
+                                -sidewaysVelocity,
+                                -m_turnController.calculate(RobotContainer.getAprilTagSubsystem().getPitch(), 0),
+                                RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
+                    } else {
+                        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
+                                -sidewaysVelocity,
+                                0.0,
+                                RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
+                    }
 
-                    m_drivetrainSubsystem.drive(chassisSpeeds);
+                    RobotContainer.getDrivetrainSubsystem().drive(chassisSpeeds);
                 }
 
                 // Check to see if we're within docking distance
@@ -190,6 +203,6 @@ public class DockWithAprilTag implements Runnable {
             System.out.printf("April tag: %.0f not detected!\n", m_aprilTagId);
         }
 
-        m_drivetrainSubsystem.stopMotors();
+        RobotContainer.getDrivetrainSubsystem().stopMotors();
     }
 }

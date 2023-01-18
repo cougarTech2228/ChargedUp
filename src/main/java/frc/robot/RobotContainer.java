@@ -5,32 +5,22 @@
 package frc.robot;
 
 import java.util.HashMap;
-import java.util.List;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.math.trajectory.TrajectoryConfig;
-import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.AutoOneCommand;
 import frc.robot.commands.AutoThreeCommand;
+import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.DockWithAprilTagCommand;
 import frc.robot.commands.FollowTrajectoryCommand;
-import frc.robot.commands.PlaceConeCommand;
-import frc.robot.commands.PlaceCubeCommand;
-import frc.robot.commands.StrafeCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.utils.ShuffleboardManager;
@@ -49,8 +39,7 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final static DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
 
-    private final XboxController m_controller = new XboxController(0);
-    // private final Joystick m_joystick = new Joystick(1);
+    private final static XboxController m_controller = new XboxController(0);
 
     private final static AprilTagSubsystem m_aprilTagSubsystem = new AprilTagSubsystem();
 
@@ -106,24 +95,22 @@ public class RobotContainer {
                 // No requirements because we don't need to interrupt anything
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
 
-        new Trigger(m_controller::getYButton)
-                .onTrue(new SequentialCommandGroup(new PrintCommand("!!!!!!!!!!!!!AutoThreeInit!!!!!!!!!!!!!!!!"),
-                new AutoThreeCommand(m_drivetrainSubsystem, m_aprilTagSubsystem, m_controller)
-                ));
-
         new Trigger(m_controller::getBButton)
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::stopMotors, m_drivetrainSubsystem));
 
-        new Trigger(m_controller::getAButton)
-                .onTrue(new SequentialCommandGroup(
-                        new InstantCommand(m_drivetrainSubsystem::setDoingTeleOpAuto),
-                        new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
-                        new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto1_out", eventMap, 4.0, 3.0, true),
-                        new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto1_back", eventMap, 4.0, 3.0, true),
-                        new DockWithAprilTagCommand(m_controller, m_drivetrainSubsystem, m_aprilTagSubsystem, false, 3),
-                        new InstantCommand(() -> {
-                            m_drivetrainSubsystem.setNotDoingTeleOpAuto();
-                        }, m_drivetrainSubsystem)));
+        // TODO - REMOVE - Temporary bindings for debug purposes
+         new Trigger(m_controller::getYButton)
+                 .onTrue(new AutoThreeCommand());
+
+        // new Trigger(m_controller::getAButton)
+        //         .onTrue(new SequentialCommandGroup(
+        //                 new InstantCommand(m_drivetrainSubsystem::setPathPlannerDriving),
+        //                 new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
+        //                 new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto3_out", eventMap, 4.0, 3.0, true),
+        //                 new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto3_back", eventMap, 4.0, 3.0, true),
+        //                 new InstantCommand(m_drivetrainSubsystem::setNotPathPlannerDriving),
+        //                 new DockWithAprilTagCommand(false)
+        //                 ));
     }
 
     /**
@@ -132,8 +119,17 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
-        // An ExampleCommand will run in autonomous
-        return new InstantCommand();
+        switch (DriverStation.getLocation()) {
+            case 1:
+                return new AutoOneCommand();
+            case 2:
+                return new AutoTwoCommand();
+            case 3:
+                return new AutoThreeCommand();
+            default:
+                System.out.println("Invalid position received from DriverStation");
+                return null;
+        }
     }
 
     private static double deadband(double value, double deadband) {
@@ -172,5 +168,9 @@ public class RobotContainer {
 
     public static ShuffleboardManager getShuffleboardManager() {
         return m_shuffleboardManager;
+    }
+
+    public static XboxController getXboxController() {
+        return m_controller;
     }
 }

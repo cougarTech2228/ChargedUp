@@ -47,7 +47,6 @@ public class FollowTrajectoryCommand extends SequentialCommandGroup {
                     }
                 }),
                 command
-
         );
     }
 }

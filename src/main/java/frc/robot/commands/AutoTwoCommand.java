@@ -10,9 +10,9 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
-public class AutoThreeCommand extends SequentialCommandGroup {
+public class AutoTwoCommand extends SequentialCommandGroup {
 
-    public AutoThreeCommand() {
+    public AutoTwoCommand() {
 
         // TODO - do we want to do something cool at each stage like with LEDs?
         // We could create multiple eventMaps
@@ -54,59 +54,17 @@ public class AutoThreeCommand extends SequentialCommandGroup {
         //             Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
         // }
 
-        // Based on Shuffleboard seletion, create appropriate Place Command for staged
-        // piece
-        Constants.PlacePosition stagedPieceLevel = RobotContainer.getShuffleboardManager()
-                .getStagedPieceLevel();
-        Command stagedPiecePlaceCommand;
-
-        if ((stagedPieceLevel == Constants.PlacePosition.HighCone) ||
-                (stagedPieceLevel == Constants.PlacePosition.MiddleCone) ||
-                (stagedPieceLevel == Constants.PlacePosition.LowCone)) {
-            stagedPiecePlaceCommand = new PlaceConeCommand(stagedPieceLevel);
-        } else {
-            stagedPiecePlaceCommand = new PlaceCubeCommand(stagedPieceLevel);
-        }
-
-        // Based on Shuffleboard selection for staged cone placement, 0.0 for cube
-        Constants.ConeOffsetPosition stagedConeOffsetPosition = RobotContainer.getShuffleboardManager()
-                .getStagedConeOffsetPosition();
-        Command stagedStrafeCommand = new PrintCommand("TODO stagedStrafeCommand");;
-
-        // if ((stagedPieceLevel == Constants.PlacePosition.HighCube) ||
-        //         (stagedPieceLevel == Constants.PlacePosition.MiddleCube) ||
-        //         (stagedPieceLevel == Constants.PlacePosition.LowCube)) {
-        //     System.out.println("Staged Cube Chosen");
-        //     stagedStrafeCommand = new PrintCommand("Already in position");
-        // } else if (stagedConeOffsetPosition == Constants.ConeOffsetPosition.Left) {
-        //     System.out.println("Staged Left Cone Chosen");
-        //     stagedStrafeCommand = new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-        //             "grid_strafe_left", eventMap,
-        //             Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
-        // } else {
-        //     System.out.println("Staged Right Cone Chosen");
-        //     stagedStrafeCommand = new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-        //             "grid_strafe_right", eventMap,
-        //             Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
-        // }
-
-        addCommands(new PrintCommand("Starting AutoThreeCommand"),
+        addCommands(new PrintCommand("Starting AutoTwoCommand"),
                 new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setPathPlannerDriving),
                 new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
                 new ParallelCommandGroup(
                         preloadedStrafeCommand,
                         preloadedPiecePlaceCommand),
-                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto3_out", eventMap,
+                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto2_out", eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto3_back", eventMap,
+                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto2_back", eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                 new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setNotPathPlannerDriving),
-                new DockWithAprilTagCommand(false),
-                new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setPathPlannerDriving),
-                new ParallelCommandGroup(
-                        stagedStrafeCommand,
-                        stagedPiecePlaceCommand),
-                new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setNotPathPlannerDriving),
-                new PrintCommand("AutoThreeCommand Complete!"));
+                new PrintCommand("AutoTwoCommand Complete!"));
     }
 }
