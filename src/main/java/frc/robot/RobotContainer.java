@@ -99,7 +99,7 @@ public class RobotContainer {
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::stopMotors, m_drivetrainSubsystem));
 
         // TODO - REMOVE - Temporary bindings for debug purposes
-         new Trigger(m_controller::getYButton)
+        new Trigger(m_controller::getYButton)
                  .onTrue(new AutoThreeCommand());
 
         // new Trigger(m_controller::getAButton)
