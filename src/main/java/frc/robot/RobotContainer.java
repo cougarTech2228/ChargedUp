@@ -118,9 +118,9 @@ public class RobotContainer {
                 .onTrue(new SequentialCommandGroup(
                         new InstantCommand(m_drivetrainSubsystem::setDoingTeleOpAuto),
                         new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
-                        new FollowTrajectoryCommand(m_drivetrainSubsystem, "NewStraight", eventMap, 4.0, 3.0, true),
-                        new FollowTrajectoryCommand(m_drivetrainSubsystem, "NewStraightBack", eventMap, 4.0, 3.0, true),
-
+                        new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto1_out", eventMap, 4.0, 3.0, true),
+                        new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto1_back", eventMap, 4.0, 3.0, true),
+                        new DockWithAprilTagCommand(m_controller, m_drivetrainSubsystem, m_aprilTagSubsystem, false, 3),
                         new InstantCommand(() -> {
                             m_drivetrainSubsystem.setNotDoingTeleOpAuto();
                         }, m_drivetrainSubsystem)));
