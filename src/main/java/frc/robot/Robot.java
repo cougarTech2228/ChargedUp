@@ -33,8 +33,6 @@ public class Robot extends TimedRobot {
         // and put our
         // autonomous chooser on the dashboard.
         m_robotContainer = new RobotContainer();
-
-        //PathPlannerServer.startServer(5811);
     }
 
     /**
@@ -58,7 +56,7 @@ public class Robot extends TimedRobot {
         // robot's periodic
         // block in order for anything in the Command-based framework to work.
         CommandScheduler.getInstance().run();
-    } 
+    }
 
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
@@ -81,12 +79,13 @@ public class Robot extends TimedRobot {
     public void autonomousInit() {
         RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
         RobotContainer.getDrivetrainSubsystem().primeDrivetrain();
-        // m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+
+        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)
-        // if (m_autonomousCommand != null) {
-        // m_autonomousCommand.schedule();
-        // }
+        if (m_autonomousCommand != null) {
+            m_autonomousCommand.schedule();
+        }
     }
 
     /** This function is called periodically during autonomous. */
@@ -98,6 +97,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
         RobotContainer.getDrivetrainSubsystem().primeDrivetrain();
+        
         // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to
         // continue until interrupted by another command, remove

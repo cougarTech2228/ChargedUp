@@ -297,6 +297,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return new SwerveModulePosition(position, moduleState.angle);
     }
 
+    // ---- End of "inspired" code from Team Spectrum 3847
+
     /*
      * This method is used to determine if the robot has stopped moving
      * during an autonomous command being run inside a thread. We need
@@ -394,7 +396,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return m_isFieldOrientedTableEntry.getBoolean(INITIAL_FIELD_ORIENTED_SETTING);
     }
 
-    public double getRotationalAdjustmennt() {
+    public double getRotationalAdjustment() {
         return m_rotationalAdjustmentTableEntry.getDouble(INITIAL_INPUT_ADJUSTMENT);
     }
 
@@ -423,10 +425,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 states[3].angle.getRadians());
     }
 
-    public double getYaw() {
-        return Math.IEEEremainder(m_pigeon.getYaw(), 360.0d);
-    }
-
     public void setDoingTeleOpAuto() {
         m_doingTeleOpAuto = true;
     }
@@ -443,6 +441,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return m_kinematics;
     }
 
+    public void resetOdometry(Pose2d pose) {
+        m_odometry.resetPosition(getGyroscopeRotation(), getSwerveModulePositions(), pose);
+    }
+
     @Override
     public void periodic() {
 
@@ -453,7 +455,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
             m_encoderUpdateCounter = 0;
         }
 
-        m_odometry.update(Rotation2d.fromDegrees(getYaw()), getSwerveModulePositions());
+        m_odometry.update(getGyroscopeRotation(), getSwerveModulePositions());
 
         if(!m_doingTeleOpAuto) {
             SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);

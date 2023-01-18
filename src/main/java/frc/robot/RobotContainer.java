@@ -5,23 +5,35 @@
 package frc.robot;
 
 import java.util.HashMap;
+import java.util.List;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.PathPlanner;
-import com.pathplanner.lib.auto.BaseAutoBuilder;
-
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.trajectory.Trajectory;
+import edu.wpi.first.math.trajectory.TrajectoryConfig;
+import edu.wpi.first.math.trajectory.TrajectoryGenerator;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.AutoThreeCommand;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.FollowTrajectoryCommand;
 import frc.robot.commands.DockWithAprilTagCommand;
+import frc.robot.commands.FollowTrajectoryCommand;
+import frc.robot.commands.PlaceConeCommand;
+import frc.robot.commands.PlaceCubeCommand;
+import frc.robot.commands.StrafeCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
+import frc.robot.utils.ShuffleboardManager;
 import frc.robot.subsystems.AprilTagSubsystem;
 
 /**
@@ -38,15 +50,23 @@ public class RobotContainer {
     private final static DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
 
     private final XboxController m_controller = new XboxController(0);
+    // private final Joystick m_joystick = new Joystick(1);
 
     private final static AprilTagSubsystem m_aprilTagSubsystem = new AprilTagSubsystem();
 
     private final static LEDStripSubsystem m_ledStripSubsystem = new LEDStripSubsystem();
 
+    private final static ShuffleboardTab m_autoConfigTab = Shuffleboard.getTab("Auto Config");
+    private final static ShuffleboardManager m_shuffleboardManager = new ShuffleboardManager(m_autoConfigTab);
+
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
      */
     public RobotContainer() {
+
+        // This has to be called first to setup the Shuffleboard controls which
+        // are used in the configureButtonBindings method.
+        m_shuffleboardManager.configureShuffleboard();
 
         // Set up the default command for the drivetrain.
         // Left stick Y axis -> forward and backwards movement
@@ -59,7 +79,7 @@ public class RobotContainer {
                         * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
                 () -> -modifyAxis(m_controller.getLeftX()) * m_drivetrainSubsystem.getSidewaysAdjustment()
                         * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-                () -> -modifyAxis(m_controller.getRightX()) * m_drivetrainSubsystem.getRotationalAdjustmennt()
+                () -> -modifyAxis(m_controller.getRightX()) * m_drivetrainSubsystem.getRotationalAdjustment()
                         * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
 
         // Configure the button bindings
@@ -75,34 +95,35 @@ public class RobotContainer {
      * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
      */
     private void configureButtonBindings() {
-        BaseAutoBuilder b;
+
         HashMap<String, Command> eventMap = new HashMap<>();
         eventMap.put("marker1", new InstantCommand(() -> {
             m_ledStripSubsystem.rainbow();
         }));
+
         // Back button zeros the gyroscope
         new Trigger(m_controller::getBackButton)
                 // No requirements because we don't need to interrupt anything
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
 
         new Trigger(m_controller::getYButton)
-                .onTrue(new DockWithAprilTagCommand(m_controller, m_drivetrainSubsystem, m_aprilTagSubsystem, false, 1.0));
+                .onTrue(new SequentialCommandGroup(new PrintCommand("!!!!!!!!!!!!!AutoThreeInit!!!!!!!!!!!!!!!!"),
+                new AutoThreeCommand(m_drivetrainSubsystem, m_aprilTagSubsystem, m_controller)
+                ));
 
         new Trigger(m_controller::getBButton)
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::stopMotors, m_drivetrainSubsystem));
 
         new Trigger(m_controller::getAButton)
                 .onTrue(new SequentialCommandGroup(
-                            new InstantCommand(m_drivetrainSubsystem::setDoingTeleOpAuto),
-                            new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
-                            new FollowTrajectoryCommand(m_drivetrainSubsystem, "NewStraight", eventMap,4.0, 3.0, true),
-                            new FollowTrajectoryCommand(m_drivetrainSubsystem, "NewStraightBack", eventMap,4.0, 3.0, true),
-                                
-                            new InstantCommand(() -> {
-                                m_drivetrainSubsystem.setNotDoingTeleOpAuto();
-                            }, m_drivetrainSubsystem)
-                        )     
-                );
+                        new InstantCommand(m_drivetrainSubsystem::setDoingTeleOpAuto),
+                        new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
+                        new FollowTrajectoryCommand(m_drivetrainSubsystem, "NewStraight", eventMap, 4.0, 3.0, true),
+                        new FollowTrajectoryCommand(m_drivetrainSubsystem, "NewStraightBack", eventMap, 4.0, 3.0, true),
+
+                        new InstantCommand(() -> {
+                            m_drivetrainSubsystem.setNotDoingTeleOpAuto();
+                        }, m_drivetrainSubsystem)));
     }
 
     /**
@@ -147,5 +168,9 @@ public class RobotContainer {
 
     public static LEDStripSubsystem getLEDStripSubsystem() {
         return m_ledStripSubsystem;
+    }
+
+    public static ShuffleboardManager getShuffleboardManager() {
+        return m_shuffleboardManager;
     }
 }
