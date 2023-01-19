@@ -105,6 +105,7 @@ public final class Constants {
         Position3
     }
 
+
     public static final double MAX_AUTO_VELOCITY = 4.0;
     public static final double MAX_AUTO_ACCELERATION = 3.0;
 }

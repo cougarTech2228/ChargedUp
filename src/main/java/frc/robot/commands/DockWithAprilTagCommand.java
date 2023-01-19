@@ -39,7 +39,7 @@ public class DockWithAprilTagCommand extends CommandBase {
                 break;
             case 3:
                 if (DriverStation.getAlliance() == Alliance.Blue) {
-                    m_aprilTagId = 3.0; //TODO Fix this when red path is made 8.0;
+                    m_aprilTagId = 8.0;
                 } else {
                     m_aprilTagId = 3.0;
                 }

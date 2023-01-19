@@ -155,7 +155,7 @@ public class DockWithAprilTag implements Runnable {
                 if (!m_isCameraForward) {
 
                     // When we're within a meter, try to correct for pitch
-                    if (distanceToTarget < 1.0) {
+                    if (distanceToTarget < 2.0) {
                         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
                                 sidewaysVelocity,
                                 m_turnController.calculate(RobotContainer.getAprilTagSubsystem().getPitch(), 0),
