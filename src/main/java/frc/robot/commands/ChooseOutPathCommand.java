@@ -2,10 +2,8 @@ package frc.robot.commands;
 
 import java.util.HashMap;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 
@@ -32,60 +30,56 @@ public class ChooseOutPathCommand extends CommandBase {
         if ((preloadedPieceLevel == Constants.PlacePosition.HighCone) ||
                 (preloadedPieceLevel == Constants.PlacePosition.MiddleCone) ||
                 (preloadedPieceLevel == Constants.PlacePosition.LowCone)) {
+
             if (coneOffsetPosition == Constants.ConeOffsetPosition.Left) {
-                switch (DriverStation.getLocation()) { //Cone Left
-                    case 1:
-                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto1L_out", eventMap,
-                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
-                        break;
-                    case 2:
-                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto2L_out", eventMap,
-                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
-                        break;
-                    case 3:
-                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto3L_out", eventMap,
-                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
-                        break;
-                    default:
-                        System.out.println("Uh Oh, somthing went wrong :( (Auto Location not found)");
-                        System.out.println("Invalid position received from DriverStation");
+                if (RobotContainer.getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position1) {
+                    new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto1L_out", eventMap,
+                            Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
+
+                } else if (RobotContainer.getShuffleboardManager()
+                        .getAutoPosition() == Constants.AutoPosition.Position2) {
+                    new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto2L_out", eventMap,
+                            Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
+
+                } else if (RobotContainer.getShuffleboardManager()
+                        .getAutoPosition() == Constants.AutoPosition.Position3) {
+                    new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto3L_out", eventMap,
+                            Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
+                } else {
+                    System.out.println("Uh Oh, somthing went wrong :( (Auto Location not found)");
                 }
-            } else { //Cone Right
-                switch (DriverStation.getLocation()) {
-                    case 1:
-                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto1R_out", eventMap,
-                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
-                        break;
-                    case 2:
-                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto2R_out", eventMap,
-                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
-                        break;
-                    case 3:
-                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto3R_out", eventMap,
-                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
-                        break;
-                    default:
-                        System.out.println("Uh Oh, somthing went wrong :( (Auto Location not found)");
-                        System.out.println("Invalid position received from DriverStation");
+
+            } else { // Cone Right
+                if (RobotContainer.getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position1) {
+                    new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto1R_out", eventMap,
+                            Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
+
+                } else if (RobotContainer.getShuffleboardManager()
+                        .getAutoPosition() == Constants.AutoPosition.Position2) {
+                    new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto2R_out", eventMap,
+                            Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
+
+                } else if (RobotContainer.getShuffleboardManager()
+                        .getAutoPosition() == Constants.AutoPosition.Position3) {
+                    new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto3R_out", eventMap,
+                            Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
+                } else {
+                    System.out.println("Uh Oh, somthing went wrong :( (Auto Location not found)");
                 }
             }
-        } else { //Cube
-            switch (DriverStation.getLocation()) {
-                case 1:
-                    new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "autoM_out", eventMap,
-                            Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
-                    break;
-                case 2:
-                    new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto2M_out", eventMap,
-                            Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
-                    break;
-                case 3:
-                    new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto3M_out", eventMap,
-                            Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
-                    break;
-                default:
-                    System.out.println("Uh Oh, somthing went wrong :( (Auto Location not found)");
-                    System.out.println("Invalid position received from DriverStation");
+        } else { // Cube
+            if (RobotContainer.getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position1) {
+                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "autoM_out", eventMap,
+                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
+            } else if (RobotContainer.getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position2) {
+                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto2M_out", eventMap,
+                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
+
+            } else if (RobotContainer.getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position3) {
+                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto3M_out", eventMap,
+                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true);
+            } else {
+                System.out.println("Uh Oh, somthing went wrong :( (Auto Location not found)");
             }
         }
     }
@@ -93,7 +87,7 @@ public class ChooseOutPathCommand extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-
+        // Do nothing
     }
 
     // Called once the command ends or is interrupted.

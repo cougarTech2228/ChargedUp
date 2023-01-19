@@ -3,7 +3,9 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.RobotContainer;
 import frc.robot.utils.DockWithAprilTag;
+import frc.robot.Constants;
 
 public class DockWithAprilTagCommand extends CommandBase {
     private double m_aprilTagId;
@@ -22,30 +24,27 @@ public class DockWithAprilTagCommand extends CommandBase {
     @Override
     public void initialize() {
 
-        switch (DriverStation.getLocation()) {
-            case 1:
-                if (DriverStation.getAlliance() == Alliance.Blue) {
-                    m_aprilTagId = 6.0;
-                } else {
-                    m_aprilTagId = 1.0;
-                }
-                break;
-            case 2:
-                if (DriverStation.getAlliance() == Alliance.Blue) {
-                    m_aprilTagId = 7.0;
-                } else {
-                    m_aprilTagId = 2.0;
-                }
-                break;
-            case 3:
-                if (DriverStation.getAlliance() == Alliance.Blue) {
-                    m_aprilTagId = 8.0;
-                } else {
-                    m_aprilTagId = 3.0;
-                }
-                break;
-            default:
-                System.out.println("Invalid position received from DriverStation");
+        // Get the correct AprilTag ID based on Position and Alliance Color
+        if (RobotContainer.getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position1) {
+            if (DriverStation.getAlliance() == Alliance.Blue) {
+                m_aprilTagId = 6.0;
+            } else {
+                m_aprilTagId = 1.0;
+            }
+        } else if (RobotContainer.getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position2) {
+            if (DriverStation.getAlliance() == Alliance.Blue) {
+                m_aprilTagId = 7.0;
+            } else {
+                m_aprilTagId = 2.0;
+            }
+        } else if (RobotContainer.getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position3) {
+            if (DriverStation.getAlliance() == Alliance.Blue) {
+                m_aprilTagId = 8.0;
+            } else {
+                m_aprilTagId = 3.0;
+            }
+        } else {
+            System.out.println("Invalid position received from Shufflboard");
         }
 
         System.out.println("Running auto dock with AprilTag command for tag ID: " + m_aprilTagId);

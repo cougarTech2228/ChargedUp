@@ -6,21 +6,17 @@ package frc.robot;
 
 import java.util.HashMap;
 
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoOneCommand;
 import frc.robot.commands.AutoThreeCommand;
 import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.DockWithAprilTagCommand;
-import frc.robot.commands.FollowTrajectoryCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.utils.ShuffleboardManager;
@@ -99,8 +95,6 @@ public class RobotContainer {
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::stopMotors, m_drivetrainSubsystem));
 
         // TODO - REMOVE - Temporary bindings for debug purposes
-        new Trigger(m_controller::getYButton)
-                 .onTrue(new AutoThreeCommand());
 
         // new Trigger(m_controller::getAButton)
         //         .onTrue(new SequentialCommandGroup(
@@ -120,16 +114,15 @@ public class RobotContainer {
      */
 
     public Command getAutonomousCommand() {
-        switch (DriverStation.getLocation()) {
-            case 1:
-                return new AutoOneCommand();
-            case 2:
-                return new AutoTwoCommand();
-            case 3:
-                return new AutoThreeCommand();
-            default:
-                System.out.println("Invalid position received from DriverStation");
-                return null;
+        if (getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position1) {
+            return new AutoOneCommand();
+        } else if (getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position2) {
+            return new AutoTwoCommand();
+        } else if (getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position3) {
+            return new AutoThreeCommand();
+        } else {
+            System.out.println("Invalid position received from Shufflboard");
+            return null;
         }
     }
 

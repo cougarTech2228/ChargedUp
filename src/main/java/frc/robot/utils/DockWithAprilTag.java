@@ -57,6 +57,8 @@ public class DockWithAprilTag implements Runnable {
     // trying to reacquire the AprilTag
     private static final double MAX_DETECTION_LOST_TIME_SEC = 0.3;
 
+    private static final double DISTANCE_TO_START_PITCH_CORRECTION = 2.0;
+
     private double m_startTime = 0;
 
     public DockWithAprilTag(
@@ -155,7 +157,7 @@ public class DockWithAprilTag implements Runnable {
                 if (!m_isCameraForward) {
 
                     // When we're within a meter, try to correct for pitch
-                    if (distanceToTarget < 2.0) {
+                    if (distanceToTarget < DISTANCE_TO_START_PITCH_CORRECTION) {
                         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
                                 sidewaysVelocity,
                                 m_turnController.calculate(RobotContainer.getAprilTagSubsystem().getPitch(), 0),
@@ -169,7 +171,7 @@ public class DockWithAprilTag implements Runnable {
 
                     RobotContainer.getDrivetrainSubsystem().drive(chassisSpeeds);
                 } else {
-                    if (distanceToTarget < 1.0) {
+                    if (distanceToTarget < DISTANCE_TO_START_PITCH_CORRECTION) {
                         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
                                 -sidewaysVelocity,
                                 -m_turnController.calculate(RobotContainer.getAprilTagSubsystem().getPitch(), 0),
