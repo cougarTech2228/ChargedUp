@@ -17,6 +17,7 @@ import frc.robot.commands.AutoOneCommand;
 import frc.robot.commands.AutoThreeCommand;
 import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.DockWithAprilTagCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.utils.ShuffleboardManager;
@@ -93,6 +94,9 @@ public class RobotContainer {
 
         new Trigger(m_controller::getBButton)
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::stopMotors, m_drivetrainSubsystem));
+
+        new Trigger(m_controller::getYButton)
+                .onTrue(new DockWithAprilTagCommand(false, true));
 
         // TODO - REMOVE - Temporary bindings for debug purposes
 

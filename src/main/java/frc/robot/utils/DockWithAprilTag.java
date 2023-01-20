@@ -13,6 +13,7 @@ public class DockWithAprilTag implements Runnable {
 
     private double m_aprilTagId;
     private boolean m_isCameraForward;
+    private boolean m_useGryoForPitchCorrection;
 
     private boolean m_hasStartedMoving;
 
@@ -57,16 +58,18 @@ public class DockWithAprilTag implements Runnable {
     // trying to reacquire the AprilTag
     private static final double MAX_DETECTION_LOST_TIME_SEC = 0.3;
 
-    private static final double DISTANCE_TO_START_PITCH_CORRECTION = 2.0;
+    private static final double PITCH_CORRECTION_GYRO_ANGLE = 0.0;
 
     private double m_startTime = 0;
 
     public DockWithAprilTag(
             boolean isCameraForward,
-            double aprilTagId) {
+            double aprilTagId,
+            boolean useGryoForPitchCorrection) {
 
         m_isCameraForward = isCameraForward;
-        m_aprilTagId = aprilTagId;
+        m_aprilTagId = aprilTagId; 
+        m_useGryoForPitchCorrection = useGryoForPitchCorrection;
     }
 
     public void run() {
@@ -154,13 +157,17 @@ public class DockWithAprilTag implements Runnable {
 
                 ChassisSpeeds chassisSpeeds;
 
+                // System.out.println("Current heading: "
+                // +
+                // RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees());
+
                 if (!m_isCameraForward) {
-
-                    // When we're within a meter, try to correct for pitch
-                    if (distanceToTarget < DISTANCE_TO_START_PITCH_CORRECTION) {
+                    if (m_useGryoForPitchCorrection) {
                         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
                                 sidewaysVelocity,
-                                m_turnController.calculate(RobotContainer.getAprilTagSubsystem().getPitch(), 0),
+                                m_turnController.calculate(
+                                        RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees(),
+                                        PITCH_CORRECTION_GYRO_ANGLE),
                                 RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
                     } else {
                         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
@@ -168,13 +175,13 @@ public class DockWithAprilTag implements Runnable {
                                 0.0,
                                 RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
                     }
-
-                    RobotContainer.getDrivetrainSubsystem().drive(chassisSpeeds);
                 } else {
-                    if (distanceToTarget < DISTANCE_TO_START_PITCH_CORRECTION) {
+                    if (m_useGryoForPitchCorrection) {
                         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
                                 -sidewaysVelocity,
-                                -m_turnController.calculate(RobotContainer.getAprilTagSubsystem().getPitch(), 0),
+                                -m_turnController.calculate(
+                                        RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees(),
+                                        PITCH_CORRECTION_GYRO_ANGLE),
                                 RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
                     } else {
                         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
@@ -182,9 +189,9 @@ public class DockWithAprilTag implements Runnable {
                                 0.0,
                                 RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
                     }
-
-                    RobotContainer.getDrivetrainSubsystem().drive(chassisSpeeds);
                 }
+
+                RobotContainer.getDrivetrainSubsystem().drive(chassisSpeeds);
 
                 // Check to see if we're within docking distance
                 if (distanceToTarget < DOCKING_DISTANCE_GOAL_METERS) {
@@ -197,7 +204,6 @@ public class DockWithAprilTag implements Runnable {
                 try {
                     Thread.sleep(1);
                 } catch (InterruptedException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
             }

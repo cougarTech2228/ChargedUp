@@ -24,7 +24,9 @@ public class AutoOneCommand extends SequentialCommandGroup {
                 new ChooseOutPathCommand(),
                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto1_back", eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new DockWithAprilTagCommand(true),
+                new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setNotPathPlannerDriving),
+                new DockWithAprilTagCommand(false, false),
+                new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setPathPlannerDriving),
                 new PlaceStagedPieceCommand(),
                 new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setNotPathPlannerDriving),
                 new PrintCommand("AutoOneCommand Complete!"));

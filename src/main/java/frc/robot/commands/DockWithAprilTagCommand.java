@@ -10,14 +10,17 @@ import frc.robot.Constants;
 public class DockWithAprilTagCommand extends CommandBase {
     private double m_aprilTagId;
     private boolean m_isCameraForward;
+    private boolean m_useGryoForPitchCorrection;
 
     private Runnable m_dockWithAprilTagRunnable;
     private Thread m_dockWithAprilTagThread;
 
     /** Creates a new ThreadedDockWithAprilTagCommand. */
     public DockWithAprilTagCommand(
-            boolean isCameraForward) {
+            boolean isCameraForward,
+            boolean useGryoForPitchCorrection) {
         m_isCameraForward = isCameraForward;
+        m_useGryoForPitchCorrection = useGryoForPitchCorrection;
     }
 
     // Called when the command is initially scheduled.
@@ -51,7 +54,8 @@ public class DockWithAprilTagCommand extends CommandBase {
 
         m_dockWithAprilTagRunnable = new DockWithAprilTag(
                 m_isCameraForward,
-                m_aprilTagId);
+                m_aprilTagId,
+                m_useGryoForPitchCorrection);
 
         m_dockWithAprilTagThread = new Thread(m_dockWithAprilTagRunnable, "DockWithAprilTagThread");
         m_dockWithAprilTagThread.start();
