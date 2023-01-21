@@ -59,6 +59,8 @@ public class OutPathFileNameChooser {
             }
         }
 
+        System.out.println("Choosing out path file: " + m_outPathFileName);
+
         return m_outPathFileName;
     }
 }

@@ -77,6 +77,8 @@ public final class Constants {
 
     public static final int DRIVETRAIN_PIGEON_ID = 61; // Set Pigeon ID
 
+    public static final int ARM_WINCH_MOTOR_ID = 00; // TODO - Need to determine CAN ID for this motor
+
     public static final double BAD_APRIL_TAG_ID = 2228;
 
     public enum PlacePosition {

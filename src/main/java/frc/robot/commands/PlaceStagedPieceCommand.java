@@ -26,9 +26,9 @@ public class PlaceStagedPieceCommand extends CommandBase {
                 (stagedPieceLevel == Constants.PlacePosition.MiddleCone) ||
                 (stagedPieceLevel == Constants.PlacePosition.LowCone)) {
                     if (coneOffsetPosition == Constants.ConeOffsetPosition.Left) {
-                        System.out.println("Placing staged left cone ... need to strafe left");
+                        System.out.println("Placing staged left cone");
                     } else {
-                        System.out.println("Placing staged right cone ... need to strafe right");
+                        System.out.println("Placing staged right cone");
                     }
         } else {
            System.out.println("Placing staged cube"); 

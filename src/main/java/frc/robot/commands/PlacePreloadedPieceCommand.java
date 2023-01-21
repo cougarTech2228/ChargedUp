@@ -26,9 +26,9 @@ public class PlacePreloadedPieceCommand extends CommandBase {
                 (preloadedPieceLevel == Constants.PlacePosition.MiddleCone) ||
                 (preloadedPieceLevel == Constants.PlacePosition.LowCone)) {
                     if (coneOffsetPosition == Constants.ConeOffsetPosition.Left) {
-                        System.out.println("Placing preloaded left cone ... need to strafe left first");
+                        System.out.println("Placing preloaded left cone");
                     } else {
-                        System.out.println("Placing preloaded right cone ... need to straffe right first");
+                        System.out.println("Placing preloaded right cone");
                     }
         } else {
            System.out.println("Placing preloaded cube"); 

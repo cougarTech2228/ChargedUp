@@ -22,6 +22,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.utils.ShuffleboardManager;
 import frc.robot.subsystems.AprilTagSubsystem;
+import frc.robot.subsystems.ArmSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -41,6 +42,8 @@ public class RobotContainer {
     private final static AprilTagSubsystem m_aprilTagSubsystem = new AprilTagSubsystem();
 
     private final static LEDStripSubsystem m_ledStripSubsystem = new LEDStripSubsystem();
+
+    private final static ArmSubsystem m_armSubsystem = new ArmSubsystem();
 
     private final static ShuffleboardTab m_autoConfigTab = Shuffleboard.getTab("Auto Config");
     private final static ShuffleboardManager m_shuffleboardManager = new ShuffleboardManager(m_autoConfigTab);
@@ -92,6 +95,12 @@ public class RobotContainer {
                 // No requirements because we don't need to interrupt anything
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
 
+        new Trigger(m_controller::getAButton)
+                .onTrue(new InstantCommand(() -> m_armSubsystem.setWinchMotorPercentOutput(0.1)));
+                
+        new Trigger(m_controller::getXButton)
+                .onTrue(new InstantCommand(() -> m_armSubsystem.setWinchMotorPercentOutput(0.0)));
+
         new Trigger(m_controller::getBButton)
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::stopMotors, m_drivetrainSubsystem));
 
@@ -101,14 +110,16 @@ public class RobotContainer {
         // TODO - REMOVE - Temporary bindings for debug purposes
 
         // new Trigger(m_controller::getAButton)
-        //         .onTrue(new SequentialCommandGroup(
-        //                 new InstantCommand(m_drivetrainSubsystem::setPathPlannerDriving),
-        //                 new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
-        //                 new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto3_out", eventMap, 4.0, 3.0, true),
-        //                 new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto3_back", eventMap, 4.0, 3.0, true),
-        //                 new InstantCommand(m_drivetrainSubsystem::setNotPathPlannerDriving),
-        //                 new DockWithAprilTagCommand(false)
-        //                 ));
+        // .onTrue(new SequentialCommandGroup(
+        // new InstantCommand(m_drivetrainSubsystem::setPathPlannerDriving),
+        // new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
+        // new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto3_out", eventMap,
+        // 4.0, 3.0, true),
+        // new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto3_back", eventMap,
+        // 4.0, 3.0, true),
+        // new InstantCommand(m_drivetrainSubsystem::setNotPathPlannerDriving),
+        // new DockWithAprilTagCommand(false)
+        // ));
     }
 
     /**

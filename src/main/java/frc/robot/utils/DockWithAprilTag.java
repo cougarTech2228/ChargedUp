@@ -49,7 +49,7 @@ public class DockWithAprilTag implements Runnable {
 
     // We'll make this a little larger to give the AprilTag detector some time to
     // process
-    private static final double DOCKING_DISTANCE_GOAL_METERS = Units.inchesToMeters(20.0);
+    private static final double DOCKING_DISTANCE_GOAL_METERS = Units.inchesToMeters(24.0);
 
     private static final double MIN_FORWARD_VELOCITY = 0.2;
     private static final double MIN_SIDEWAYS_VELOCITY = 0.2;
@@ -79,7 +79,7 @@ public class DockWithAprilTag implements Runnable {
 
             m_startTime = Timer.getFPGATimestamp();
 
-            m_forwardController.setGoal(0.0); // DOCKING_DISTANCE_GOAL_METERS?
+            m_forwardController.setGoal(0.0);
             m_sidewaysController.setGoal(0.0);
             m_turnController.enableContinuousInput(-180, 180);
             m_turnController.setTolerance(3, 5);
