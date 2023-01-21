@@ -157,9 +157,7 @@ public class DockWithAprilTag implements Runnable {
 
                 ChassisSpeeds chassisSpeeds;
 
-                // System.out.println("Current heading: "
-                // +
-                // RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees());
+                // System.out.println("Current heading: " + RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees());
 
                 if (!m_isCameraForward) {
                     if (m_useGryoForPitchCorrection) {

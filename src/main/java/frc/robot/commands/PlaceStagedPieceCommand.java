@@ -19,9 +19,8 @@ public class PlaceStagedPieceCommand extends CommandBase {
         // Based on Shuffleboard selection, create appropriate Place Command for
         // preloaded piece
         Constants.PlacePosition stagedPieceLevel = RobotContainer.getShuffleboardManager()
-                .getPreloadedPieceLevel();
+                .getStagedPieceLevel();
         Constants.ConeOffsetPosition coneOffsetPosition = RobotContainer.getShuffleboardManager().getStagedConeOffsetPosition();
-
 
         if ((stagedPieceLevel == Constants.PlacePosition.HighCone) ||
                 (stagedPieceLevel == Constants.PlacePosition.MiddleCone) ||

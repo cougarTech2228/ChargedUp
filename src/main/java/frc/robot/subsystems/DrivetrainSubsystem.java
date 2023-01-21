@@ -24,7 +24,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -136,12 +135,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public DrivetrainSubsystem() {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
-        m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+        m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(/* 
                 // This parameter is optional, but will allow you to see the current state of
                 // the module on the dashboard.
                 tab.getLayout("Front Left Module", BuiltInLayouts.kList)
                         .withSize(2, 3)
-                        .withPosition(0, 0),
+                        .withPosition(0, 0),*/
                 // This can either be STANDARD or FAST depending on your gear configuration
                 Mk4iSwerveModuleHelper.GearRatio.L2,
                 // This is the ID of the drive motor
@@ -155,30 +154,30 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 Constants.FRONT_LEFT_MODULE_STEER_OFFSET);
 
         // We will do the same for the other modules
-        m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+        m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(/*
                 tab.getLayout("Front Right Module", BuiltInLayouts.kList)
                         .withSize(2, 3)
-                        .withPosition(2, 0),
+                        .withPosition(2, 0),*/
                 Mk4iSwerveModuleHelper.GearRatio.L2,
                 Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID,
                 Constants.FRONT_RIGHT_MODULE_STEER_MOTOR_ID,
                 Constants.FRONT_RIGHT_MODULE_STEER_ENCODER_ID,
                 Constants.FRONT_RIGHT_MODULE_STEER_OFFSET);
 
-        m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+        m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(/*
                 tab.getLayout("Back Left Module", BuiltInLayouts.kList)
                         .withSize(2, 3)
-                        .withPosition(4, 0),
+                        .withPosition(4, 0),*/
                 Mk4iSwerveModuleHelper.GearRatio.L2,
                 Constants.BACK_LEFT_MODULE_DRIVE_MOTOR_ID,
                 Constants.BACK_LEFT_MODULE_STEER_MOTOR_ID,
                 Constants.BACK_LEFT_MODULE_STEER_ENCODER_ID,
                 Constants.BACK_LEFT_MODULE_STEER_OFFSET);
 
-        m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+        m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500(/*
                 tab.getLayout("Back Right Module", BuiltInLayouts.kList)
                         .withSize(2, 3)
-                        .withPosition(6, 0),
+                        .withPosition(6, 0),*/
                 Mk4iSwerveModuleHelper.GearRatio.L2,
                 Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR_ID,
                 Constants.BACK_RIGHT_MODULE_STEER_MOTOR_ID,
@@ -425,12 +424,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 states[3].angle.getRadians());
     }
 
-    public void setPathPlannerDriving() {
-        m_pathPlannerDriving = true;
-    }
-
-    public void setNotPathPlannerDriving() {
-        m_pathPlannerDriving = false;
+    public void setPathPlannerDriving(boolean isPathPlannerDriving) {
+        m_pathPlannerDriving = isPathPlannerDriving;
     }
 
     public SwerveDriveOdometry getOdometry() {
