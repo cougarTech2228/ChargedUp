@@ -31,7 +31,7 @@ public class AutoThreeCommand extends SequentialCommandGroup {
                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto3_back", eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                 new InstantCommand(()->RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
-                new DockWithAprilTagCommand(false, false),
+                new DockWithAprilTagCommand(false, true),
                 new InstantCommand(()->RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
                 new PlaceStagedPieceCommand(),
                 new InstantCommand(()->RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),

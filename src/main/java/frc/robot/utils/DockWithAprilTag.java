@@ -81,6 +81,8 @@ public class DockWithAprilTag implements Runnable {
 
             m_forwardController.setGoal(0.0); // DOCKING_DISTANCE_GOAL_METERS?
             m_sidewaysController.setGoal(0.0);
+            m_turnController.enableContinuousInput(-180, 180);
+            m_turnController.setTolerance(3, 5);
 
             double detectionLostTime = 0.0;
 
