@@ -47,7 +47,7 @@ public class DockWithAprilTagCommand extends CommandBase {
                 m_aprilTagId = 3.0;
             }
         } else {
-            System.out.println("Invalid position received from Shufflboard");
+            System.out.println("Invalid position received from Shuffleboard");
         }
 
         System.out.println("Running auto dock with AprilTag command for tag ID: " + m_aprilTagId);

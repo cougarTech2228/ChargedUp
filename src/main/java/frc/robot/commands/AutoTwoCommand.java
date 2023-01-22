@@ -24,9 +24,6 @@ public class AutoTwoCommand extends SequentialCommandGroup {
         OutPathFileNameChooser outPathFileNameChooser = new OutPathFileNameChooser();
         String outPathFileName = outPathFileNameChooser.getOutPathFileName();
 
-        // Choose whether or not we have to strafe and in what direction based on
-        // Shuffleboard inputs
-
         addCommands(new InstantCommand(() -> printStartCommand()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()

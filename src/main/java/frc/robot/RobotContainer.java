@@ -4,8 +4,6 @@
 
 package frc.robot;
 
-import java.util.HashMap;
-
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -17,9 +15,9 @@ import frc.robot.commands.AutoOneCommand;
 import frc.robot.commands.AutoThreeCommand;
 import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.DockWithAprilTagCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
+import frc.robot.utils.ButtonBoardManager;
 import frc.robot.utils.ShuffleboardManager;
 import frc.robot.subsystems.AprilTagSubsystem;
 import frc.robot.subsystems.ArmSubsystem;
@@ -47,6 +45,8 @@ public class RobotContainer {
 
     private final static ShuffleboardTab m_autoConfigTab = Shuffleboard.getTab("Auto Config");
     private final static ShuffleboardManager m_shuffleboardManager = new ShuffleboardManager(m_autoConfigTab);
+
+    private final static ButtonBoardManager m_buttonBoardManager = new ButtonBoardManager();
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -85,41 +85,12 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
 
-        HashMap<String, Command> eventMap = new HashMap<>();
-        eventMap.put("marker1", new InstantCommand(() -> {
-            m_ledStripSubsystem.rainbow();
-        }));
-
-        // Back button zeros the gyroscope
-        new Trigger(m_controller::getBackButton)
-                // No requirements because we don't need to interrupt anything
+        // Configure the XboxController buttons
+        new Trigger(m_controller::getBackButton) // Back button zeros the gyroscope
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
 
-        new Trigger(m_controller::getAButton)
-                .onTrue(new InstantCommand(() -> m_armSubsystem.setWinchMotorPercentOutput(0.1)));
-                
-        new Trigger(m_controller::getXButton)
-                .onTrue(new InstantCommand(() -> m_armSubsystem.setWinchMotorPercentOutput(0.0)));
-
-        new Trigger(m_controller::getBButton)
-                .onTrue(new InstantCommand(m_drivetrainSubsystem::stopMotors, m_drivetrainSubsystem));
-
-        new Trigger(m_controller::getYButton)
-                .onTrue(new DockWithAprilTagCommand(false, true));
-
-        // TODO - REMOVE - Temporary bindings for debug purposes
-
-        // new Trigger(m_controller::getAButton)
-        // .onTrue(new SequentialCommandGroup(
-        // new InstantCommand(m_drivetrainSubsystem::setPathPlannerDriving),
-        // new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
-        // new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto3_out", eventMap,
-        // 4.0, 3.0, true),
-        // new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto3_back", eventMap,
-        // 4.0, 3.0, true),
-        // new InstantCommand(m_drivetrainSubsystem::setNotPathPlannerDriving),
-        // new DockWithAprilTagCommand(false)
-        // ));
+        // Configure all the buttons and switches on the Custom Button Board
+        m_buttonBoardManager.configureButtonBindings();
     }
 
     /**
@@ -175,8 +146,16 @@ public class RobotContainer {
         return m_ledStripSubsystem;
     }
 
+    public static ArmSubsystem getArmSubsystem() {
+        return m_armSubsystem;
+    }
+
     public static ShuffleboardManager getShuffleboardManager() {
         return m_shuffleboardManager;
+    }
+
+    public static ButtonBoardManager getButtonBoardManager() {
+        return m_buttonBoardManager;
     }
 
     public static XboxController getXboxController() {
