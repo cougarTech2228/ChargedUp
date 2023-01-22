@@ -3,6 +3,7 @@ package frc.robot.commands;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -21,6 +22,8 @@ public class AutoOneCommand extends SequentialCommandGroup {
         STRAFE_NONE
     }
 
+    private double m_startTime = 0;
+
     public AutoOneCommand() {
 
         // TODO - do we want to do something cool at each stage like with LEDs?
@@ -30,7 +33,7 @@ public class AutoOneCommand extends SequentialCommandGroup {
         OutPathFileNameChooser outPathFileNameChooser = new OutPathFileNameChooser();
         String outPathFileName = outPathFileNameChooser.getOutPathFileName();
 
-        addCommands(new PrintCommand("Starting AutoOneCommand"),
+        addCommands(new InstantCommand(() -> printStartCommand()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
                         .setPathPlannerDriving(true)),
@@ -63,7 +66,7 @@ public class AutoOneCommand extends SequentialCommandGroup {
                 new PlaceStagedPieceCommand(),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
                         .setPathPlannerDriving(false)),
-                new PrintCommand("AutoOneCommand Complete!"));
+                new InstantCommand(() -> printEndCommand()));
     }
 
     // Choose whether or not we have to strafe and in what direction based on
@@ -85,5 +88,14 @@ public class AutoOneCommand extends SequentialCommandGroup {
         } else {
             return CommandSelector.STRAFE_NONE;
         }
+    }
+
+    private void printStartCommand() {
+        m_startTime = Timer.getFPGATimestamp();
+        System.out.println("Starting AutoOneCommand");
+    }
+
+    private void printEndCommand() {
+        System.out.println("AutoOneCommand completed in " + (Timer.getFPGATimestamp() - m_startTime) + " seconds");
     }
 }

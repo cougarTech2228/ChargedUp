@@ -2,15 +2,17 @@ package frc.robot.commands;
 
 import java.util.HashMap;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.utils.OutPathFileNameChooser;
 
 public class AutoTwoCommand extends SequentialCommandGroup {
+
+    private double m_startTime = 0;
 
     public AutoTwoCommand() {
 
@@ -25,7 +27,7 @@ public class AutoTwoCommand extends SequentialCommandGroup {
         // Choose whether or not we have to strafe and in what direction based on
         // Shuffleboard inputs
 
-        addCommands(new PrintCommand("Starting AutoTwoCommand"),
+        addCommands(new InstantCommand(() -> printStartCommand()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
                         .setPathPlannerDriving(true)),
@@ -39,6 +41,15 @@ public class AutoTwoCommand extends SequentialCommandGroup {
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
                         .setPathPlannerDriving(false)),
-                new PrintCommand("AutoTwoCommand Complete!"));
+                new InstantCommand(() -> printEndCommand()));
+    }
+     
+    private void printStartCommand() {
+        m_startTime = Timer.getFPGATimestamp();
+        System.out.println("Starting AutoTwoCommand");
+    }
+
+    private void printEndCommand() {
+        System.out.println("AutoTwoCommand completed in " + (Timer.getFPGATimestamp() - m_startTime) + " seconds");
     }
 }

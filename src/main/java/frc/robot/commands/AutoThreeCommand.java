@@ -3,6 +3,7 @@ package frc.robot.commands;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -21,6 +22,8 @@ public class AutoThreeCommand extends SequentialCommandGroup {
         STRAFE_NONE
     }
 
+    private double m_startTime = 0;
+
     public AutoThreeCommand() {
 
         // TODO - do we want to do something cool at each stage like with LEDs?
@@ -31,7 +34,7 @@ public class AutoThreeCommand extends SequentialCommandGroup {
         OutPathFileNameChooser outPathFileNameChooser = new OutPathFileNameChooser();
         String outPathFileName = outPathFileNameChooser.getOutPathFileName();
 
-        addCommands(new PrintCommand("Starting AutoThreeCommand"),
+        addCommands(new InstantCommand(() ->printStartCommand()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
                 new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
@@ -58,7 +61,7 @@ public class AutoThreeCommand extends SequentialCommandGroup {
                         this::selectStagedStrafe),
                 new PlaceStagedPieceCommand(),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
-                new PrintCommand("AutoThreeCommand Complete!"));
+                new InstantCommand(() ->printEndCommand()));
     }
 
     // Choose whether or not we have to strafe and in what direction based on
@@ -80,5 +83,14 @@ public class AutoThreeCommand extends SequentialCommandGroup {
         } else {
             return CommandSelector.STRAFE_NONE;
         }
+    }
+
+    private void printStartCommand() {
+        m_startTime = Timer.getFPGATimestamp();
+        System.out.println("Starting AutoThreeCommand");
+    }
+
+    private void printEndCommand() {
+        System.out.println("AutoThreeCommand completed in " + (Timer.getFPGATimestamp() - m_startTime) + " seconds");
     }
 }

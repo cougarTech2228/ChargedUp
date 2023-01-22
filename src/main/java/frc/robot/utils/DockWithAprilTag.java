@@ -60,7 +60,7 @@ public class DockWithAprilTag implements Runnable {
 
     private static final double PITCH_CORRECTION_GYRO_ANGLE = 0.0;
 
-    private double m_startTime = 0;
+    // private double m_startTime = 0;
 
     public DockWithAprilTag(
             boolean isCameraForward,
@@ -77,7 +77,7 @@ public class DockWithAprilTag implements Runnable {
 
         if (RobotContainer.getAprilTagSubsystem().getTagID() == m_aprilTagId) {
 
-            m_startTime = Timer.getFPGATimestamp();
+            // m_startTime = Timer.getFPGATimestamp();
 
             m_forwardController.setGoal(0.0);
             m_sidewaysController.setGoal(0.0);
@@ -196,8 +196,8 @@ public class DockWithAprilTag implements Runnable {
                 // Check to see if we're within docking distance
                 if (distanceToTarget < DOCKING_DISTANCE_GOAL_METERS) {
                     System.out.println("Docked with target. Yipee!!!!!");
-                    System.out
-                            .println("Command completed in " + (Timer.getFPGATimestamp() - m_startTime) + " seconds");
+                    // System.out
+                    //         .println("Command completed in " + (Timer.getFPGATimestamp() - m_startTime) + " seconds");
                     break;
                 }
 
