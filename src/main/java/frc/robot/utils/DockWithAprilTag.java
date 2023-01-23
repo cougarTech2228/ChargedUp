@@ -75,7 +75,7 @@ public class DockWithAprilTag implements Runnable {
     public void run() {
         m_hasStartedMoving = false;
 
-        if (RobotContainer.getAprilTagSubsystem().getTagID() == m_aprilTagId) {
+        if (RobotContainer.getAprilTagManager().getTagID() == m_aprilTagId) {
 
             // m_startTime = Timer.getFPGATimestamp();
 
@@ -91,10 +91,10 @@ public class DockWithAprilTag implements Runnable {
                 // If the AprilTag comes up as 2228 that means the detector can't see a
                 // tag. We should wait a bit to see if the detection loss is just transitory
                 // before giving up on it.
-                if ((RobotContainer.getAprilTagSubsystem().getTagID() == Constants.BAD_APRIL_TAG_ID) &&
+                if ((RobotContainer.getAprilTagManager().getTagID() == Constants.BAD_APRIL_TAG_ID) &&
                         (detectionLostTime == 0.0)) {
                     detectionLostTime = Timer.getFPGATimestamp();
-                } else if (RobotContainer.getAprilTagSubsystem().getTagID() == m_aprilTagId) {
+                } else if (RobotContainer.getAprilTagManager().getTagID() == m_aprilTagId) {
                     detectionLostTime = 0.0;
                 }
 
@@ -121,8 +121,8 @@ public class DockWithAprilTag implements Runnable {
                     break;
                 }
 
-                double distanceToTarget = RobotContainer.getAprilTagSubsystem().getTZ();
-                double offsetTargetDistance = RobotContainer.getAprilTagSubsystem().getTX();
+                double distanceToTarget = RobotContainer.getAprilTagManager().getTZ();
+                double offsetTargetDistance = RobotContainer.getAprilTagManager().getTX();
 
                 double forwardSpeed = -m_forwardController.calculate(distanceToTarget);
                 double sidewaysSpeed = m_sidewaysController.calculate(offsetTargetDistance);

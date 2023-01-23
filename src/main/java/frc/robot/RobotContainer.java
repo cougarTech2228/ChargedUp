@@ -19,7 +19,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.utils.ButtonBoardManager;
 import frc.robot.utils.ShuffleboardManager;
-import frc.robot.subsystems.AprilTagSubsystem;
+import frc.robot.utils.AprilTagManager;
 import frc.robot.subsystems.ArmSubsystem;
 
 /**
@@ -37,7 +37,7 @@ public class RobotContainer {
 
     private final static XboxController m_controller = new XboxController(0);
 
-    private final static AprilTagSubsystem m_aprilTagSubsystem = new AprilTagSubsystem();
+    private final static AprilTagManager m_aprilTagManager = new AprilTagManager();
 
     private final static LEDStripSubsystem m_ledStripSubsystem = new LEDStripSubsystem();
 
@@ -138,8 +138,8 @@ public class RobotContainer {
         return m_drivetrainSubsystem;
     }
 
-    public static AprilTagSubsystem getAprilTagSubsystem() {
-        return m_aprilTagSubsystem;
+    public static AprilTagManager getAprilTagManager() {
+        return m_aprilTagManager;
     }
 
     public static LEDStripSubsystem getLEDStripSubsystem() {

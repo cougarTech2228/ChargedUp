@@ -20,7 +20,6 @@ public class CT_LEDStrip extends AddressableLED {
      */ 
     private final static double INCREASE_VALUE = 0.0314;
 
-
     private AddressableLEDBuffer m_LEDBuffer;
     private int m_rainbowFirstPixelHue = 0;
 

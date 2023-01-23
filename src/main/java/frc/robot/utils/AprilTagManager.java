@@ -1,13 +1,12 @@
-package frc.robot.subsystems;
+package frc.robot.utils;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import frc.robot.Constants;
 
-public class AprilTagSubsystem extends SubsystemBase {
-
+public class AprilTagManager {
+    
     static NetworkTable m_aprilTagTable = NetworkTableInstance.getDefault().getTable("AprilTag");
 
     static NetworkTableEntry m_pitchEntry = m_aprilTagTable.getEntry("Pitch");
@@ -15,7 +14,7 @@ public class AprilTagSubsystem extends SubsystemBase {
     static NetworkTableEntry m_tzEntry = m_aprilTagTable.getEntry("TZ");
     static NetworkTableEntry m_tagIdEntry = m_aprilTagTable.getEntry("Tag ID");
 
-    public AprilTagSubsystem() {
+    public AprilTagManager() {
     }
 
     public double getPitch() {
@@ -32,11 +31,5 @@ public class AprilTagSubsystem extends SubsystemBase {
 
     public double getTagID() {
         return m_tagIdEntry.getDouble(Constants.BAD_APRIL_TAG_ID);
-    }
-
-    @Override
-    public void periodic() {
-        //System.out.println("TZ: " + getTZ() + " | TagID: " + getTagID());
-        //System.out.println("TagID last_change: " + m_tagID.getInfo().last_change);
     }
 }
