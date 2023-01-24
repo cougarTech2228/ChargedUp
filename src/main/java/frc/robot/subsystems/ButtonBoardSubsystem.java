@@ -1,4 +1,4 @@
-package frc.robot.utils;
+package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
@@ -6,19 +6,20 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.DockWithAprilTagCommand;
 
-public class ButtonBoardManager {
+public class ButtonBoardSubsystem extends SubsystemBase {
 
     private final int kJoystickChannel = 1;
     private Joystick m_joystick;
     private Constants.AutoPosition m_gridPosition = Constants.AutoPosition.Position1;
     private double m_aprilTagID = Constants.BAD_APRIL_TAG_ID;
 
-    public ButtonBoardManager() {
+    public ButtonBoardSubsystem() {
         m_joystick = new Joystick(kJoystickChannel);
     }
 
@@ -105,6 +106,12 @@ public class ButtonBoardManager {
 
     public double getAprilTagID() {
         return m_aprilTagID;
+    }
+
+    @Override
+    public void periodic() {
+        // Monitor the current state of the Joystick and Toggle Switches here
+        
     }
 
     public void configureButtonBindings() {

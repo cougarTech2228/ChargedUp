@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
-import frc.robot.utils.ButtonBoardManager;
+import frc.robot.subsystems.ButtonBoardSubsystem;
 import frc.robot.utils.DockWithAprilTag;
 import frc.robot.Constants;
 
@@ -12,7 +12,7 @@ public class DockWithAprilTagCommand extends CommandBase {
     private double m_aprilTagId;
     private boolean m_isCameraForward;
     private boolean m_useGryoForPitchCorrection;
-    private ButtonBoardManager m_buttonBoardManager;
+    private ButtonBoardSubsystem m_buttonBoardSubsystem;
 
     private Runnable m_dockWithAprilTagRunnable;
     private Thread m_dockWithAprilTagThread;
@@ -27,10 +27,10 @@ public class DockWithAprilTagCommand extends CommandBase {
     public DockWithAprilTagCommand(
             boolean isCameraForward,
             boolean useGryoForPitchCorrection,
-            ButtonBoardManager buttonBoardManager) {
+            ButtonBoardSubsystem buttonBoardSubsystem) {
         m_isCameraForward = isCameraForward;
         m_useGryoForPitchCorrection = useGryoForPitchCorrection;
-        m_buttonBoardManager = buttonBoardManager;
+        m_buttonBoardSubsystem = buttonBoardSubsystem;
     }
 
     // Called when the command is initially scheduled.
@@ -45,7 +45,7 @@ public class DockWithAprilTagCommand extends CommandBase {
         // approach, we were never getting the correct April Tag ID value
         // presumably due to how the button bindings are created at
         // initialization.
-        if (m_buttonBoardManager == null) {
+        if (m_buttonBoardSubsystem == null) {
             // Get the correct AprilTag ID based on Position and Alliance Color
             if (RobotContainer.getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position1) {
                 if (DriverStation.getAlliance() == Alliance.Blue) {
@@ -69,7 +69,7 @@ public class DockWithAprilTagCommand extends CommandBase {
                 System.out.println("Invalid position received from Shuffleboard");
             }
         } else {
-            m_aprilTagId = m_buttonBoardManager.getAprilTagID();
+            m_aprilTagId = m_buttonBoardSubsystem.getAprilTagID();
         }
 
         System.out.println("Running auto dock with AprilTag command for tag ID: " + m_aprilTagId);

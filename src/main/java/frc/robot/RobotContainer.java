@@ -17,7 +17,7 @@ import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
-import frc.robot.utils.ButtonBoardManager;
+import frc.robot.subsystems.ButtonBoardSubsystem;
 import frc.robot.utils.ShuffleboardManager;
 import frc.robot.utils.AprilTagManager;
 import frc.robot.subsystems.ArmSubsystem;
@@ -46,7 +46,7 @@ public class RobotContainer {
     private final static ShuffleboardTab m_autoConfigTab = Shuffleboard.getTab("Auto Config");
     private final static ShuffleboardManager m_shuffleboardManager = new ShuffleboardManager(m_autoConfigTab);
 
-    private final static ButtonBoardManager m_buttonBoardManager = new ButtonBoardManager();
+    private final static ButtonBoardSubsystem m_buttonBoardSubsystem = new ButtonBoardSubsystem();
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -90,7 +90,7 @@ public class RobotContainer {
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
 
         // Configure all the buttons and switches on the Custom Button Board
-        m_buttonBoardManager.configureButtonBindings();
+        m_buttonBoardSubsystem.configureButtonBindings();
     }
 
     /**
@@ -154,8 +154,8 @@ public class RobotContainer {
         return m_shuffleboardManager;
     }
 
-    public static ButtonBoardManager getButtonBoardManager() {
-        return m_buttonBoardManager;
+    public static ButtonBoardSubsystem getButtonBoardSubsystem() {
+        return m_buttonBoardSubsystem;
     }
 
     public static XboxController getXboxController() {
