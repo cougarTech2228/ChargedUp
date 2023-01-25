@@ -177,9 +177,10 @@ public class DockWithAprilTag implements Runnable {
                     }
                 } else {
                     if (m_useGryoForPitchCorrection) {
+                        // TODO Something is messed up here
                         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
                                 -sidewaysVelocity,
-                                -m_turnController.calculate(
+                                m_turnController.calculate(
                                         RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees(),
                                         PITCH_CORRECTION_GYRO_ANGLE),
                                 RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());

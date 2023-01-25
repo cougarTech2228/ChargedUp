@@ -1,8 +1,11 @@
 package frc.robot.subsystems;
 
+import java.util.HashMap;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -11,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.DockWithAprilTagCommand;
+import frc.robot.commands.FollowTrajectoryCommand;
 
 public class ButtonBoardSubsystem extends SubsystemBase {
 
@@ -111,18 +115,27 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         // Monitor the current state of the Joystick and Toggle Switches here
-        
+
     }
 
     public void configureButtonBindings() {
+
+        // TODO - do we want to do something cool at each stage like with LEDs?
+        // We could create multiple eventMaps
+        HashMap<String, Command> eventMap = new HashMap<>();
 
         // !! Robot MUST BE ENABLED for these commands to work !!
 
         // Bottom Three Red Buttons used to place game piece
         getJoystickButton1().onTrue(new SequentialCommandGroup(new PrintCommand("High Left Cone"),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
-                new DockWithAprilTagCommand(false, true, this),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true))));
+                new DockWithAprilTagCommand(true, false, this),
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
+                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
+                        "strafe_right", eventMap,
+                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                new PrintCommand("Placing game piece")));
 
         getJoystickButton2().onTrue(new SequentialCommandGroup(new PrintCommand("High Cube")));
 

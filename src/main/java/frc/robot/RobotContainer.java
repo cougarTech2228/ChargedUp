@@ -90,8 +90,8 @@ public class RobotContainer {
         new Trigger(m_controller::getBackButton) // Back button zeros the gyroscope
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
 
-        // new Trigger(m_controller::getYButton)
-        //         .onTrue(new DockWithAprilTagCommand(false, true));
+        new Trigger(m_controller::getYButton)
+                .onTrue(new DockWithAprilTagCommand(true, true));
 
         // Configure all the buttons and switches on the Custom Button Board
         m_buttonBoardSubsystem.configureButtonBindings();
