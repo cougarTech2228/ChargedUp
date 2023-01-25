@@ -15,6 +15,7 @@ import frc.robot.commands.AutoOneCommand;
 import frc.robot.commands.AutoThreeCommand;
 import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.DockWithAprilTagCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.subsystems.ButtonBoardSubsystem;
@@ -88,6 +89,9 @@ public class RobotContainer {
         // Configure the XboxController buttons
         new Trigger(m_controller::getBackButton) // Back button zeros the gyroscope
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
+
+        // new Trigger(m_controller::getYButton)
+        //         .onTrue(new DockWithAprilTagCommand(false, true));
 
         // Configure all the buttons and switches on the Custom Button Board
         m_buttonBoardSubsystem.configureButtonBindings();
