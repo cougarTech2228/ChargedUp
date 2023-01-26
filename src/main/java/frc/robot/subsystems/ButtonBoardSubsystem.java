@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -15,91 +16,117 @@ import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.DockWithAprilTagCommand;
 import frc.robot.commands.FollowTrajectoryCommand;
+import frc.robot.commands.SetArmHeightCommand;
+import frc.robot.commands.SetArmReachCommand;
 
 public class ButtonBoardSubsystem extends SubsystemBase {
 
+    private enum SubstationShelfPosition {
+        Left,
+        Right
+    }
+
+    private enum ButtonBoardOperationMode {
+        Manual,
+        Auto
+    }
+
+    private enum GripperMode {
+        Open,
+        Closed
+    }
+
     private final int kJoystickChannel1 = 1;
     private final int kJoystickChannel2 = 2;
+
     private Joystick m_joystick1;
-    private Joystick m_Joystick2;
+    private Joystick m_joystick2;
+
     private Constants.AutoPosition m_gridPosition = Constants.AutoPosition.Position1;
+
     private double m_aprilTagID = Constants.BAD_APRIL_TAG_ID;
+
+    private SubstationShelfPosition m_substationShelfPosition;
+    private ButtonBoardOperationMode m_operationMode;
+    private GripperMode m_gripperMode;
+    private double m_armJoystick;
+    private double m_strafeJoystick;
 
     public ButtonBoardSubsystem() {
         m_joystick1 = new Joystick(kJoystickChannel1);
-        m_Joystick2 = new Joystick(kJoystickChannel2);
+        m_joystick2 = new Joystick(kJoystickChannel2);
     }
 
-    private JoystickButton getHighLeftCone() {
+    private JoystickButton getHighLeftConeButton() {
         return new JoystickButton(m_joystick1, 1);
     }
 
-    private JoystickButton getHighCube() {
+    private JoystickButton getHighCubeButton() {
         return new JoystickButton(m_joystick1, 2);
     }
 
-    private JoystickButton getHighRightCone() {
+    private JoystickButton getHighRightConeButton() {
         return new JoystickButton(m_joystick1, 3);
     }
 
-    private JoystickButton getMiddleLeftCone() {
+    private JoystickButton getMiddleLeftConeButton() {
         return new JoystickButton(m_joystick1, 4);
     }
 
-    private JoystickButton getMiddleCube() {
+    private JoystickButton getMiddleCubeButton() {
         return new JoystickButton(m_joystick1, 5);
     }
 
-    private JoystickButton getMiddleRightCone() {
+    private JoystickButton getMiddleRightConeButton() {
         return new JoystickButton(m_joystick1, 6);
     }
 
-    private JoystickButton getLowLeftCone() {
+    private JoystickButton getLowLeftConeButton() {
         return new JoystickButton(m_joystick1, 7);
     }
 
-    private JoystickButton getLowCube() {
+    private JoystickButton getLowCubeButton() {
         return new JoystickButton(m_joystick1, 8);
     }
 
-    private JoystickButton getLowRightCone() {
+    private JoystickButton getLowRightConeButton() {
         return new JoystickButton(m_joystick1, 9);
     }
 
-    private JoystickButton getPosition1() {
+    private JoystickButton getPosition1Button() {
         return new JoystickButton(m_joystick1, 10);
     }
 
-    private JoystickButton getPosition2() {
+    private JoystickButton getPosition2Button() {
         return new JoystickButton(m_joystick1, 11);
     }
 
-    private JoystickButton getPosition3() {
+    private JoystickButton getPosition3Button() {
         return new JoystickButton(m_joystick1, 12);
     }
 
-    private JoystickButton getArmUp() {
-        return new JoystickButton(m_Joystick2, 12);
+    private JoystickButton getArmUpButton() {
+        return new JoystickButton(m_joystick2, 12);
     }
 
-    private JoystickButton getArmDown() {
-        return new JoystickButton(m_Joystick2, 12);
+    private JoystickButton getArmDownButton() {
+        return new JoystickButton(m_joystick2, 12);
     }
 
-    private JoystickButton getSubstationDock() {
-        return new JoystickButton(m_Joystick2, 12);
+    private JoystickButton getSubstationDockButton() {
+        return new JoystickButton(m_joystick2, 12);
     }
 
-    private JoystickButton getLRToggleSwitch() {
-        return new JoystickButton(m_Joystick2, 1);
+    private JoystickButton getSubstationLeftRightToggleSwitch() {
+        return new JoystickButton(m_joystick2, 1);
     }
 
-    private JoystickButton getAutoManualToggleSwich() {
-        return new JoystickButton(m_Joystick2, 3);
+    private JoystickButton getAutoManualToggleSwitch() {
+        return new JoystickButton(m_joystick2, 3);
     }
 
-    private JoystickButton getGripperToggleSwich() {
-        return new JoystickButton(m_Joystick2, 6);
+    private JoystickButton getOpenCloseGripperToggleSwitch() {
+        return new JoystickButton(m_joystick2, 6);
     }
 
     private void setPosition(Constants.AutoPosition position) {
@@ -141,8 +168,26 @@ public class ButtonBoardSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        // Monitor the current state of the Joystick and Toggle Switches here
+        if (getSubstationLeftRightToggleSwitch().getAsBoolean()) {
+            m_substationShelfPosition = SubstationShelfPosition.Right;
+        } else {
+            m_substationShelfPosition = SubstationShelfPosition.Left;
+        }
 
+        if (getAutoManualToggleSwitch().getAsBoolean()) {
+            m_operationMode = ButtonBoardOperationMode.Manual;
+        } else {
+            m_operationMode = ButtonBoardOperationMode.Auto;
+        }
+
+        if (getOpenCloseGripperToggleSwitch().getAsBoolean()) {
+            m_gripperMode = GripperMode.Closed;
+        } else {
+            m_gripperMode = GripperMode.Open;
+        }
+
+        m_strafeJoystick = m_joystick2.getRawAxis(0);
+        m_armJoystick = m_joystick2.getRawAxis(1);
     }
 
     public void configureButtonBindings() {
@@ -154,14 +199,14 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // !! Robot MUST BE ENABLED for these commands to work !!
 
         // Arm and Docking Buttons
-        getSubstationDock().onTrue(new SequentialCommandGroup(new PrintCommand("Docking")));
+        getSubstationDockButton().onTrue(new SequentialCommandGroup(new PrintCommand("Docking")));
 
-        getArmUp().onTrue(new SequentialCommandGroup(new PrintCommand("Arm Up")));
+        getArmUpButton().onTrue(new SequentialCommandGroup(new PrintCommand("Arm Up")));
 
-        getArmDown().onTrue(new SequentialCommandGroup(new PrintCommand("Docking")));
+        getArmDownButton().onTrue(new SequentialCommandGroup(new PrintCommand("Docking")));
 
         // Bottom Three Red Buttons used to place game piece
-        getHighLeftCone().onTrue(new SequentialCommandGroup(new PrintCommand("High Left Cone"),
+        getHighLeftConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("High Left Cone"),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new DockWithAprilTagCommand(true, true, this),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
@@ -169,14 +214,18 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         "strafe_right", eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
-                new PrintCommand("Placing game piece")));
+                new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
+                        new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
+                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))));
 
-        getHighCube().onTrue(new SequentialCommandGroup(new PrintCommand("High Cube"),
+        getHighCubeButton().onTrue(new SequentialCommandGroup(new PrintCommand("High Cube"),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new DockWithAprilTagCommand(true, true, this),
-                new PrintCommand("Placing game piece")));
+                new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CUBE_HEIGHT_CM),
+                        new SetArmReachCommand(Constants.ARM_HIGH_CUBE_REACH_CM)),
+                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))));
 
-        getHighRightCone().onTrue(new SequentialCommandGroup(new PrintCommand("High Left Cone"),
+        getHighRightConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("High Right Cone"),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new DockWithAprilTagCommand(true, true, this),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
@@ -184,30 +233,32 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         "strafe_left", eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
-                new PrintCommand("Placing game piece")));
+                new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
+                        new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
+                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))));
 
         // Middle Three Red Buttons used to place game piece
-        getMiddleLeftCone().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Left Cone")));
+        getMiddleLeftConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Left Cone")));
 
-        getMiddleCube().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Cube")));
+        getMiddleCubeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Cube")));
 
-        getMiddleRightCone().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Right Cone")));
+        getMiddleRightConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Right Cone")));
 
         // Top Three Red Buttons used to place game piece
-        getLowLeftCone().onTrue(new SequentialCommandGroup(new PrintCommand("Low Left Cone")));
+        getLowLeftConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Low Left Cone")));
 
-        getLowCube().onTrue(new SequentialCommandGroup(new PrintCommand("Low Cube")));
+        getLowCubeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Low Cube")));
 
-        getLowRightCone().onTrue(new SequentialCommandGroup(new PrintCommand("Low Right Cone")));
+        getLowRightConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Low Right Cone")));
 
-        // Three Blue Buttons to set the position based of Alliance
-        getPosition1().onTrue(new SequentialCommandGroup(new PrintCommand("Setting Position 1"),
+        // Three Blue Buttons to set the position based off of Alliance setting
+        getPosition1Button().onTrue(new SequentialCommandGroup(new PrintCommand("Setting Position 1"),
                 new InstantCommand(() -> setPosition(Constants.AutoPosition.Position1))));
 
-        getPosition2().onTrue(new SequentialCommandGroup(new PrintCommand("Setting Position 2"),
+        getPosition2Button().onTrue(new SequentialCommandGroup(new PrintCommand("Setting Position 2"),
                 new InstantCommand(() -> setPosition(Constants.AutoPosition.Position2))));
 
-        getPosition3().onTrue(new SequentialCommandGroup(new PrintCommand("Setting Position 3"),
+        getPosition3Button().onTrue(new SequentialCommandGroup(new PrintCommand("Setting Position 3"),
                 new InstantCommand(() -> setPosition(Constants.AutoPosition.Position3))));
     }
 }

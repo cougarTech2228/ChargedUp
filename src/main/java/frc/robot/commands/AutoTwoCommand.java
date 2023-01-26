@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.utils.OutPathFileNameChooser;
+import frc.robot.utils.PlacePreloadedPieceCommandChooser;
 
 public class AutoTwoCommand extends SequentialCommandGroup {
 
@@ -24,12 +25,15 @@ public class AutoTwoCommand extends SequentialCommandGroup {
         OutPathFileNameChooser outPathFileNameChooser = new OutPathFileNameChooser();
         String outPathFileName = outPathFileNameChooser.getOutPathFileName();
 
+        PlacePreloadedPieceCommandChooser placePreloadedPieceCommandChooser = new PlacePreloadedPieceCommandChooser();
+        SequentialCommandGroup placePreloadedPieceSequentialCommandGroup = placePreloadedPieceCommandChooser.getPlacePreloadedPieceCommand();
+
         addCommands(new InstantCommand(() -> printStartCommand()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
                         .setPathPlannerDriving(true)),
                 new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
-                new PlacePreloadedPieceCommand(),
+                placePreloadedPieceSequentialCommandGroup,
                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), outPathFileName,
                         eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),

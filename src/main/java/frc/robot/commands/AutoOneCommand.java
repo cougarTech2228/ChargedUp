@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.utils.OutPathFileNameChooser;
+import frc.robot.utils.PlacePreloadedPieceCommandChooser;
+import frc.robot.utils.PlaceStagedPieceCommandChooser;
 
 public class AutoOneCommand extends SequentialCommandGroup {
 
@@ -33,12 +35,20 @@ public class AutoOneCommand extends SequentialCommandGroup {
         OutPathFileNameChooser outPathFileNameChooser = new OutPathFileNameChooser();
         String outPathFileName = outPathFileNameChooser.getOutPathFileName();
 
+        PlacePreloadedPieceCommandChooser placePreloadedPieceCommandChooser = new PlacePreloadedPieceCommandChooser();
+        SequentialCommandGroup placePreloadedPieceSequentialCommandGroup = placePreloadedPieceCommandChooser
+                .getPlacePreloadedPieceCommand();
+
+        PlaceStagedPieceCommandChooser placeStagedPieceCommandChooser = new PlaceStagedPieceCommandChooser();
+        SequentialCommandGroup placeStagedPieceSequentialCommandGroup = placeStagedPieceCommandChooser
+                .getPlaceStagedPieceCommand();
+
         addCommands(new InstantCommand(() -> printStartCommand()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
                         .setPathPlannerDriving(true)),
                 new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
-                new PlacePreloadedPieceCommand(),
+                placePreloadedPieceSequentialCommandGroup,
                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), outPathFileName,
                         eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
@@ -63,7 +73,7 @@ public class AutoOneCommand extends SequentialCommandGroup {
                                 Map.entry(CommandSelector.STRAFE_NONE,
                                         new PrintCommand("We're already lined up, no strafing necessary"))),
                         this::selectStagedStrafe),
-                new PlaceStagedPieceCommand(),
+                placeStagedPieceSequentialCommandGroup,
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
                         .setPathPlannerDriving(false)),
                 new InstantCommand(() -> printEndCommand()));

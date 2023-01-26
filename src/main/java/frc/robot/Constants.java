@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.util.Units;
+
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide
  * numerical or boolean
@@ -77,7 +79,8 @@ public final class Constants {
 
     public static final int DRIVETRAIN_PIGEON_ID = 61; // Set Pigeon ID
 
-    public static final int ARM_WINCH_MOTOR_ID = 00; // TODO - Need to determine CAN ID for this motor
+    public static final int ARM_ELEVATOR_MOTOR_ID = 64; // TODO - Need to determine CAN ID for this motor
+    public static final int ARM_WINCH_MOTOR_ID = 65; // TODO - Need to determine CAN ID for this motor
 
     public static final double BAD_APRIL_TAG_ID = 2228;
 
@@ -107,7 +110,42 @@ public final class Constants {
         Position3
     }
 
-
     public static final double MAX_AUTO_VELOCITY = 4.0;
     public static final double MAX_AUTO_ACCELERATION = 3.0;
+
+    // Constants for the Arm Subsystem and Commands
+    public static final int UPPER_ELEVATOR_LIMIT_SWITCH_DIO = 1;
+    public static final int LOWER_ELEVATOR_LIMIT_SWITCH_DIO = 2;
+    public static final int MINIMUM_REACH_LIMIT_SWITCH_DIO = 3;
+
+    private static final double HIGH_CONE_NODE_HEIGHT_CM = Units.inchesToMeters(46.0) / 100.0;
+    private static final double MIDDLE_CONE_NODE_HEIGHT_CM = Units.inchesToMeters(34.0) / 100.0;
+    private static final double LOW_CONE_NODE_HEIGHT_CM = 0.0;
+
+    private static final double HIGH_CUBE_NODE_HEIGHT_CM = Units.inchesToMeters(35.5) / 100.0;
+    private static final double MIDDLE_CUBE_NODE_HEIGHT_CM = Units.inchesToMeters(23.5) / 100.0;
+    private static final double LOW_CUBE_NODE_HEIGHT_CM = 0.0;
+
+    private static final double CLEARANCE_MARGIN_CM = Units.inchesToMeters(2.0) / 100.0;
+
+    public static final double ARM_HIGH_CONE_HEIGHT_CM = HIGH_CONE_NODE_HEIGHT_CM + CLEARANCE_MARGIN_CM;
+    public static final double ARM_MIDDLE_CONE_HEIGHT_CM = MIDDLE_CONE_NODE_HEIGHT_CM + CLEARANCE_MARGIN_CM;
+    public static final double ARM_LOW_CONE_HEIGHT_CM = LOW_CONE_NODE_HEIGHT_CM + CLEARANCE_MARGIN_CM;
+
+    public static final double ARM_HIGH_CUBE_HEIGHT_CM = HIGH_CUBE_NODE_HEIGHT_CM + CLEARANCE_MARGIN_CM;
+    public static final double ARM_MIDDLE_CUBE_HEIGHT_CM = MIDDLE_CUBE_NODE_HEIGHT_CM + CLEARANCE_MARGIN_CM;
+    public static final double ARM_LOW_CUBE_HEIGHT_CM = LOW_CUBE_NODE_HEIGHT_CM + CLEARANCE_MARGIN_CM;
+
+    private static final double CONE_DIAMETER_CM = 21.0;
+    private static final double CUBE_WIDTH_CM = 24.0;
+
+    public static final double ARM_HIGH_CONE_REACH_CM = (Units.inchesToMeters(39.75) / 100.0)
+            + (CONE_DIAMETER_CM / 2.0);
+    public static final double ARM_MIDDLE_CONE_REACH_CM = (Units.inchesToMeters(22.75) / 100.0)
+            + (CONE_DIAMETER_CM / 2.0);
+    public static final double ARM_LOW_CONE_REACH_CM = (Units.inchesToMeters(8.0) / 100.0) + (CONE_DIAMETER_CM / 2.0);
+
+    public static final double ARM_HIGH_CUBE_REACH_CM = (Units.inchesToMeters(39.75) / 100.0) + (CUBE_WIDTH_CM / 2.0);
+    public static final double ARM_MIDDLE_CUBE_REACH_CM = (Units.inchesToMeters(22.75) / 100.0) + (CUBE_WIDTH_CM / 2.0);
+    public static final double ARM_LOW_CUBE_REACH_CM = (Units.inchesToMeters(8.0) / 100.0) + (CUBE_WIDTH_CM / 2.0);
 }
