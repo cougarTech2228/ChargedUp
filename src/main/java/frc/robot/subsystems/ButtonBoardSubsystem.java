@@ -18,61 +18,88 @@ import frc.robot.commands.FollowTrajectoryCommand;
 
 public class ButtonBoardSubsystem extends SubsystemBase {
 
-    private final int kJoystickChannel = 1;
-    private Joystick m_joystick;
+    private final int kJoystickChannel1 = 1;
+    private final int kJoystickChannel2 = 2;
+    private Joystick m_joystick1;
+    private Joystick m_Joystick2;
     private Constants.AutoPosition m_gridPosition = Constants.AutoPosition.Position1;
     private double m_aprilTagID = Constants.BAD_APRIL_TAG_ID;
 
     public ButtonBoardSubsystem() {
-        m_joystick = new Joystick(kJoystickChannel);
+        m_joystick1 = new Joystick(kJoystickChannel1);
+        m_Joystick2 = new Joystick(kJoystickChannel2);
     }
 
-    private JoystickButton getJoystickButton1() {
-        return new JoystickButton(m_joystick, 1);
+    private JoystickButton getHighLeftCone() {
+        return new JoystickButton(m_joystick1, 1);
     }
 
-    private JoystickButton getJoystickButton2() {
-        return new JoystickButton(m_joystick, 2);
+    private JoystickButton getHighCube() {
+        return new JoystickButton(m_joystick1, 2);
     }
 
-    private JoystickButton getJoystickButton3() {
-        return new JoystickButton(m_joystick, 3);
+    private JoystickButton getHighRightCone() {
+        return new JoystickButton(m_joystick1, 3);
     }
 
-    private JoystickButton getJoystickButton4() {
-        return new JoystickButton(m_joystick, 4);
+    private JoystickButton getMiddleLeftCone() {
+        return new JoystickButton(m_joystick1, 4);
     }
 
-    private JoystickButton getJoystickButton5() {
-        return new JoystickButton(m_joystick, 5);
+    private JoystickButton getMiddleCube() {
+        return new JoystickButton(m_joystick1, 5);
     }
 
-    private JoystickButton getJoystickButton6() {
-        return new JoystickButton(m_joystick, 6);
+    private JoystickButton getMiddleRightCone() {
+        return new JoystickButton(m_joystick1, 6);
     }
 
-    private JoystickButton getJoystickButton7() {
-        return new JoystickButton(m_joystick, 7);
+    private JoystickButton getLowLeftCone() {
+        return new JoystickButton(m_joystick1, 7);
     }
 
-    private JoystickButton getJoystickButton8() {
-        return new JoystickButton(m_joystick, 8);
+    private JoystickButton getLowCube() {
+        return new JoystickButton(m_joystick1, 8);
     }
 
-    private JoystickButton getJoystickButton9() {
-        return new JoystickButton(m_joystick, 9);
+    private JoystickButton getLowRightCone() {
+        return new JoystickButton(m_joystick1, 9);
     }
 
-    private JoystickButton getJoystickButton10() {
-        return new JoystickButton(m_joystick, 10);
+    private JoystickButton getPosition1() {
+        return new JoystickButton(m_joystick1, 10);
     }
 
-    private JoystickButton getJoystickButton11() {
-        return new JoystickButton(m_joystick, 11);
+    private JoystickButton getPosition2() {
+        return new JoystickButton(m_joystick1, 11);
     }
 
-    private JoystickButton getJoystickButton12() {
-        return new JoystickButton(m_joystick, 12);
+    private JoystickButton getPosition3() {
+        return new JoystickButton(m_joystick1, 12);
+    }
+
+    private JoystickButton getArmUp() {
+        return new JoystickButton(m_Joystick2, 12);
+    }
+
+    private JoystickButton getArmDown() {
+        return new JoystickButton(m_Joystick2, 12);
+    }
+
+    private JoystickButton getSubstationDock() {
+        return new JoystickButton(m_Joystick2, 12);
+    }
+
+    private JoystickButton getLRToggleSwitch() {
+        return new JoystickButton(m_Joystick2, 1);
+    }
+
+    private JoystickButton getAutoManualToggleSwich() {
+        return new JoystickButton(m_Joystick2, 3);
+    }
+
+    private JoystickButton getGripperToggleSwich() {
+        return new JoystickButton(m_Joystick2, 6);
     }
 
     private void setPosition(Constants.AutoPosition position) {
@@ -126,10 +153,17 @@ public class ButtonBoardSubsystem extends SubsystemBase {
 
         // !! Robot MUST BE ENABLED for these commands to work !!
 
+        // Arm and Docking Buttons
+        getSubstationDock().onTrue(new SequentialCommandGroup(new PrintCommand("Docking")));
+
+        getArmUp().onTrue(new SequentialCommandGroup(new PrintCommand("Arm Up")));
+
+        getArmDown().onTrue(new SequentialCommandGroup(new PrintCommand("Docking")));
+
         // Bottom Three Red Buttons used to place game piece
-        getJoystickButton1().onTrue(new SequentialCommandGroup(new PrintCommand("High Left Cone"),
+        getHighLeftCone().onTrue(new SequentialCommandGroup(new PrintCommand("High Left Cone"),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
-                new DockWithAprilTagCommand(true, false, this),
+                new DockWithAprilTagCommand(true, true, this),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
                         "strafe_right", eventMap,
@@ -137,32 +171,43 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new PrintCommand("Placing game piece")));
 
-        getJoystickButton2().onTrue(new SequentialCommandGroup(new PrintCommand("High Cube")));
+        getHighCube().onTrue(new SequentialCommandGroup(new PrintCommand("High Cube"),
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                new DockWithAprilTagCommand(true, true, this),
+                new PrintCommand("Placing game piece")));
 
-        getJoystickButton3().onTrue(new SequentialCommandGroup(new PrintCommand("High Right Cone")));
+        getHighRightCone().onTrue(new SequentialCommandGroup(new PrintCommand("High Left Cone"),
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                new DockWithAprilTagCommand(true, true, this),
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
+                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
+                        "strafe_left", eventMap,
+                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                new PrintCommand("Placing game piece")));
 
         // Middle Three Red Buttons used to place game piece
-        getJoystickButton4().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Left Cone")));
+        getMiddleLeftCone().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Left Cone")));
 
-        getJoystickButton5().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Cube")));
+        getMiddleCube().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Cube")));
 
-        getJoystickButton6().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Right Cone")));
+        getMiddleRightCone().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Right Cone")));
 
         // Top Three Red Buttons used to place game piece
-        getJoystickButton7().onTrue(new SequentialCommandGroup(new PrintCommand("Low Left Cone")));
+        getLowLeftCone().onTrue(new SequentialCommandGroup(new PrintCommand("Low Left Cone")));
 
-        getJoystickButton8().onTrue(new SequentialCommandGroup(new PrintCommand("Low Cube")));
+        getLowCube().onTrue(new SequentialCommandGroup(new PrintCommand("Low Cube")));
 
-        getJoystickButton9().onTrue(new SequentialCommandGroup(new PrintCommand("Low Right Cone")));
+        getLowRightCone().onTrue(new SequentialCommandGroup(new PrintCommand("Low Right Cone")));
 
         // Three Blue Buttons to set the position based of Alliance
-        getJoystickButton10().onTrue(new SequentialCommandGroup(new PrintCommand("Setting Position 1"),
+        getPosition1().onTrue(new SequentialCommandGroup(new PrintCommand("Setting Position 1"),
                 new InstantCommand(() -> setPosition(Constants.AutoPosition.Position1))));
 
-        getJoystickButton11().onTrue(new SequentialCommandGroup(new PrintCommand("Setting Position 2"),
+        getPosition2().onTrue(new SequentialCommandGroup(new PrintCommand("Setting Position 2"),
                 new InstantCommand(() -> setPosition(Constants.AutoPosition.Position2))));
 
-        getJoystickButton12().onTrue(new SequentialCommandGroup(new PrintCommand("Setting Position 3"),
+        getPosition3().onTrue(new SequentialCommandGroup(new PrintCommand("Setting Position 3"),
                 new InstantCommand(() -> setPosition(Constants.AutoPosition.Position3))));
     }
 }

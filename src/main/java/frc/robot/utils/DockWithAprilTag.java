@@ -81,7 +81,7 @@ public class DockWithAprilTag implements Runnable {
 
             m_forwardController.setGoal(0.0);
             m_sidewaysController.setGoal(0.0);
-            m_turnController.enableContinuousInput(-180, 180);
+            m_turnController.enableContinuousInput(180, -180);
             m_turnController.setTolerance(3, 5);
 
             double detectionLostTime = 0.0;
@@ -177,11 +177,10 @@ public class DockWithAprilTag implements Runnable {
                     }
                 } else {
                     if (m_useGryoForPitchCorrection) {
-                        // TODO Something is messed up here
                         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
                                 -sidewaysVelocity,
                                 m_turnController.calculate(
-                                        RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees(),
+                                        ((RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees() + 360.0) % 360.0) - 180.0,
                                         PITCH_CORRECTION_GYRO_ANGLE),
                                 RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
                     } else {
