@@ -17,8 +17,8 @@ import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
+import frc.robot.subsystems.ShuffleboardSubsystem;
 import frc.robot.subsystems.ButtonBoardSubsystem;
-import frc.robot.utils.ShuffleboardManager;
 import frc.robot.utils.AprilTagManager;
 import frc.robot.subsystems.ArmSubsystem;
 
@@ -35,6 +35,13 @@ public class RobotContainer {
     // The robot's subsystems and commands are defined here...
     private final static DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
 
+    // The Shuffleboard stuff needs to be called early because some of the data
+    // updates by other subsystems in their periodics make calls to Shuffleboard.
+    private final static ShuffleboardTab m_autoConfigTab = Shuffleboard.getTab("Auto Config");
+    private final static ShuffleboardTab m_teleopConfigTab = Shuffleboard.getTab("Teleop Config");
+    private final static ShuffleboardSubsystem m_shuffleboardSubsystem = new ShuffleboardSubsystem(m_autoConfigTab,
+            m_teleopConfigTab);
+
     private final static XboxController m_controller = new XboxController(0);
 
     private final static AprilTagManager m_aprilTagManager = new AprilTagManager();
@@ -42,9 +49,6 @@ public class RobotContainer {
     private final static LEDStripSubsystem m_ledStripSubsystem = new LEDStripSubsystem();
 
     private final static ArmSubsystem m_armSubsystem = new ArmSubsystem();
-
-    private final static ShuffleboardTab m_autoConfigTab = Shuffleboard.getTab("Auto Config");
-    private final static ShuffleboardManager m_shuffleboardManager = new ShuffleboardManager(m_autoConfigTab);
 
     private final static ButtonBoardSubsystem m_buttonBoardSubsystem = new ButtonBoardSubsystem();
 
@@ -55,7 +59,7 @@ public class RobotContainer {
 
         // This has to be called first to setup the Shuffleboard controls which
         // are used in the configureButtonBindings method.
-        m_shuffleboardManager.configureShuffleboard();
+        m_shuffleboardSubsystem.configureShuffleboard();
 
         // Set up the default command for the drivetrain.
         // Left stick Y axis -> forward and backwards movement
@@ -90,7 +94,7 @@ public class RobotContainer {
                 .onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
 
         // new Trigger(m_controller::getYButton)
-        //         .onTrue(new DockWithAprilTagCommand(true, true));
+        // .onTrue(new DockWithAprilTagCommand(true, true));
 
         // Configure all the buttons and switches on the Custom Button Board
         m_buttonBoardSubsystem.configureButtonBindings();
@@ -103,16 +107,20 @@ public class RobotContainer {
      */
 
     public Command getAutonomousCommand() {
-        if (getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position1) {
+        if (m_shuffleboardSubsystem().getAutoPosition() == Constants.AutoPosition.Position1) {
             return new AutoOneCommand();
-        } else if (getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position2) {
+        } else if (m_shuffleboardSubsystem().getAutoPosition() == Constants.AutoPosition.Position2) {
             return new AutoTwoCommand();
-        } else if (getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position3) {
+        } else if (m_shuffleboardSubsystem().getAutoPosition() == Constants.AutoPosition.Position3) {
             return new AutoThreeCommand();
         } else {
             System.out.println("Invalid position received from Shufflboard");
             return null;
         }
+    }
+
+    private ShuffleboardSubsystem m_shuffleboardSubsystem() {
+        return null;
     }
 
     private static double deadband(double value, double deadband) {
@@ -153,8 +161,8 @@ public class RobotContainer {
         return m_armSubsystem;
     }
 
-    public static ShuffleboardManager getShuffleboardManager() {
-        return m_shuffleboardManager;
+    public static ShuffleboardSubsystem getShuffleboardManager() {
+        return m_shuffleboardSubsystem;
     }
 
     public static ButtonBoardSubsystem getButtonBoardSubsystem() {

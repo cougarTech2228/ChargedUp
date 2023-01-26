@@ -1,13 +1,17 @@
-package frc.robot.utils;
+package frc.robot.subsystems;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 
-public class ShuffleboardManager {
+public class ShuffleboardSubsystem extends SubsystemBase {
 
     private static ShuffleboardTab m_autoConfigTab;
+    private static ShuffleboardTab m_teleopConfigTab;
 
     private static SendableChooser<Constants.AutoPosition> m_positionChooser = new SendableChooser<>();
     private static SendableChooser<Constants.PlacePosition> m_preloadedPieceLevelChooser = new SendableChooser<>();
@@ -15,9 +19,18 @@ public class ShuffleboardManager {
     private static SendableChooser<Constants.ConeOffsetPosition> m_preloadedPieceConeOffsetChooser = new SendableChooser<>();
     private static SendableChooser<Constants.ConeOffsetPosition> m_stagedPieceConeOffsetChooser = new SendableChooser<>();
 
-    public ShuffleboardManager(ShuffleboardTab autoConfigTab) {
+    private static GenericEntry m_detectedTagIdEntry;
+    private static GenericEntry m_targetTagIdEntry;
+    private static GenericEntry m_idsMatchEntry;
+
+    public ShuffleboardSubsystem(ShuffleboardTab autoConfigTab, ShuffleboardTab teleopConfigTab) {
 
         m_autoConfigTab = autoConfigTab;
+        m_teleopConfigTab = teleopConfigTab;
+
+        m_detectedTagIdEntry = m_teleopConfigTab.add("Detected ID", Constants.BAD_APRIL_TAG_ID).getEntry();
+        m_targetTagIdEntry = m_teleopConfigTab.add("Target ID", Constants.BAD_APRIL_TAG_ID).getEntry();
+        m_idsMatchEntry = m_teleopConfigTab.add("IDs Match?", false).getEntry();
     }
 
     public void configureShuffleboard() {
@@ -74,7 +87,7 @@ public class ShuffleboardManager {
     public Constants.PlacePosition getPreloadedPieceLevel() {
         return m_preloadedPieceLevelChooser.getSelected();
     }
-    
+
     public Constants.ConeOffsetPosition getPreloadedConeOffsetPosition() {
         return m_preloadedPieceConeOffsetChooser.getSelected();
     }
@@ -82,8 +95,26 @@ public class ShuffleboardManager {
     public Constants.PlacePosition getStagedPieceLevel() {
         return m_stagedPieceLevelChooser.getSelected();
     }
-    
+
     public Constants.ConeOffsetPosition getStagedConeOffsetPosition() {
         return m_stagedPieceConeOffsetChooser.getSelected();
+    }
+
+    public GenericEntry getDetectedIDEntry() {
+        return m_detectedTagIdEntry;
+    }
+
+    public GenericEntry getTargetIDEntry() {
+        return m_targetTagIdEntry;
+    }
+
+    @Override
+    public void periodic() {
+        double targetAprilTagID = RobotContainer.getButtonBoardSubsystem().getAprilTagID();
+
+        m_targetTagIdEntry.setDouble(targetAprilTagID);
+        m_detectedTagIdEntry.setDouble(RobotContainer.getAprilTagManager().getTagID());
+
+        m_idsMatchEntry.setBoolean(targetAprilTagID == RobotContainer.getAprilTagManager().getTagID());
     }
 }

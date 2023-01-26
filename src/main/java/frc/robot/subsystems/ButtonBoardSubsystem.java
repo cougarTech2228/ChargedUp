@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
@@ -55,6 +56,10 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     public ButtonBoardSubsystem() {
         m_joystick1 = new Joystick(kJoystickChannel1);
         m_joystick2 = new Joystick(kJoystickChannel2);
+
+        setSubstationShelfPosition();
+        setAutoManualOperationMode();
+        setGripperMode();
     }
 
     private JoystickButton getHighLeftConeButton() {
@@ -159,35 +164,95 @@ public class ButtonBoardSubsystem extends SubsystemBase {
             System.out.println("Alliance Color Error");
         }
 
-        System.out.println("Setting April Tag: " + m_aprilTagID);
+        System.out.println("Setting Position April Tag: " + m_aprilTagID);
+    }
+
+    private void setDockingStation() {
+
+        if (DriverStation.getAlliance() == Alliance.Blue) {
+            m_aprilTagID = 4.0;
+        } else if (DriverStation.getAlliance() == Alliance.Red) {
+            m_aprilTagID = 5.0;
+        } else {
+            System.out.println("Alliance Color Error");
+        }
+
+        System.out.println("Setting Docking Station April Tag: " + m_aprilTagID);
     }
 
     public double getAprilTagID() {
         return m_aprilTagID;
     }
 
-    @Override
-    public void periodic() {
+    private boolean isManualOperationMode() {
+        return (m_operationMode == ButtonBoardOperationMode.Manual);
+    }
+
+    private boolean isLeftDockingStation() {
+        return (m_substationShelfPosition == SubstationShelfPosition.Left);
+    }
+
+    private void setSubstationShelfPosition() {
         if (getSubstationLeftRightToggleSwitch().getAsBoolean()) {
             m_substationShelfPosition = SubstationShelfPosition.Right;
         } else {
             m_substationShelfPosition = SubstationShelfPosition.Left;
         }
+    }
 
+    private void setAutoManualOperationMode() {
         if (getAutoManualToggleSwitch().getAsBoolean()) {
             m_operationMode = ButtonBoardOperationMode.Manual;
         } else {
             m_operationMode = ButtonBoardOperationMode.Auto;
         }
+    }
 
+    private void setGripperMode() {
         if (getOpenCloseGripperToggleSwitch().getAsBoolean()) {
             m_gripperMode = GripperMode.Closed;
         } else {
             m_gripperMode = GripperMode.Open;
         }
+    }
 
+    @Override
+    public void periodic() {
+
+        setSubstationShelfPosition();
+        setAutoManualOperationMode();
+
+        // Handle the Gripper Open/Closed toggle switch
+        if (getOpenCloseGripperToggleSwitch().getAsBoolean()) { // Switch is in Closed position
+
+            // Only allow changes in Manual mode
+            if (isManualOperationMode()) {
+
+                // If we're already closed don't do anything, otherwise close the gripper
+                if (m_gripperMode != GripperMode.Closed) {
+                    new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(false));
+                    m_gripperMode = GripperMode.Closed;
+                }
+            }
+        } else { // Switch is in Open position
+
+            // Only allow changes in Manual mode
+            if (isManualOperationMode()) {
+
+                // If we're already open don't do anything, otherwise open the gripper
+                if (m_gripperMode != GripperMode.Open) {
+                    new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true));
+                    m_gripperMode = GripperMode.Open;
+                }
+            }
+        }
+
+        // TODO - how are we going to do the strafe and arm extend/retract based on
+        // joystick input?
         m_strafeJoystick = m_joystick2.getRawAxis(0);
         m_armJoystick = m_joystick2.getRawAxis(1);
+
+        RobotContainer.getShuffleboardManager().getTargetIDEntry().setDouble(getAprilTagID());
     }
 
     public void configureButtonBindings() {
@@ -198,14 +263,39 @@ public class ButtonBoardSubsystem extends SubsystemBase {
 
         // !! Robot MUST BE ENABLED for these commands to work !!
 
-        // Arm and Docking Buttons
-        getSubstationDockButton().onTrue(new SequentialCommandGroup(new PrintCommand("Docking")));
+        // **********************************
+        // Docking Station Button Handling
+        // **********************************
+        getSubstationDockButton().onTrue(new SequentialCommandGroup(new PrintCommand("Docking with Substation"),
+                new InstantCommand(() -> setDockingStation()),
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                new DockWithAprilTagCommand(true, true, this),
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
+                new ConditionalCommand(new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
+                        "strafe_left", eventMap,
+                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
+                                "strafe_right", eventMap,
+                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                        this::isLeftDockingStation),
+                new PrintCommand("TODO - Pick game piece off of shelf")));
 
-        getArmUpButton().onTrue(new SequentialCommandGroup(new PrintCommand("Arm Up")));
+        // **********************************
+        // Arm Button Handling
+        // **********************************
+        // getArmUpButton().onTrue(new ConditionalCommand(new MoveArmUpCommand(),
+        // new PrintCommand("You must be in manual mode to move the arm up"),
+        // this::isManualOperationMode));
 
-        getArmDownButton().onTrue(new SequentialCommandGroup(new PrintCommand("Docking")));
+        // getArmDownButton().onTrue(new ConditionalCommand(new MoveArmDownCommand(),
+        // new PrintCommand("You must be in manual mode to move the arm down"),
+        // this::isManualOperationMode));
 
-        // Bottom Three Red Buttons used to place game piece
+        // **********************************
+        // Placing Position Button Handling
+        // **********************************
+
+        // Place high game pieces
         getHighLeftConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("High Left Cone"),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new DockWithAprilTagCommand(true, true, this),
@@ -237,21 +327,21 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
                 new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))));
 
-        // Middle Three Red Buttons used to place game piece
+        // Place middle game pieces
         getMiddleLeftConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Left Cone")));
 
         getMiddleCubeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Cube")));
 
         getMiddleRightConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Right Cone")));
 
-        // Top Three Red Buttons used to place game piece
+        // Place low game pieces
         getLowLeftConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Low Left Cone")));
 
         getLowCubeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Low Cube")));
 
         getLowRightConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Low Right Cone")));
 
-        // Three Blue Buttons to set the position based off of Alliance setting
+        // Set the desired grid position where the game piece will
         getPosition1Button().onTrue(new SequentialCommandGroup(new PrintCommand("Setting Position 1"),
                 new InstantCommand(() -> setPosition(Constants.AutoPosition.Position1))));
 
