@@ -94,5 +94,7 @@ public class ArmSubsystem extends SubsystemBase {
             // m_distMxp.getRange());
             m_currentArmReachCm = m_distMxp.getRange(Unit.kMillimeters) * 10.0;
         }
+
+        //TODO - How will we determine m_currentArmHeightCm (encoder counts per centimeter?)
     }
 }

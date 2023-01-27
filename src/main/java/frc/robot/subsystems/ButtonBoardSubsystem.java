@@ -50,8 +50,17 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     private SubstationShelfPosition m_substationShelfPosition;
     private ButtonBoardOperationMode m_operationMode;
     private GripperMode m_gripperMode;
-    private double m_armJoystick;
+
+    private double m_armReachJoystick;
     private double m_strafeJoystick;
+
+    private boolean m_strafeReset = true;
+    private boolean m_armReachReset = true;
+
+    private static final double INCREMENTAL_ARM_HEIGHT_CHANGE_CM = 2.0;
+    private static final double INCREMENTAL_ARM_REACH_CHANGE_CM = 2.0;
+
+    private HashMap<String, Command> m_eventMap = new HashMap<>();
 
     public ButtonBoardSubsystem() {
         m_joystick1 = new Joystick(kJoystickChannel1);
@@ -111,15 +120,15 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     }
 
     private JoystickButton getArmUpButton() {
-        return new JoystickButton(m_joystick2, 12);
+        return new JoystickButton(m_joystick2, 4);
     }
 
     private JoystickButton getArmDownButton() {
-        return new JoystickButton(m_joystick2, 12);
+        return new JoystickButton(m_joystick2, 5);
     }
 
     private JoystickButton getSubstationDockButton() {
-        return new JoystickButton(m_joystick2, 12);
+        return new JoystickButton(m_joystick2, 2);
     }
 
     private JoystickButton getSubstationLeftRightToggleSwitch() {
@@ -224,10 +233,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
 
         // Handle the Gripper Open/Closed toggle switch
         if (getOpenCloseGripperToggleSwitch().getAsBoolean()) { // Switch is in Closed position
-
             // Only allow changes in Manual mode
             if (isManualOperationMode()) {
-
                 // If we're already closed don't do anything, otherwise close the gripper
                 if (m_gripperMode != GripperMode.Closed) {
                     new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(false));
@@ -235,10 +242,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 }
             }
         } else { // Switch is in Open position
-
             // Only allow changes in Manual mode
             if (isManualOperationMode()) {
-
                 // If we're already open don't do anything, otherwise open the gripper
                 if (m_gripperMode != GripperMode.Open) {
                     new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true));
@@ -247,10 +252,69 @@ public class ButtonBoardSubsystem extends SubsystemBase {
             }
         }
 
-        // TODO - how are we going to do the strafe and arm extend/retract based on
-        // joystick input?
+        // Handle the joystick strafing input
         m_strafeJoystick = m_joystick2.getRawAxis(0);
-        m_armJoystick = m_joystick2.getRawAxis(1);
+
+        // We only want to allow the user to strafe right or left one step
+        // at time such that the joystick has to return to its center
+        // position before another strafe command is issued. This should
+        // stop a situation where multiple stafe commands are issued if the
+        // user were to hold the joystick in the extreme right or left
+        // position.
+        if (m_strafeReset && isManualOperationMode()) {
+            m_strafeReset = false;
+
+            if (m_strafeJoystick == 1.0) {
+                new SequentialCommandGroup(
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
+                        new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
+                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "nudge_right", m_eventMap,
+                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)));
+            } else if (m_strafeJoystick == -1.0) {
+                new SequentialCommandGroup(
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
+                        new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
+                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "nudge_left", m_eventMap,
+                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)));
+            }
+        }
+
+        // The joystick value reports 1.0 and -1.0, but it never gets exactly
+        // zero so we need to perform this check to reset the ability to send
+        // another strafe command.
+        if ((m_strafeJoystick < 1.0) && (m_strafeJoystick > -1.0)) {
+            m_strafeReset = true;
+        }
+
+        // Handle the joystick arm reach input
+        m_armReachJoystick = m_joystick2.getRawAxis(1);
+
+        // We only want to allow the user to adjust the arm reach one step
+        // at time such that the joystick has to return to its center
+        // position before another arm reach command is issued. This should
+        // stop a situation where multiple arm reach commands are issued if
+        // the user were to hold the joystick in the extreme up or down
+        // position.
+        if (m_armReachReset && isManualOperationMode()) {
+            m_armReachReset = false;
+
+            if (m_armReachJoystick == 1.0) {
+                new SetArmReachCommand(
+                        RobotContainer.getArmSubsystem().getCurrentArmReachCm() + INCREMENTAL_ARM_REACH_CHANGE_CM);
+            } else if (m_strafeJoystick == -1.0) {
+                new SetArmReachCommand(
+                        RobotContainer.getArmSubsystem().getCurrentArmReachCm() - INCREMENTAL_ARM_REACH_CHANGE_CM);
+            }
+        }
+
+        // The joystick value reports 1.0 and -1.0, but it never gets exactly
+        // zero so we need to perform this check to reset the ability to send
+        // another arm reach command.
+        if ((m_armReachJoystick < 1.0) && (m_armReachJoystick > -1.0)) {
+            m_armReachReset = true;
+        }
 
         RobotContainer.getShuffleboardManager().getTargetIDEntry().setDouble(getAprilTagID());
     }
@@ -283,13 +347,17 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // **********************************
         // Arm Button Handling
         // **********************************
-        // getArmUpButton().onTrue(new ConditionalCommand(new MoveArmUpCommand(),
-        // new PrintCommand("You must be in manual mode to move the arm up"),
-        // this::isManualOperationMode));
+        getArmUpButton().onTrue(new ConditionalCommand(
+                new SetArmHeightCommand(
+                        RobotContainer.getArmSubsystem().getCurrentArmHeightCm() + INCREMENTAL_ARM_HEIGHT_CHANGE_CM),
+                new PrintCommand("You must be in manual mode to move the arm up"),
+                this::isManualOperationMode));
 
-        // getArmDownButton().onTrue(new ConditionalCommand(new MoveArmDownCommand(),
-        // new PrintCommand("You must be in manual mode to move the arm down"),
-        // this::isManualOperationMode));
+        getArmDownButton().onTrue(new ConditionalCommand(
+                new SetArmHeightCommand(
+                        RobotContainer.getArmSubsystem().getCurrentArmHeightCm() - INCREMENTAL_ARM_HEIGHT_CHANGE_CM),
+                new PrintCommand("You must be in manual mode to move the arm down"),
+                this::isManualOperationMode));
 
         // **********************************
         // Placing Position Button Handling

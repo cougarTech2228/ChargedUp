@@ -114,9 +114,9 @@ public final class Constants {
     public static final double MAX_AUTO_ACCELERATION = 3.0;
 
     // Constants for the Arm Subsystem and Commands
+    public static final int MINIMUM_REACH_LIMIT_SWITCH_DIO = 0;
     public static final int UPPER_ELEVATOR_LIMIT_SWITCH_DIO = 1;
     public static final int LOWER_ELEVATOR_LIMIT_SWITCH_DIO = 2;
-    public static final int MINIMUM_REACH_LIMIT_SWITCH_DIO = 3;
 
     private static final double HIGH_CONE_NODE_HEIGHT_CM = Units.inchesToMeters(46.0) / 100.0;
     private static final double MIDDLE_CONE_NODE_HEIGHT_CM = Units.inchesToMeters(34.0) / 100.0;
