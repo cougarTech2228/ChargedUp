@@ -28,11 +28,11 @@ public class SetArmHeightCommand extends CommandBase {
     @Override
     public void execute() {
          // TODO - need to check for correct motor direction
-        // if (m_currentArmHeightCm > m_targetHeightCm) {
-        //     RobotContainer.getArmSubsystem().setWinchMotorPercentOutput(-ELEVATOR_MOTOR_PERCENT_OUTPUT);
-        // } else {
-        //     RobotContainer.getArmSubsystem().setWinchMotorPercentOutput(ELEVATOR_MOTOR_PERCENT_OUTPUT);
-        // }
+        if (m_currentArmHeightCm > m_targetHeightCm) {
+            RobotContainer.getArmSubsystem().setElevatorMotorPercentOutput(-ELEVATOR_MOTOR_PERCENT_OUTPUT);
+        } else {
+            RobotContainer.getArmSubsystem().setElevatorMotorPercentOutput(ELEVATOR_MOTOR_PERCENT_OUTPUT);
+        }
     }
 
     // Called once the command ends or is interrupted.
@@ -44,12 +44,11 @@ public class SetArmHeightCommand extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        // if (RobotContainer.getArmSubsystem().isLowerElevatorLimitSwithActive()
-        //         || RobotContainer.getArmSubsystem().isUpperElevatorLimitSwitchActive()) {
-        //     return true;
-        // } else {
-        //     return (Math.abs(m_currentArmHeightCm - m_targetHeightCm) < HEIGHT_TOLERANCE_CM);
-        // }
-        return true;
+        if (RobotContainer.getArmSubsystem().isLowerElevatorLimitSwithActive()
+                || RobotContainer.getArmSubsystem().isUpperElevatorLimitSwitchActive()) {
+            return true;
+        } else {
+            return (Math.abs(m_currentArmHeightCm - m_targetHeightCm) < HEIGHT_TOLERANCE_CM);
+        }
     }
 }
