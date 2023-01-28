@@ -1,11 +1,8 @@
 package frc.robot.subsystems;
 
-import java.util.HashMap;
-
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -17,7 +14,6 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.DockWithAprilTagCommand;
-import frc.robot.commands.FollowTrajectoryCommand;
 import frc.robot.commands.SetArmHeightCommand;
 import frc.robot.commands.SetArmReachCommand;
 import frc.robot.commands.StrafeCommand;
@@ -276,12 +272,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // position.
         if (m_strafeReset && isManualOperationMode()) {
 
-            
             if (m_strafeJoystick == 1.0) { // Right
                 new StrafeCommand(Constants.NUDGE_STRAFE_DISTANCE, -Constants.STRAFE_SPEED, false).schedule();
                 m_strafeReset = false;
             } else if (m_strafeJoystick == -1.0) { // Left
-                new ScheduleCommand(new StrafeCommand(Constants.NUDGE_STRAFE_DISTANCE, Constants.STRAFE_SPEED, false)).schedule();
+                new ScheduleCommand(new StrafeCommand(Constants.NUDGE_STRAFE_DISTANCE, Constants.STRAFE_SPEED, false))
+                        .schedule();
                 m_strafeReset = false;
             }
         }
@@ -304,13 +300,13 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // position.
         if (m_armReachReset && isManualOperationMode()) {
 
-            if (m_armReachJoystick == 1.0) {
+            if (m_armReachJoystick == 1.0) { // Arm Extend
                 new SetArmReachCommand(
                         RobotContainer.getArmSubsystem().getCurrentArmReachCm() + INCREMENTAL_ARM_REACH_CHANGE_CM)
                         .schedule();
                 m_armReachReset = false;
             } else if (m_armReachJoystick == -1.0) {
-                new SetArmReachCommand(
+                new SetArmReachCommand( // Arm Retract
                         RobotContainer.getArmSubsystem().getCurrentArmReachCm() - INCREMENTAL_ARM_REACH_CHANGE_CM)
                         .schedule();
                 m_armReachReset = false;
@@ -329,10 +325,6 @@ public class ButtonBoardSubsystem extends SubsystemBase {
 
     public void configureButtonBindings() {
 
-        // TODO - do we want to do something cool at each stage like with LEDs?
-        // We could create multiple eventMaps
-        HashMap<String, Command> eventMap = new HashMap<>();
-
         // !! Robot MUST BE ENABLED for these commands to work !!
 
         // **********************************
@@ -343,12 +335,10 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new DockWithAprilTagCommand(false, true, this),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
-                new ConditionalCommand(new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-                        "strafe_left", eventMap,
-                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-                                "strafe_right", eventMap,
-                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                new ConditionalCommand(new StrafeCommand(Constants.SUBSTATION_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
+                        true),
+                        new StrafeCommand(Constants.SUBSTATION_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
+                                true),
                         this::isLeftDockingStation),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new PrintCommand("TODO - Pick game piece off of shelf")));
@@ -377,11 +367,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new SequentialCommandGroup(new PrintCommand("High Left Cone"),
                         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                         new DockWithAprilTagCommand(true, true, this),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
-                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-                                "strafe_right", eventMap,
-                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
+                                true),
                         new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
                         new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
@@ -400,11 +387,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new SequentialCommandGroup(new PrintCommand("High Right Cone"),
                         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                         new DockWithAprilTagCommand(true, true, this),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
-                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-                                "strafe_left", eventMap,
-                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
+                                true),
                         new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
                         new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
@@ -416,9 +400,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                         new DockWithAprilTagCommand(true, true, this),
                         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
-                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-                                "strafe_right", eventMap,
-                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
+                                true),
                         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                         new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_MIDDLE_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_MIDDLE_CONE_REACH_CM)),
@@ -438,11 +421,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new SequentialCommandGroup(new PrintCommand("Middle Right Cone"),
                         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                         new DockWithAprilTagCommand(true, true, this),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
-                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-                                "strafe_left", eventMap,
-                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
+                                true),
                         new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_MIDDLE_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_MIDDLE_CONE_REACH_CM)),
                         new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
@@ -453,11 +433,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new SequentialCommandGroup(new PrintCommand("Low Left Cone"),
                         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                         new DockWithAprilTagCommand(true, true, this),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
-                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-                                "strafe_right", eventMap,
-                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
+                                true),
                         new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_LOW_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_LOW_CONE_REACH_CM)),
                         new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
@@ -476,11 +453,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new SequentialCommandGroup(new PrintCommand("Low Right Cone"),
                         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                         new DockWithAprilTagCommand(true, true, this),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
-                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-                                "strafe_left", eventMap,
-                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
+                                true),
                         new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_LOW_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_LOW_CONE_REACH_CM)),
                         new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),

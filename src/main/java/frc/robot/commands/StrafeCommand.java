@@ -22,12 +22,13 @@ public class StrafeCommand extends CommandBase {
     // Magic number derived from using Phoenix Tuner and checking the encoder
     // ticks per one rotation of the swerve drive wheel.
     private final static double TICKS_PER_ROTATION = 12150;
-    
+
     /**
      * 
      * @param distance Distance in CM to drive, should always be positive
-     * @param speed    speed from [-1, 1] 
-     *                 negative speed goes right (FOV), positive speed goes left (FOV)
+     * @param speed    speed from [-1, 1]
+     *                 negative speed goes right (FOV), positive speed goes left
+     *                 (FOV)
      * @throws Exception
      */
     public StrafeCommand(double distanceCM, double speed, boolean accountForAprilTag) {
@@ -45,7 +46,11 @@ public class StrafeCommand extends CommandBase {
     @Override
     public void initialize() {
 
-        if(m_accountForAprilTag) {
+        // If we're strafing away from an April Tag and it's not a manual strafe from
+        // the Button Board's joystick, use the last recorded Tx value from the April
+        // Tag detection to make a better estimate on how far we need to strafe in
+        // order to line up with the Cone Nodes.
+        if (m_accountForAprilTag) {
             m_distanceCM = RobotContainer.getAprilTagManager().getStrafeOffsetGrid(m_distanceCM);
         }
 
@@ -57,7 +62,8 @@ public class StrafeCommand extends CommandBase {
         m_currentEncoderCount = RobotContainer.getDrivetrainSubsystem().getEncoderCount();
         m_startCount = m_currentEncoderCount;
 
-        //System.out.println("Distance in encoder count to travel: " + m_distanceInEncoderCounts);
+        // System.out.println("Distance in encoder count to travel: " +
+        // m_distanceInEncoderCounts);
     }
 
     @Override
@@ -69,15 +75,16 @@ public class StrafeCommand extends CommandBase {
 
         m_currentEncoderCount = RobotContainer.getDrivetrainSubsystem().getEncoderCount();
 
-        //System.out.println("m_currentEncoderCount = " + m_currentEncoderCount + " m_startCount: " + m_startCount);
+        // System.out.println("m_currentEncoderCount = " + m_currentEncoderCount + "
+        // m_startCount: " + m_startCount);
     }
 
     @Override
     public boolean isFinished() {
 
         // Checks for both encoder count directions
-        if ( (m_currentEncoderCount <= (m_startCount - m_distanceInEncoderCounts)) ||
-             (m_currentEncoderCount >= (m_startCount + m_distanceInEncoderCounts)) ) {
+        if ((m_currentEncoderCount <= (m_startCount - m_distanceInEncoderCounts)) ||
+                (m_currentEncoderCount >= (m_startCount + m_distanceInEncoderCounts))) {
             RobotContainer.getDrivetrainSubsystem().stopMotors();
             RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
             System.out.println("StrafeCommand finished");

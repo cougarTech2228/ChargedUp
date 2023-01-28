@@ -87,7 +87,7 @@ public class AutoOneCommand extends SequentialCommandGroup {
                 (placePosition == Constants.PlacePosition.MiddleCone) ||
                 (placePosition == Constants.PlacePosition.LowCone)) {
             if (conePosition == Constants.ConeOffsetPosition.Left) {
-                return CommandSelector.STRAFE_RIGHT;
+                return CommandSelector.STRAFE_LEFT;
             } else {
                 return CommandSelector.STRAFE_RIGHT;
             }
