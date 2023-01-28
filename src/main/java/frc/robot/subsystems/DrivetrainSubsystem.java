@@ -117,10 +117,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private GenericEntry m_sidewaysAdjustmentTableEntry;
     private GenericEntry m_rotationalAdjustmentTableEntry;
 
-    private static final boolean INITIAL_FIELD_ORIENTED_SETTING = true;
-
-    private GenericEntry m_isFieldOrientedTableEntry;
-
     private SwerveDriveOdometry m_odometry;
 
     private boolean m_pathPlannerDriving;
@@ -201,7 +197,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         m_pathPlannerDriving = false;
                        
-        zeroGyroscope();
+        zeroGyroscope(0.0);
 
         m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation(), getSwerveModulePositions(), new Pose2d());
 
@@ -225,12 +221,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 .withProperties(Map.of("min", INITIAL_INPUT_ADJUSTMENT, "max", 1))
                 .withSize(2, 1)
                 .withPosition(4, 3)
-                .getEntry();
-
-        m_isFieldOrientedTableEntry = tab.add("Field Oriented?", INITIAL_FIELD_ORIENTED_SETTING)
-                .withWidget(BuiltInWidgets.kToggleButton)
-                .withSize(2, 1)
-                .withPosition(6, 3)
                 .getEntry();
     }
 
@@ -305,7 +295,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * unforseen reason. We'll just pick one of the drive motors to
      * monitor its movement.
      */
-    private double getEncoderCount() {
+    public double getEncoderCount() {
         return m_backLeftDriveMotor.getSelectedSensorPosition();
     }
 
@@ -340,8 +330,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * robot is currently facing to the
      * 'forwards' direction.
      */
-    public void zeroGyroscope() {
-        m_pigeon.setFusedHeading(0.0);
+    public void zeroGyroscope(double angle) {
+        m_pigeon.setFusedHeading(angle);
     }
 
     public Rotation2d getGyroscopeRotation() {
@@ -389,10 +379,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public double getSidewaysAdjustment() {
         return m_sidewaysAdjustmentTableEntry.getDouble(INITIAL_INPUT_ADJUSTMENT);
-    }
-
-    public boolean getIsFieldOrientedSetting() {
-        return m_isFieldOrientedTableEntry.getBoolean(INITIAL_FIELD_ORIENTED_SETTING);
     }
 
     public double getRotationalAdjustment() {

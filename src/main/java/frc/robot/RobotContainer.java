@@ -33,7 +33,6 @@ import frc.robot.subsystems.ArmSubsystem;
  */
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
-    private final static DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
 
     // The Shuffleboard stuff needs to be called early because some of the data
     // updates by other subsystems in their periodics make calls to Shuffleboard.
@@ -41,6 +40,8 @@ public class RobotContainer {
     private final static ShuffleboardTab m_teleopConfigTab = Shuffleboard.getTab("Teleop Config");
     private final static ShuffleboardSubsystem m_shuffleboardSubsystem = new ShuffleboardSubsystem(m_autoConfigTab,
             m_teleopConfigTab);
+
+    private final static DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
 
     private final static XboxController m_controller = new XboxController(0);
 
@@ -89,12 +90,13 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
 
-        // Configure the XboxController buttons
+        // TODO Let's change the zeroGyroscope call to the "B" button instead of the
+        // tiny Back button
         new Trigger(m_controller::getBackButton) // Back button zeros the gyroscope
-                .onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
+                .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.zeroGyroscope(0.0)));
 
-        // new Trigger(m_controller::getYButton)
-        // .onTrue(new DockWithAprilTagCommand(true, true));
+        new Trigger(m_controller::getBButton)
+                .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.stopMotors()));
 
         // Configure all the buttons and switches on the Custom Button Board
         m_buttonBoardSubsystem.configureButtonBindings();
@@ -106,21 +108,17 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
 
-    public Command getAutonomousCommand() {
-        if (m_shuffleboardSubsystem().getAutoPosition() == Constants.AutoPosition.Position1) {
+    public static Command getAutonomousCommand() {
+        if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position1) {
             return new AutoOneCommand();
-        } else if (m_shuffleboardSubsystem().getAutoPosition() == Constants.AutoPosition.Position2) {
+        } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position2) {
             return new AutoTwoCommand();
-        } else if (m_shuffleboardSubsystem().getAutoPosition() == Constants.AutoPosition.Position3) {
+        } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position3) {
             return new AutoThreeCommand();
         } else {
             System.out.println("Invalid position received from Shufflboard");
             return null;
         }
-    }
-
-    private ShuffleboardSubsystem m_shuffleboardSubsystem() {
-        return null;
     }
 
     private static double deadband(double value, double deadband) {
@@ -161,7 +159,7 @@ public class RobotContainer {
         return m_armSubsystem;
     }
 
-    public static ShuffleboardSubsystem getShuffleboardManager() {
+    public static ShuffleboardSubsystem getShuffleboardSubsystem() {
         return m_shuffleboardSubsystem;
     }
 

@@ -80,7 +80,7 @@ public class Robot extends TimedRobot {
         RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
         RobotContainer.getDrivetrainSubsystem().primeDrivetrain();
 
-        m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+        m_autonomousCommand = RobotContainer.getAutonomousCommand();
 
         // schedule the autonomous command (example)
         if (m_autonomousCommand != null) {

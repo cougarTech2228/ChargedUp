@@ -12,9 +12,9 @@ public class OutPathFileNameChooser {
 
     public OutPathFileNameChooser() {
 
-        m_autoPosition =  RobotContainer.getShuffleboardManager().getAutoPosition();
-        m_preloadedPieceLevel = RobotContainer.getShuffleboardManager().getPreloadedPieceLevel();
-        m_coneOffsetPosition = RobotContainer.getShuffleboardManager().getPreloadedConeOffsetPosition();
+        m_autoPosition =  RobotContainer.getShuffleboardSubsystem().getAutoPosition();
+        m_preloadedPieceLevel = RobotContainer.getShuffleboardSubsystem().getPreloadedPieceLevel();
+        m_coneOffsetPosition = RobotContainer.getShuffleboardSubsystem().getPreloadedConeOffsetPosition();
 
         m_outPathFileName = null;
     }

@@ -27,18 +27,11 @@ public class DefaultDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        if (m_drivetrainSubsystem.getIsFieldOrientedSetting()) {
-            m_drivetrainSubsystem.drive(
-                    ChassisSpeeds.fromFieldRelativeSpeeds(m_translationXSupplier.getAsDouble(),
-                            m_translationYSupplier.getAsDouble(),
-                            m_rotationSupplier.getAsDouble(),
-                            m_drivetrainSubsystem.getGyroscopeRotation()));
-        } else {
-            m_drivetrainSubsystem.drive(
-                    new ChassisSpeeds(m_translationXSupplier.getAsDouble(),
-                            m_translationYSupplier.getAsDouble(),
-                            m_rotationSupplier.getAsDouble()));
-        }
+        m_drivetrainSubsystem.drive(
+                ChassisSpeeds.fromFieldRelativeSpeeds(m_translationXSupplier.getAsDouble(),
+                        m_translationYSupplier.getAsDouble(),
+                        m_rotationSupplier.getAsDouble(),
+                        m_drivetrainSubsystem.getGyroscopeRotation()));
     }
 
     @Override

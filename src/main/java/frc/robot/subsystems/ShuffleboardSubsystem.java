@@ -115,6 +115,6 @@ public class ShuffleboardSubsystem extends SubsystemBase {
         m_targetTagIdEntry.setDouble(targetAprilTagID);
         m_detectedTagIdEntry.setDouble(RobotContainer.getAprilTagManager().getTagID());
 
-        m_idsMatchEntry.setBoolean(targetAprilTagID == RobotContainer.getAprilTagManager().getTagID());
+        m_idsMatchEntry.setBoolean(RobotContainer.getButtonBoardSubsystem().isAprilTagIDMatch());
     }
 }

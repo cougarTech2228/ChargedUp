@@ -36,11 +36,11 @@ public class SetArmReachCommand extends CommandBase {
     @Override
     public void execute() {
         // TODO - need to check for correct motor direction
-        // if (m_currentArmReachCm > m_targetReachCm) {
-        //     RobotContainer.getArmSubsystem().setWinchMotorPercentOutput(-WINCH_MOTOR_PERCENT_OUTPUT);
-        // } else {
-        //     RobotContainer.getArmSubsystem().setWinchMotorPercentOutput(WINCH_MOTOR_PERCENT_OUTPUT);
-        // }
+        if (m_currentArmReachCm > m_targetReachCm) {
+            RobotContainer.getArmSubsystem().setWinchMotorPercentOutput(-WINCH_MOTOR_PERCENT_OUTPUT);
+        } else {
+            RobotContainer.getArmSubsystem().setWinchMotorPercentOutput(WINCH_MOTOR_PERCENT_OUTPUT);
+        }
     }
 
     // Called once the command ends or is interrupted.
@@ -53,12 +53,10 @@ public class SetArmReachCommand extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        // if (RobotContainer.getArmSubsystem().isMinimumReachLimitSwitchActive()) {
-        //     return true;
-        // } else {
-        //     return (Math.abs(m_currentArmReachCm - m_targetReachCm) < REACH_TOLERANCE_CM);
-        // }
-
-        return true;
+        if (RobotContainer.getArmSubsystem().isMinimumReachLimitSwitchActive()) {
+            return true;
+        } else {
+            return (Math.abs(m_currentArmReachCm - m_targetReachCm) < REACH_TOLERANCE_CM);
+        }
     }
 }

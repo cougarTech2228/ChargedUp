@@ -18,7 +18,7 @@ public class PlacePreloadedPieceCommandChooser {
 
         // Based on Shuffleboard selection, create appropriate Place Command for
         // preloaded piece
-        Constants.PlacePosition preloadedPieceLevel = RobotContainer.getShuffleboardManager()
+        Constants.PlacePosition preloadedPieceLevel = RobotContainer.getShuffleboardSubsystem()
                 .getPreloadedPieceLevel();
 
         if (preloadedPieceLevel == Constants.PlacePosition.HighCone) {

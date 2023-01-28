@@ -47,19 +47,19 @@ public class DockWithAprilTagCommand extends CommandBase {
         // initialization.
         if (m_buttonBoardSubsystem == null) {
             // Get the correct AprilTag ID based on Position and Alliance Color
-            if (RobotContainer.getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position1) {
+            if (RobotContainer.getShuffleboardSubsystem().getAutoPosition() == Constants.AutoPosition.Position1) {
                 if (DriverStation.getAlliance() == Alliance.Blue) {
                     m_aprilTagId = 6.0;
                 } else {
                     m_aprilTagId = 1.0;
                 }
-            } else if (RobotContainer.getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position2) {
+            } else if (RobotContainer.getShuffleboardSubsystem().getAutoPosition() == Constants.AutoPosition.Position2) {
                 if (DriverStation.getAlliance() == Alliance.Blue) {
                     m_aprilTagId = 7.0;
                 } else {
                     m_aprilTagId = 2.0;
                 }
-            } else if (RobotContainer.getShuffleboardManager().getAutoPosition() == Constants.AutoPosition.Position3) {
+            } else if (RobotContainer.getShuffleboardSubsystem().getAutoPosition() == Constants.AutoPosition.Position3) {
                 if (DriverStation.getAlliance() == Alliance.Blue) {
                     m_aprilTagId = 8.0;
                 } else {

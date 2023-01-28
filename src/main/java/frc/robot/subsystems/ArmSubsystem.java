@@ -30,9 +30,9 @@ public class ArmSubsystem extends SubsystemBase {
 
         m_distMxp = new Rev2mDistanceSensor(Port.kMXP);
 
-        m_upperElevatorLimitSwitch = new CT_DigitalInput(Constants.UPPER_ELEVATOR_LIMIT_SWITCH_DIO);
-        m_lowerElevatorLimitSwitch = new CT_DigitalInput(Constants.LOWER_ELEVATOR_LIMIT_SWITCH_DIO);
-        m_minimumArmReachLimitSwitch = new CT_DigitalInput(Constants.MINIMUM_REACH_LIMIT_SWITCH_DIO);
+        m_upperElevatorLimitSwitch = new CT_DigitalInput(Constants.UPPER_ELEVATOR_LIMIT_SWITCH_DIO, true);
+        m_lowerElevatorLimitSwitch = new CT_DigitalInput(Constants.LOWER_ELEVATOR_LIMIT_SWITCH_DIO, true);
+        m_minimumArmReachLimitSwitch = new CT_DigitalInput(Constants.MINIMUM_REACH_LIMIT_SWITCH_DIO, true);
     }
 
     public void enableDistanceSensor(boolean isEnabled) {

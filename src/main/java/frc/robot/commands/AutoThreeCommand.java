@@ -45,10 +45,10 @@ public class AutoThreeCommand extends SequentialCommandGroup {
                 .getPlaceStagedPieceCommand();
 
         addCommands(new InstantCommand(() -> printStartCommand()),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope(0.0)),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
                 new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
-                placePreloadedPieceSequentialCommandGroup,
+                /* placePreloadedPieceSequentialCommandGroup, */
                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), outPathFileName, eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto3_back", eventMap,
@@ -59,18 +59,15 @@ public class AutoThreeCommand extends SequentialCommandGroup {
                 new SelectCommand(
                         Map.ofEntries(
                                 Map.entry(CommandSelector.STRAFE_LEFT,
-                                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-                                                "strafe_left", eventMap,
-                                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true)),
+                                        new StrafeCommand(-58.0, 0.20)),
                                 Map.entry(CommandSelector.STRAFE_RIGHT,
-                                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-                                                "strafe_right", eventMap,
-                                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true)),
+                                        new StrafeCommand(58.0, 0.20)),
                                 Map.entry(CommandSelector.STRAFE_NONE,
                                         new PrintCommand("We're already lined up, no strafing necessary"))),
                         this::selectStagedStrafe),
-                placeStagedPieceSequentialCommandGroup,
+                /* placeStagedPieceSequentialCommandGroup, */
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope(180.0)),
                 new InstantCommand(() -> printEndCommand()));
     }
 
@@ -78,8 +75,8 @@ public class AutoThreeCommand extends SequentialCommandGroup {
     // Shuffleboard inputs
     private CommandSelector selectStagedStrafe() {
 
-        Constants.PlacePosition placePosition = RobotContainer.getShuffleboardManager().getStagedPieceLevel();
-        Constants.ConeOffsetPosition conePosition = RobotContainer.getShuffleboardManager()
+        Constants.PlacePosition placePosition = RobotContainer.getShuffleboardSubsystem().getStagedPieceLevel();
+        Constants.ConeOffsetPosition conePosition = RobotContainer.getShuffleboardSubsystem()
                 .getStagedConeOffsetPosition();
 
         if ((placePosition == Constants.PlacePosition.HighCone) ||
