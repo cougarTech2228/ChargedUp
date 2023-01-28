@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.DockWithAprilTagCommand;
-import frc.robot.commands.SetArmHeightCommand;
+import frc.robot.commands.SetElevatorHeightCommand;
 import frc.robot.commands.SetArmReachCommand;
 import frc.robot.commands.StrafeCommand;
 
@@ -347,14 +347,14 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // Arm Button Handling
         // **********************************
         getArmUpButton().onTrue(new ConditionalCommand(
-                new SetArmHeightCommand(
-                        RobotContainer.getArmSubsystem().getCurrentArmHeightCm() + INCREMENTAL_ARM_HEIGHT_CHANGE_CM),
+                new SetElevatorHeightCommand(
+                        RobotContainer.getElevatorSubsystem().getCurrentElevatorHeightCm() + INCREMENTAL_ARM_HEIGHT_CHANGE_CM),
                 new PrintCommand("You must be in manual mode to move the arm up"),
                 this::isManualOperationMode));
 
         getArmDownButton().onTrue(new ConditionalCommand(
-                new SetArmHeightCommand(
-                        RobotContainer.getArmSubsystem().getCurrentArmHeightCm() - INCREMENTAL_ARM_HEIGHT_CHANGE_CM),
+                new SetElevatorHeightCommand(
+                        RobotContainer.getElevatorSubsystem().getCurrentElevatorHeightCm() - INCREMENTAL_ARM_HEIGHT_CHANGE_CM),
                 new PrintCommand("You must be in manual mode to move the arm down"),
                 this::isManualOperationMode));
 
@@ -369,7 +369,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         new DockWithAprilTagCommand(true, true, this),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true),
-                        new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
+                        new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
                         new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
                         new InstantCommand(() -> resetAprilTagID())),
@@ -378,7 +378,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         getHighCubeButton().onTrue(new ConditionalCommand(new SequentialCommandGroup(new PrintCommand("High Cube"),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new DockWithAprilTagCommand(true, true, this),
-                new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CUBE_HEIGHT_CM),
+                new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_HIGH_CUBE_HEIGHT_CM),
                         new SetArmReachCommand(Constants.ARM_HIGH_CUBE_REACH_CM)),
                 new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
@@ -389,7 +389,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         new DockWithAprilTagCommand(true, true, this),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
-                        new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
+                        new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
                         new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
@@ -403,7 +403,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true),
                         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
-                        new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_MIDDLE_CONE_HEIGHT_CM),
+                        new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_MIDDLE_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_MIDDLE_CONE_REACH_CM)),
                         new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
                         new InstantCommand(() -> resetAprilTagID())),
@@ -412,7 +412,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         getMiddleCubeButton().onTrue(new ConditionalCommand(new SequentialCommandGroup(new PrintCommand("Middle Cube"),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new DockWithAprilTagCommand(true, true, this),
-                new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_MIDDLE_CUBE_HEIGHT_CM),
+                new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_MIDDLE_CUBE_HEIGHT_CM),
                         new SetArmReachCommand(Constants.ARM_MIDDLE_CUBE_REACH_CM)),
                 new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
@@ -423,7 +423,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         new DockWithAprilTagCommand(true, true, this),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
-                        new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_MIDDLE_CONE_HEIGHT_CM),
+                        new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_MIDDLE_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_MIDDLE_CONE_REACH_CM)),
                         new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
@@ -435,7 +435,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         new DockWithAprilTagCommand(true, true, this),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true),
-                        new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_LOW_CONE_HEIGHT_CM),
+                        new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_LOW_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_LOW_CONE_REACH_CM)),
                         new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
                         new InstantCommand(() -> resetAprilTagID())),
@@ -444,7 +444,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         getLowCubeButton().onTrue(new ConditionalCommand(new SequentialCommandGroup(new PrintCommand("Low Cube"),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new DockWithAprilTagCommand(true, true, this),
-                new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_LOW_CUBE_HEIGHT_CM),
+                new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_LOW_CUBE_HEIGHT_CM),
                         new SetArmReachCommand(Constants.ARM_LOW_CUBE_REACH_CM)),
                 new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
@@ -455,7 +455,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         new DockWithAprilTagCommand(true, true, this),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
-                        new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_LOW_CONE_HEIGHT_CM),
+                        new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_LOW_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_LOW_CONE_REACH_CM)),
                         new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));

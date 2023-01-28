@@ -13,25 +13,18 @@ import frc.robot.utils.CT_DigitalInput;
 public class ArmSubsystem extends SubsystemBase {
 
     private TalonFX m_winchMotor;
-    private TalonFX m_elevatorMotor;
 
     private Rev2mDistanceSensor m_distMxp;
 
     private double m_currentArmReachCm = 0.0;
-    private double m_currentArmHeightCm = 0.0;
 
-    private CT_DigitalInput m_upperElevatorLimitSwitch;
-    private CT_DigitalInput m_lowerElevatorLimitSwitch;
     private CT_DigitalInput m_minimumArmReachLimitSwitch;
 
     public ArmSubsystem() {
         m_winchMotor = new TalonFX(Constants.ARM_WINCH_MOTOR_ID);
-        m_elevatorMotor = new TalonFX(Constants.ARM_ELEVATOR_MOTOR_ID);
 
         m_distMxp = new Rev2mDistanceSensor(Port.kMXP);
 
-        m_upperElevatorLimitSwitch = new CT_DigitalInput(Constants.UPPER_ELEVATOR_LIMIT_SWITCH_DIO, true);
-        m_lowerElevatorLimitSwitch = new CT_DigitalInput(Constants.LOWER_ELEVATOR_LIMIT_SWITCH_DIO, true);
         m_minimumArmReachLimitSwitch = new CT_DigitalInput(Constants.MINIMUM_REACH_LIMIT_SWITCH_DIO, true);
     }
 
@@ -43,32 +36,12 @@ public class ArmSubsystem extends SubsystemBase {
         m_winchMotor.set(ControlMode.PercentOutput, percentOutput);
     }
 
-    public void setElevatorMotorPercentOutput(double percentOutput) {
-        m_elevatorMotor.set(ControlMode.PercentOutput, percentOutput);
-    }
-
     public double getCurrentArmReachCm() {
         return m_currentArmReachCm;
     }
 
-    public double getCurrentArmHeightCm() {
-        return m_currentArmHeightCm;
-    }
-
     public void setCurrentArmReachCm(double armReachCm) {
         m_currentArmReachCm = armReachCm;
-    }
-
-    public void setCurrentArmHeightCM(double armHeightCM) {
-        m_currentArmHeightCm = armHeightCM;
-    }
-
-    public boolean isUpperElevatorLimitSwitchActive() {
-        return m_upperElevatorLimitSwitch.get();
-    }
-
-    public boolean isLowerElevatorLimitSwithActive() {
-        return m_lowerElevatorLimitSwitch.get();
     }
 
     public boolean isMinimumReachLimitSwitchActive() {
@@ -94,7 +67,5 @@ public class ArmSubsystem extends SubsystemBase {
             // m_distMxp.getRange());
             m_currentArmReachCm = m_distMxp.getRange(Unit.kMillimeters) * 10.0;
         }
-
-        //TODO - How will we determine m_currentArmHeightCm (encoder counts per centimeter?)
     }
 }

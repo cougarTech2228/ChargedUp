@@ -48,7 +48,7 @@ public class AutoOneCommand extends SequentialCommandGroup {
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
                         .setPathPlannerDriving(true)),
                 new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
-                /* placePreloadedPieceSequentialCommandGroup, */
+                placePreloadedPieceSequentialCommandGroup,
                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), outPathFileName,
                         eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
@@ -69,9 +69,7 @@ public class AutoOneCommand extends SequentialCommandGroup {
                                 Map.entry(CommandSelector.STRAFE_NONE,
                                         new PrintCommand("We're already lined up, no strafing necessary"))),
                         this::selectStagedStrafe),
-                /* placeStagedPieceSequentialCommandGroup, */
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
-                        .setPathPlannerDriving(false)),
+                placeStagedPieceSequentialCommandGroup,
                 new InstantCommand(() -> printEndCommand()));
     }
 

@@ -79,7 +79,7 @@ public final class Constants {
 
     public static final int DRIVETRAIN_PIGEON_ID = 61; // Set Pigeon ID
 
-    public static final int ARM_ELEVATOR_MOTOR_ID = 58;
+    public static final int ELEVATOR_MOTOR_ID = 58;
     public static final int ARM_WINCH_MOTOR_ID = 59;
 
     public static final double BAD_APRIL_TAG_ID = 2228;

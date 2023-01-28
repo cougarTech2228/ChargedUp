@@ -47,16 +47,14 @@ public class SetArmReachCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         RobotContainer.getArmSubsystem().enableDistanceSensor(false);
+        RobotContainer.getArmSubsystem().setWinchMotorPercentOutput(0.0);
         System.out.println("Ending SetArmReachCommand");
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        if (RobotContainer.getArmSubsystem().isMinimumReachLimitSwitchActive()) {
-            return true;
-        } else {
-            return (Math.abs(m_currentArmReachCm - m_targetReachCm) < REACH_TOLERANCE_CM);
-        }
+        // TODO - are we going to change the ArmSubsystem to a PIDSubsystem like the Elevator?
+        return true;
     }
 }

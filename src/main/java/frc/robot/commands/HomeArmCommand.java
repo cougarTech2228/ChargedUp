@@ -10,7 +10,7 @@ public class HomeArmCommand extends ParallelCommandGroup {
         // need to determine what the minimum value is for the
         // arm's height and reach when it is in its home
         // position.
-        addCommands(new SetArmHeightCommand(0.0),
+        addCommands(new SetElevatorHeightCommand(0.0),
                 new SetArmReachCommand(0.0));
     }
 }

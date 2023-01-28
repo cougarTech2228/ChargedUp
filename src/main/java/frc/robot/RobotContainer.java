@@ -17,6 +17,7 @@ import frc.robot.commands.AutoThreeCommand;
 import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.subsystems.ShuffleboardSubsystem;
 import frc.robot.subsystems.ButtonBoardSubsystem;
@@ -51,6 +52,8 @@ public class RobotContainer {
     private final static LEDStripSubsystem m_ledStripSubsystem = new LEDStripSubsystem();
 
     private final static ArmSubsystem m_armSubsystem = new ArmSubsystem();
+
+    private final static ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
 
     private final static ButtonBoardSubsystem m_buttonBoardSubsystem = new ButtonBoardSubsystem();
 
@@ -170,6 +173,10 @@ public class RobotContainer {
 
     public static ButtonBoardSubsystem getButtonBoardSubsystem() {
         return m_buttonBoardSubsystem;
+    }
+
+    public static ElevatorSubsystem getElevatorSubsystem() {
+        return m_elevatorSubsystem;
     }
 
     public static XboxController getXboxController() {
