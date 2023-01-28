@@ -2,6 +2,9 @@ package frc.robot.subsystems;
 
 import java.util.HashMap;
 
+import javax.naming.CompoundName;
+import javax.swing.text.Position;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -141,6 +144,19 @@ public class ButtonBoardSubsystem extends SubsystemBase {
 
     private JoystickButton getOpenCloseGripperToggleSwitch() {
         return new JoystickButton(m_joystick2, 6);
+    }
+
+    private boolean aprilTagIDMatch() {
+        if ((m_aprilTagID == RobotContainer.getAprilTagManager().getTagID())
+                && (m_aprilTagID != Constants.BAD_APRIL_TAG_ID)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    private void resetAprilTagID() {
+        m_aprilTagID = Constants.BAD_APRIL_TAG_ID;
     }
 
     private void setPosition(Constants.AutoPosition position) {
@@ -333,7 +349,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         getSubstationDockButton().onTrue(new SequentialCommandGroup(new PrintCommand("Docking with Substation"),
                 new InstantCommand(() -> setDockingStation()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
-                new DockWithAprilTagCommand(true, true, this),
+                new DockWithAprilTagCommand(false, true, this),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
                 new ConditionalCommand(new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
                         "strafe_left", eventMap,
@@ -342,6 +358,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                 "strafe_right", eventMap,
                                 Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                         this::isLeftDockingStation),
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new PrintCommand("TODO - Pick game piece off of shelf")));
 
         // **********************************
@@ -364,50 +381,118 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // **********************************
 
         // Place high game pieces
-        getHighLeftConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("High Left Cone"),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
-                new DockWithAprilTagCommand(true, true, this),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
-                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-                        "strafe_right", eventMap,
-                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
-                new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
-                        new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
-                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))));
+        getHighLeftConeButton().onTrue(new ConditionalCommand(
+                new SequentialCommandGroup(new PrintCommand("High Left Cone"),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new DockWithAprilTagCommand(true, true, this),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
+                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
+                                "strafe_right", eventMap,
+                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
+                                new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
+                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
+                        new InstantCommand(() -> resetAprilTagID())),
+                new PrintCommand("April Tag Not Detected"), () -> aprilTagIDMatch()));
 
-        getHighCubeButton().onTrue(new SequentialCommandGroup(new PrintCommand("High Cube"),
+        getHighCubeButton().onTrue(new ConditionalCommand(new SequentialCommandGroup(new PrintCommand("High Cube"),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new DockWithAprilTagCommand(true, true, this),
                 new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CUBE_HEIGHT_CM),
                         new SetArmReachCommand(Constants.ARM_HIGH_CUBE_REACH_CM)),
-                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))));
+                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                new PrintCommand("April Tag Not Detected"), () -> aprilTagIDMatch()));
 
-        getHighRightConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("High Right Cone"),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
-                new DockWithAprilTagCommand(true, true, this),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
-                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-                        "strafe_left", eventMap,
-                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
-                new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
-                        new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
-                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))));
+        getHighRightConeButton().onTrue(new ConditionalCommand(
+                new SequentialCommandGroup(new PrintCommand("High Right Cone"),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new DockWithAprilTagCommand(true, true, this),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
+                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
+                                "strafe_left", eventMap,
+                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
+                                new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
+                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                new PrintCommand("High Right Cone"), () -> aprilTagIDMatch()));
 
         // Place middle game pieces
-        getMiddleLeftConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Left Cone")));
+        getMiddleLeftConeButton().onTrue(new ConditionalCommand(
+                new SequentialCommandGroup(new PrintCommand("Middle Left Cone"),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new DockWithAprilTagCommand(true, true, this),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
+                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
+                                "strafe_right", eventMap,
+                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
+                                new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
+                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
+                        new InstantCommand(() -> resetAprilTagID())),
+                new PrintCommand("April Tag Not Detected"), () -> aprilTagIDMatch()));
 
-        getMiddleCubeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Cube")));
+        getMiddleCubeButton().onTrue(new ConditionalCommand(new SequentialCommandGroup(new PrintCommand("Middle Cube"),
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                new DockWithAprilTagCommand(true, true, this),
+                new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CUBE_HEIGHT_CM),
+                        new SetArmReachCommand(Constants.ARM_HIGH_CUBE_REACH_CM)),
+                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                new PrintCommand("April Tag Not Detected"), () -> aprilTagIDMatch()));
 
-        getMiddleRightConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Middle Right Cone")));
+        getMiddleRightConeButton().onTrue(new ConditionalCommand(
+                new SequentialCommandGroup(new PrintCommand("Middle Right Cone"),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new DockWithAprilTagCommand(true, true, this),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
+                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
+                                "strafe_left", eventMap,
+                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
+                                new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
+                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                new PrintCommand("High Right Cone"), () -> aprilTagIDMatch()));
 
         // Place low game pieces
-        getLowLeftConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Low Left Cone")));
+        getLowLeftConeButton().onTrue(new ConditionalCommand(
+                new SequentialCommandGroup(new PrintCommand("Low Left Cone"),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new DockWithAprilTagCommand(true, true, this),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
+                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
+                                "strafe_right", eventMap,
+                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
+                                new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
+                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
+                        new InstantCommand(() -> resetAprilTagID())),
+                new PrintCommand("April Tag Not Detected"), () -> aprilTagIDMatch()));
 
-        getLowCubeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Low Cube")));
+        getLowCubeButton().onTrue(new ConditionalCommand(new SequentialCommandGroup(new PrintCommand("Low Cube"),
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                new DockWithAprilTagCommand(true, true, this),
+                new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CUBE_HEIGHT_CM),
+                        new SetArmReachCommand(Constants.ARM_HIGH_CUBE_REACH_CM)),
+                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                new PrintCommand("April Tag Not Detected"), () -> aprilTagIDMatch()));
 
-        getLowRightConeButton().onTrue(new SequentialCommandGroup(new PrintCommand("Low Right Cone")));
+        getLowRightConeButton().onTrue(new ConditionalCommand(
+                new SequentialCommandGroup(new PrintCommand("Low Right Cone"),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new DockWithAprilTagCommand(true, true, this),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
+                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
+                                "strafe_left", eventMap,
+                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
+                        new ParallelCommandGroup(new SetArmHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
+                                new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
+                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                new PrintCommand("High Right Cone"), () -> aprilTagIDMatch()));
 
         // Set the desired grid position where the game piece will
         getPosition1Button().onTrue(new SequentialCommandGroup(new PrintCommand("Setting Position 1"),
