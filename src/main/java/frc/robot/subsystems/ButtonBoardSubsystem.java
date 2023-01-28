@@ -276,11 +276,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // position.
         if (m_strafeReset && isManualOperationMode()) {
 
-            if (m_strafeJoystick == 1.0) {
-                new StrafeCommand(5.0, 0.20).schedule();
+            
+            if (m_strafeJoystick == 1.0) { // Right
+                new StrafeCommand(Constants.NUDGE_STRAFE_DISTANCE, -Constants.STRAFE_SPEED, false).schedule();
                 m_strafeReset = false;
-            } else if (m_strafeJoystick == -1.0) {
-                new ScheduleCommand(new StrafeCommand(-5.0, 0.20)).schedule();
+            } else if (m_strafeJoystick == -1.0) { // Left
+                new ScheduleCommand(new StrafeCommand(Constants.NUDGE_STRAFE_DISTANCE, Constants.STRAFE_SPEED, false)).schedule();
                 m_strafeReset = false;
             }
         }

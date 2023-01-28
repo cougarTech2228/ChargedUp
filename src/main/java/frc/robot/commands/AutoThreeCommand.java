@@ -55,21 +55,17 @@ public class AutoThreeCommand extends SequentialCommandGroup {
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new DockWithAprilTagCommand(false, true),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
                 new SelectCommand(
                         Map.ofEntries(
                                 Map.entry(CommandSelector.STRAFE_LEFT,
-                                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-                                                "strafe_left", eventMap,
-                                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true)),
+                                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
+                                                true)),
                                 Map.entry(CommandSelector.STRAFE_RIGHT,
-                                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-                                                "strafe_right", eventMap,
-                                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true)),
+                                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
+                                                true)),
                                 Map.entry(CommandSelector.STRAFE_NONE,
                                         new PrintCommand("We're already lined up, no strafing necessary"))),
                         this::selectStagedStrafe),
-                /* placeStagedPieceSequentialCommandGroup, */
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new InstantCommand(() -> printEndCommand()));
     }
@@ -86,9 +82,9 @@ public class AutoThreeCommand extends SequentialCommandGroup {
                 (placePosition == Constants.PlacePosition.MiddleCone) ||
                 (placePosition == Constants.PlacePosition.LowCone)) {
             if (conePosition == Constants.ConeOffsetPosition.Left) {
-                return CommandSelector.STRAFE_RIGHT;
-            } else {
                 return CommandSelector.STRAFE_LEFT;
+            } else {
+                return CommandSelector.STRAFE_RIGHT;
             }
         } else {
             return CommandSelector.STRAFE_NONE;

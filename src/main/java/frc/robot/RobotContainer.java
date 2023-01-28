@@ -16,7 +16,6 @@ import frc.robot.commands.AutoOneCommand;
 import frc.robot.commands.AutoThreeCommand;
 import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.StrafeCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.subsystems.ShuffleboardSubsystem;
@@ -99,8 +98,6 @@ public class RobotContainer {
 
         new Trigger(m_controller::getBButton)
                 .onTrue(new InstantCommand(() -> cancelAllCommands()));
-
-        new Trigger(m_controller::getYButton).onTrue(new StrafeCommand(-5.0, .20));
 
         // Configure all the buttons and switches on the Custom Button Board
         m_buttonBoardSubsystem.configureButtonBindings();

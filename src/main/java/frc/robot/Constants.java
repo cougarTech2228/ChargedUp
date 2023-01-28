@@ -113,6 +113,11 @@ public final class Constants {
     public static final double MAX_AUTO_VELOCITY = 4.0;
     public static final double MAX_AUTO_ACCELERATION = 3.0;
 
+    public static final double GRID_STRAFE_DISTANCE = 56.0;
+    public static final double SUBSTATION_STRAFE_DISTANCE = 56.0;
+    public static final double NUDGE_STRAFE_DISTANCE = 3.0;
+    public static final double STRAFE_SPEED = 0.2;
+
     // Constants for the Arm Subsystem and Commands
     public static final int MINIMUM_REACH_LIMIT_SWITCH_DIO = 0;
     public static final int UPPER_ELEVATOR_LIMIT_SWITCH_DIO = 1;
