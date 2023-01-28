@@ -30,7 +30,7 @@ public class AutoTwoCommand extends SequentialCommandGroup {
         //         .getPlacePreloadedPieceCommand();
 
         addCommands(new InstantCommand(() -> printStartCommand()),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope(0.0)),
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
                         .setPathPlannerDriving(true)),
                 new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
@@ -43,7 +43,6 @@ public class AutoTwoCommand extends SequentialCommandGroup {
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
                         .setPathPlannerDriving(false)),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope(180.0)),
                 new InstantCommand(() -> printEndCommand()));
     }
 

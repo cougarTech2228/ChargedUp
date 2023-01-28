@@ -197,7 +197,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         m_pathPlannerDriving = false;
                        
-        zeroGyroscope(0.0);
+        zeroGyroscope();
 
         m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation(), getSwerveModulePositions(), new Pose2d());
 
@@ -330,8 +330,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
      * robot is currently facing to the
      * 'forwards' direction.
      */
-    public void zeroGyroscope(double angle) {
-        m_pigeon.setFusedHeading(angle);
+    public void zeroGyroscope() {
+        m_pigeon.setFusedHeading(0.0);
     }
 
     public Rotation2d getGyroscopeRotation() {

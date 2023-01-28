@@ -44,7 +44,7 @@ public class AutoOneCommand extends SequentialCommandGroup {
                 .getPlaceStagedPieceCommand();
 
         addCommands(new InstantCommand(() -> printStartCommand()),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope(0.0)),
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
                         .setPathPlannerDriving(true)),
                 new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
@@ -76,7 +76,6 @@ public class AutoOneCommand extends SequentialCommandGroup {
                 /*placeStagedPieceSequentialCommandGroup,*/
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
                         .setPathPlannerDriving(false)),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope(180.0)),
                 new InstantCommand(() -> printEndCommand()));
     }
 

@@ -41,7 +41,7 @@ public class StrafeCommand extends CommandBase {
         m_isDone = false;
         m_currentEncoderCount = RobotContainer.getDrivetrainSubsystem().getEncoderCount();
 
-        if (m_distanceCM > 0) {
+        if (m_distanceCM < 0) {
             m_endCount = m_currentEncoderCount + ((m_distanceCM / WHEEL_CIRCUMFERENCE_CM) * TICKS_PER_ROTATION);
         } else {
             m_endCount = m_currentEncoderCount - ((-m_distanceCM / WHEEL_CIRCUMFERENCE_CM) * TICKS_PER_ROTATION);
@@ -51,7 +51,7 @@ public class StrafeCommand extends CommandBase {
 
     @Override
     public void execute() {
-
+        System.out.println("m_currentEncoderCount = " + m_currentEncoderCount + " m_endCount: " + m_endCount);
         RobotContainer.getDrivetrainSubsystem().drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0,
                 m_speed * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
                 0.0,

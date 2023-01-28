@@ -277,10 +277,10 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         if (m_strafeReset && isManualOperationMode()) {
 
             if (m_strafeJoystick == 1.0) {
-                new StrafeCommand(-5.0, 0.20).schedule();
+                new StrafeCommand(5.0, 0.20).schedule();
                 m_strafeReset = false;
             } else if (m_strafeJoystick == -1.0) {
-                new ScheduleCommand(new StrafeCommand(5.0, 0.20)).schedule();
+                new ScheduleCommand(new StrafeCommand(-5.0, 0.20)).schedule();
                 m_strafeReset = false;
             }
         }

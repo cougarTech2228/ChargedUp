@@ -9,12 +9,14 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoOneCommand;
 import frc.robot.commands.AutoThreeCommand;
 import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.StrafeCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.subsystems.ShuffleboardSubsystem;
@@ -90,13 +92,15 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
 
-        // TODO Let's change the zeroGyroscope call to the "B" button instead of the
+        // TODO Let's change the zeroGyroscope call to the "A" button instead of the
         // tiny Back button
         new Trigger(m_controller::getBackButton) // Back button zeros the gyroscope
-                .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.zeroGyroscope(0.0)));
+                .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.zeroGyroscope()));
 
         new Trigger(m_controller::getBButton)
-                .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.stopMotors()));
+                .onTrue(new InstantCommand(() -> cancelAllCommands()));
+
+        new Trigger(m_controller::getYButton).onTrue(new StrafeCommand(-5.0, .20));
 
         // Configure all the buttons and switches on the Custom Button Board
         m_buttonBoardSubsystem.configureButtonBindings();
@@ -119,6 +123,10 @@ public class RobotContainer {
             System.out.println("Invalid position received from Shufflboard");
             return null;
         }
+    }
+
+    private static void cancelAllCommands() {
+        CommandScheduler.getInstance().cancelAll();
     }
 
     private static double deadband(double value, double deadband) {

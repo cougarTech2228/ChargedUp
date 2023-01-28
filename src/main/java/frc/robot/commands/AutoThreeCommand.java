@@ -45,7 +45,7 @@ public class AutoThreeCommand extends SequentialCommandGroup {
                 .getPlaceStagedPieceCommand();
 
         addCommands(new InstantCommand(() -> printStartCommand()),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope(0.0)),
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
                 new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
                 /* placePreloadedPieceSequentialCommandGroup, */
@@ -59,15 +59,18 @@ public class AutoThreeCommand extends SequentialCommandGroup {
                 new SelectCommand(
                         Map.ofEntries(
                                 Map.entry(CommandSelector.STRAFE_LEFT,
-                                        new StrafeCommand(-58.0, 0.20)),
+                                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
+                                                "strafe_left", eventMap,
+                                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true)),
                                 Map.entry(CommandSelector.STRAFE_RIGHT,
-                                        new StrafeCommand(58.0, 0.20)),
+                                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
+                                                "strafe_right", eventMap,
+                                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true)),
                                 Map.entry(CommandSelector.STRAFE_NONE,
                                         new PrintCommand("We're already lined up, no strafing necessary"))),
                         this::selectStagedStrafe),
                 /* placeStagedPieceSequentialCommandGroup, */
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope(180.0)),
                 new InstantCommand(() -> printEndCommand()));
     }
 
