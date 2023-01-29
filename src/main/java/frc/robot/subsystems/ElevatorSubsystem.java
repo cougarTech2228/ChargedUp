@@ -11,7 +11,7 @@ import frc.robot.utils.CT_DigitalInput;
 
 public class ElevatorSubsystem extends PIDSubsystem {
 
-    private static final double kP = 6.0;
+    private static final double kP = 1.0;
     private static final double kI = 0.0;
     private static final double kD = 0.0;
     private static final double kF = 0.0;
@@ -20,8 +20,6 @@ public class ElevatorSubsystem extends PIDSubsystem {
 
     private CT_DigitalInput m_upperElevatorLimitSwitch;
     private CT_DigitalInput m_lowerElevatorLimitSwitch;
-
-    private double m_currentElevatorHeightCm = 0.0;
 
     public ElevatorSubsystem() {
         super(new PIDController(kP, kI, kD));
@@ -46,24 +44,33 @@ public class ElevatorSubsystem extends PIDSubsystem {
         m_motor.set(ControlMode.PercentOutput, output);
     }
 
-    public boolean isUpperElevatorLimitSwitchActive() {
+    private boolean isUpperElevatorLimitSwitchActive() {
         return m_upperElevatorLimitSwitch.get();
     }
 
-    public boolean isLowerElevatorLimitSwithActive() {
+    private boolean isLowerElevatorLimitSwithActive() {
         return m_lowerElevatorLimitSwitch.get();
     }
 
-    public double getCurrentElevatorHeightCm() {
-        return m_currentElevatorHeightCm;
+    public void updateSetpoint(double targetHeightInCM) {
+        // TODO - need to convert target cm to encoder counts
+        double kEncoderTicksPerCM = 1234.0;
+        m_controller.setSetpoint(targetHeightInCM * kEncoderTicksPerCM);
+        m_controller.reset();
     }
 
-    public void setElevatorMotorPercentOutput(double percentOutput) {
-        m_motor.set(ControlMode.PercentOutput, percentOutput);
+    public void stopMotor() {
+        m_motor.set(ControlMode.PercentOutput, 0.0);
     }
 
     public void setMotorToBrake() {
         m_motor.setNeutralMode(NeutralMode.Brake);
+    }
+
+    public double getCurrentElevatorHeightCm() {
+        // TODO - This is needed from the ButtonBoard to make incremental
+        // height changes with the Joystick
+        return 0.0;
     }
 
     public boolean atSetpoint() {
