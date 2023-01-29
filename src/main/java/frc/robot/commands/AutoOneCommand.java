@@ -47,16 +47,12 @@ public class AutoOneCommand extends SequentialCommandGroup {
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
                 new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
                 placePreloadedPieceSequentialCommandGroup,
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
-                .setPathPlannerDriving(true)),
                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), outPathFileName,
                         eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto1_back",
                         eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
-                        .setPathPlannerDriving(false)),
                 new DockWithAprilTagCommand(false, true),
                 new SelectCommand(
                         Map.ofEntries(

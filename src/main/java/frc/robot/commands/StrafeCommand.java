@@ -19,9 +19,8 @@ public class StrafeCommand extends CommandBase {
     // Based on a 4" swerve wheel
     private final static double WHEEL_CIRCUMFERENCE_CM = 31.9278;
 
-    // Magic number derived from using Phoenix Tuner and checking the encoder
-    // ticks per one rotation of the swerve drive wheel.
-    private final static double TICKS_PER_ROTATION = 12150;
+    // Falcon ticks per rotation is 2048 * SDS Mk4i Gear Ratio of 6.75:1
+    private final static double TICKS_PER_ROTATION = 2048.0 * 6.75;
 
     /**
      * 
