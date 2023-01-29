@@ -31,10 +31,10 @@ public class AutoTwoCommand extends SequentialCommandGroup {
 
         addCommands(new InstantCommand(() -> printStartCommand()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
-                        .setPathPlannerDriving(true)),
                 new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
                 placePreloadedPieceSequentialCommandGroup,
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
+                        .setPathPlannerDriving(true)),
                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), outPathFileName,
                         eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),

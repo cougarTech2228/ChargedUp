@@ -332,15 +332,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // **********************************
         getSubstationDockButton().onTrue(new SequentialCommandGroup(new PrintCommand("Docking with Substation"),
                 new InstantCommand(() -> setDockingStation()),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new DockWithAprilTagCommand(false, true, this),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
                 new ConditionalCommand(new StrafeCommand(Constants.SUBSTATION_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                         true),
                         new StrafeCommand(Constants.SUBSTATION_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
                         this::isLeftDockingStation),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new PrintCommand("TODO - Pick game piece off of shelf")));
 
         // **********************************
@@ -348,13 +345,15 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // **********************************
         getArmUpButton().onTrue(new ConditionalCommand(
                 new SetElevatorHeightCommand(
-                        RobotContainer.getElevatorSubsystem().getCurrentElevatorHeightCm() + INCREMENTAL_ARM_HEIGHT_CHANGE_CM),
+                        RobotContainer.getElevatorSubsystem().getCurrentElevatorHeightCm()
+                                + INCREMENTAL_ARM_HEIGHT_CHANGE_CM),
                 new PrintCommand("You must be in manual mode to move the arm up"),
                 this::isManualOperationMode));
 
         getArmDownButton().onTrue(new ConditionalCommand(
                 new SetElevatorHeightCommand(
-                        RobotContainer.getElevatorSubsystem().getCurrentElevatorHeightCm() - INCREMENTAL_ARM_HEIGHT_CHANGE_CM),
+                        RobotContainer.getElevatorSubsystem().getCurrentElevatorHeightCm()
+                                - INCREMENTAL_ARM_HEIGHT_CHANGE_CM),
                 new PrintCommand("You must be in manual mode to move the arm down"),
                 this::isManualOperationMode));
 
@@ -365,7 +364,6 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // Place high game pieces
         getHighLeftConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("High Left Cone"),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                         new DockWithAprilTagCommand(true, true, this),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true),
@@ -376,7 +374,6 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getHighCubeButton().onTrue(new ConditionalCommand(new SequentialCommandGroup(new PrintCommand("High Cube"),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new DockWithAprilTagCommand(true, true, this),
                 new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_HIGH_CUBE_HEIGHT_CM),
                         new SetArmReachCommand(Constants.ARM_HIGH_CUBE_REACH_CM)),
@@ -385,7 +382,6 @@ public class ButtonBoardSubsystem extends SubsystemBase {
 
         getHighRightConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("High Right Cone"),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                         new DockWithAprilTagCommand(true, true, this),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
@@ -397,20 +393,16 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // Place middle game pieces
         getMiddleLeftConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("Middle Left Cone"),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                         new DockWithAprilTagCommand(true, true, this),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
-                        new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_MIDDLE_CONE_HEIGHT_CM),
+                       new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_MIDDLE_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_MIDDLE_CONE_REACH_CM)),
                         new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
                         new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getMiddleCubeButton().onTrue(new ConditionalCommand(new SequentialCommandGroup(new PrintCommand("Middle Cube"),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new DockWithAprilTagCommand(true, true, this),
                 new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_MIDDLE_CUBE_HEIGHT_CM),
                         new SetArmReachCommand(Constants.ARM_MIDDLE_CUBE_REACH_CM)),
@@ -419,8 +411,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
 
         getMiddleRightConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("Middle Right Cone"),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
-                        new DockWithAprilTagCommand(true, true, this),
+                            new DockWithAprilTagCommand(true, true, this),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
                         new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_MIDDLE_CONE_HEIGHT_CM),
@@ -431,7 +422,6 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // Place low game pieces
         getLowLeftConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("Low Left Cone"),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                         new DockWithAprilTagCommand(true, true, this),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true),
@@ -442,7 +432,6 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getLowCubeButton().onTrue(new ConditionalCommand(new SequentialCommandGroup(new PrintCommand("Low Cube"),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
                 new DockWithAprilTagCommand(true, true, this),
                 new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_LOW_CUBE_HEIGHT_CM),
                         new SetArmReachCommand(Constants.ARM_LOW_CUBE_REACH_CM)),
@@ -451,8 +440,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
 
         getLowRightConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("Low Right Cone"),
-                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false)),
-                        new DockWithAprilTagCommand(true, true, this),
+                         new DockWithAprilTagCommand(true, true, this),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
                         new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_LOW_CONE_HEIGHT_CM),
