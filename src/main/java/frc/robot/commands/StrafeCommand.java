@@ -15,6 +15,7 @@ public class StrafeCommand extends CommandBase {
     double m_distanceInEncoderCounts;
 
     boolean m_accountForAprilTag;
+    boolean m_hasStartedMoving;
 
     // Based on a 4" swerve wheel
     private final static double WHEEL_CIRCUMFERENCE_CM = 31.9278;
@@ -36,7 +37,7 @@ public class StrafeCommand extends CommandBase {
         m_speed = speed;
         m_accountForAprilTag = accountForAprilTag;
 
-        if (m_speed < -1 || m_speed > 1.0) {
+        if (m_speed < -1.0 || m_speed > 1.0) {
             System.out.println("ERROR: Speed value passed into StrafeCommand out of [-1, 1]");
             m_speed = 0.0;
         }
@@ -60,6 +61,8 @@ public class StrafeCommand extends CommandBase {
 
         m_currentEncoderCount = RobotContainer.getDrivetrainSubsystem().getEncoderCount();
         m_startCount = m_currentEncoderCount;
+
+        m_hasStartedMoving = true;
 
         // System.out.println("Distance in encoder count to travel: " +
         // m_distanceInEncoderCounts);
@@ -87,6 +90,14 @@ public class StrafeCommand extends CommandBase {
             RobotContainer.getDrivetrainSubsystem().stopMotors();
             RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
             System.out.println("StrafeCommand finished");
+            m_isDone = true;
+        }
+
+        // If we've started moving but then stop moving due to some unforseen issue
+        // like being blocked by another robot or field element, we need to end this
+        // command.
+        if (m_hasStartedMoving && (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() == 0)) {
+            System.out.println("Robot has stopped moving...StrafeCommand finished");
             m_isDone = true;
         }
 

@@ -16,6 +16,7 @@ import frc.robot.commands.AutoOneCommand;
 import frc.robot.commands.AutoThreeCommand;
 import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.StrafeCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
@@ -94,13 +95,15 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
 
-        // TODO Let's change the zeroGyroscope call to the "A" button instead of the
+        // TODO Let's change the zeroGyroscope call to the "A" button? instead of the
         // tiny Back button
         new Trigger(m_controller::getBackButton) // Back button zeros the gyroscope
                 .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.zeroGyroscope()));
 
         new Trigger(m_controller::getBButton)
                 .onTrue(new InstantCommand(() -> cancelAllCommands()));
+
+        new Trigger(m_controller::getYButton).onTrue(new StrafeCommand(10.0, 0.2, false));
 
         // Configure all the buttons and switches on the Custom Button Board
         m_buttonBoardSubsystem.configureButtonBindings();
