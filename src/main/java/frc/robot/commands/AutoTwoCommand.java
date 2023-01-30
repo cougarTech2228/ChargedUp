@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.utils.OutPathFileNameChooser;
-import frc.robot.utils.PlacePreloadedPieceCommandChooser;
+import frc.robot.utils.PlacePieceCommandChooser;
 
 public class AutoTwoCommand extends SequentialCommandGroup {
 
@@ -19,25 +19,28 @@ public class AutoTwoCommand extends SequentialCommandGroup {
 
         // TODO - do we want to do something cool at each stage like with LEDs?
         // We could create multiple eventMaps
-        HashMap<String, Command> eventMap = new HashMap<>();
+        HashMap<String, Command> m_eventMap = new HashMap<>();
 
         // Select the "out path" file based on Shuffleboard configuration
-        OutPathFileNameChooser outPathFileNameChooser = new OutPathFileNameChooser();
-        String outPathFileName = outPathFileNameChooser.getOutPathFileName();
+        OutPathFileNameChooser m_outPathFileNameChooser = new OutPathFileNameChooser();
+        String m_outPathFileName = m_outPathFileNameChooser.getOutPathFileName();
 
-        PlacePreloadedPieceCommandChooser placePreloadedPieceCommandChooser = new PlacePreloadedPieceCommandChooser();
-        SequentialCommandGroup placePreloadedPieceSequentialCommandGroup = placePreloadedPieceCommandChooser
-                .getPlacePreloadedPieceCommand();
+        // Get the appropriate command group to place the Preloaded Game Piece
+        PlacePieceCommandChooser m_placePreloadedPieceCommandChooser = new PlacePieceCommandChooser(
+                RobotContainer.getShuffleboardSubsystem()
+                        .getPreloadedPieceLevel());
+        SequentialCommandGroup m_placePreloadedPieceSequentialCommandGroup = m_placePreloadedPieceCommandChooser
+                .getPlacePieceCommand();
 
         addCommands(new InstantCommand(() -> printStartCommand()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
                 new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
-                placePreloadedPieceSequentialCommandGroup,
-                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), outPathFileName,
-                        eventMap,
+                m_placePreloadedPieceSequentialCommandGroup,
+                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), m_outPathFileName,
+                        m_eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto2_back",
-                        eventMap,
+                        m_eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                 new InstantCommand(() -> printEndCommand()));
     }

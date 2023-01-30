@@ -61,9 +61,14 @@ public class Robot extends TimedRobot {
     /** This function is called once each time the robot enters Disabled mode. */
     @Override
     public void disabledInit() {
-        // Note that this may cause Falcon 500 errors at startup, shouldn't
-        // be anything to worry about.
+
+        // Make sure that any erroneously pending commands are canceled so
+        // they don't fire up in Teleop next time we enable
+        CommandScheduler.getInstance().cancelAll();
+
+        RobotContainer.getDrivetrainSubsystem().stopMotors();
         RobotContainer.getDrivetrainSubsystem().setMotorsToCoast();
+
         RobotContainer.getLEDStripSubsystem().resetStrip();
     }
 

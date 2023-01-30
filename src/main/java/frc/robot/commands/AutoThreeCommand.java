@@ -12,8 +12,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.utils.OutPathFileNameChooser;
-import frc.robot.utils.PlacePreloadedPieceCommandChooser;
-import frc.robot.utils.PlaceStagedPieceCommandChooser;
+import frc.robot.utils.PlacePieceCommandChooser;
 
 public class AutoThreeCommand extends SequentialCommandGroup {
 
@@ -30,27 +29,33 @@ public class AutoThreeCommand extends SequentialCommandGroup {
 
         // TODO - do we want to do something cool at each stage like with LEDs?
         // We could create multiple eventMaps
-        HashMap<String, Command> eventMap = new HashMap<>();
+        HashMap<String, Command> m_eventMap = new HashMap<>();
 
         // Select the "out path" file based on Shuffleboard configuration
-        OutPathFileNameChooser outPathFileNameChooser = new OutPathFileNameChooser();
-        String outPathFileName = outPathFileNameChooser.getOutPathFileName();
+        OutPathFileNameChooser m_outPathFileNameChooser = new OutPathFileNameChooser();
+        String m_outPathFileName = m_outPathFileNameChooser.getOutPathFileName();
 
-        PlacePreloadedPieceCommandChooser placePreloadedPieceCommandChooser = new PlacePreloadedPieceCommandChooser();
-        SequentialCommandGroup placePreloadedPieceSequentialCommandGroup = placePreloadedPieceCommandChooser
-                .getPlacePreloadedPieceCommand();
+        // Get the appropriate command group to place the Preloaded Game Piece
+        PlacePieceCommandChooser m_placePreloadedPieceCommandChooser = new PlacePieceCommandChooser(
+                RobotContainer.getShuffleboardSubsystem()
+                        .getPreloadedPieceLevel());
+        SequentialCommandGroup m_placePreloadedPieceSequentialCommandGroup = m_placePreloadedPieceCommandChooser
+                .getPlacePieceCommand();
 
-        PlaceStagedPieceCommandChooser placeStagedPieceCommandChooser = new PlaceStagedPieceCommandChooser();
-        SequentialCommandGroup placeStagedPieceSequentialCommandGroup = placeStagedPieceCommandChooser
-                .getPlaceStagedPieceCommand();
+        // Get the appropriate command group to place the Staged Game Piece
+        PlacePieceCommandChooser m_placeStagedPieceCommandChooser = new PlacePieceCommandChooser(
+                RobotContainer.getShuffleboardSubsystem()
+                        .getStagedPieceLevel());
+        SequentialCommandGroup m_placeStagedPieceSequentialCommandGroup = m_placeStagedPieceCommandChooser
+                .getPlacePieceCommand();
 
         addCommands(new InstantCommand(() -> printStartCommand()),
                 new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
                 new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
-                placePreloadedPieceSequentialCommandGroup,
-                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), outPathFileName, eventMap,
+                m_placePreloadedPieceSequentialCommandGroup,
+                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), m_outPathFileName, m_eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto3_back", eventMap,
+                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto3_back", m_eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                 new DockWithAprilTagCommand(false, true),
                 new SelectCommand(
@@ -64,7 +69,7 @@ public class AutoThreeCommand extends SequentialCommandGroup {
                                 Map.entry(CommandSelector.STRAFE_NONE,
                                         new PrintCommand("We're already lined up, no strafing necessary"))),
                         this::selectStagedStrafe),
-                placeStagedPieceSequentialCommandGroup,
+                m_placeStagedPieceSequentialCommandGroup,
                 new InstantCommand(() -> printEndCommand()));
     }
 
