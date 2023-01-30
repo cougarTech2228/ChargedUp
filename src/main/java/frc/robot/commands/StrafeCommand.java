@@ -54,7 +54,25 @@ public class StrafeCommand extends CommandBase {
         // Tag detection to make a better estimate on how far we need to strafe in
         // order to line up with the Cone Nodes.
         if (m_accountForAprilTag) {
-            m_distanceCM = RobotContainer.getAprilTagManager().getStrafeOffsetGrid(m_distanceCM);
+            double offsetInCm = RobotContainer.getAprilTagManager().getTX() * 100.0;
+            System.out.println("offsetInCm: " + offsetInCm);
+
+            // If we're strafing right ...
+            if (m_speed < 1.0) {
+                // If offset is positive, subtract from constant, otherwise add to constant
+                if (offsetInCm < 0.0) {
+                    m_distanceCM -= Math.abs(offsetInCm);
+                } else {
+                    m_distanceCM += Math.abs(offsetInCm);
+                }
+            } else { // We're strafing left ...
+                // If offset is positive, add to constant, otherwise subtract from constant
+                if (offsetInCm > 0.0) {
+                    m_distanceCM += Math.abs(offsetInCm);
+                } else {
+                    m_distanceCM -= Math.abs(offsetInCm);
+                }
+            }
         }
 
         System.out.println("Strafe Command starting");
@@ -67,7 +85,8 @@ public class StrafeCommand extends CommandBase {
         m_lastEncoderCount = m_currentEncoderCount;
         m_robotNotMovingCount = 0;
 
-        // System.out.println("Distance in encoder count to travel: " +
+        System.out.println("Distance in cm to travel: " + m_distanceCM);
+        // System.out.println("Distance in encoder counts to travel: " +
         // m_distanceInEncoderCounts);
     }
 
@@ -93,24 +112,24 @@ public class StrafeCommand extends CommandBase {
             m_isDone = true;
         }
 
-        // If we've started moving but then stop moving due to some unforseen issue
-        // like being blocked by another robot or field element, we need to end this
-        // command.
-        if ((m_startEncoderCount != m_currentEncoderCount) &&
-                (m_lastEncoderCount == m_currentEncoderCount)) {
+        // // If we've started moving but then stop moving due to some unforseen issue
+        // // like being blocked by another robot or field element, we need to end this
+        // // command.
+        // if ((m_startEncoderCount != m_currentEncoderCount) &&
+        //         (m_lastEncoderCount == m_currentEncoderCount)) {
 
-            // Because of the CAN bus utilization, we've turned down the frequency
-            // at which encoder counts are reported for the Falcon 500s. We need
-            // to wait a few periodic cycles to make sure that the robot has really
-            // stopped moving.
-            if (m_robotNotMovingCount++ > 2) {
-                System.out.println("Robot is obstructed...StrafeCommand finished");
-                m_robotNotMovingCount = 0;
-                m_isDone = true;
-            }
-        } else {
-            m_lastEncoderCount = m_currentEncoderCount;
-        }
+        //     // Because of the CAN bus utilization, we've turned down the frequency
+        //     // at which encoder counts are reported for the Falcon 500s. We need
+        //     // to wait a few periodic cycles to make sure that the robot has really
+        //     // stopped moving.
+        //     if (m_robotNotMovingCount++ > 3) {
+        //         System.out.println("Robot is obstructed...StrafeCommand finished");
+        //         m_robotNotMovingCount = 0;
+        //         m_isDone = true;
+        //     }
+        // } else {
+        //     m_lastEncoderCount = m_currentEncoderCount;
+        // }
 
         return m_isDone;
     }

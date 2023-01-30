@@ -32,10 +32,4 @@ public class AprilTagManager {
     public double getTagID() {
         return m_tagIdEntry.getDouble(Constants.BAD_APRIL_TAG_ID);
     }
-
-    public double getStrafeOffsetGrid(double trueStrafeDistance) {
-        // System.out.println("getTx is: " + getTX());
-        // System.out.println("Offset: " + (-getTX() * 100.0));
-        return trueStrafeDistance + (-getTX() * 100.0);
-    }
 }
