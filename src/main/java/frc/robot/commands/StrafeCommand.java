@@ -79,9 +79,6 @@ public class StrafeCommand extends CommandBase {
                 RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation()));
 
         m_currentEncoderCount = RobotContainer.getDrivetrainSubsystem().getEncoderCount();
-
-        System.out
-                .println("m_currentEncoderCount = " + m_currentEncoderCount + " m_startCount: " + m_startEncoderCount);
     }
 
     @Override
