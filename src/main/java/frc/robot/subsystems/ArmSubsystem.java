@@ -85,6 +85,8 @@ public class ArmSubsystem extends PIDSubsystem {
     }
 
     public double getCurrentArmReachCm() {
+        // TODO - This is needed from the ButtonBoard to make incremental
+        // reach changes with the Joystick
         return m_currentArmReachCm;
     }
 

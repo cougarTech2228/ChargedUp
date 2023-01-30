@@ -69,7 +69,7 @@ public class ElevatorSubsystem extends PIDSubsystem {
 
     public double getCurrentElevatorHeightCm() {
         // TODO - This is needed from the ButtonBoard to make incremental
-        // height changes with the Joystick
+        // height changes with the up/down buttons
         return 0.0;
     }
 
