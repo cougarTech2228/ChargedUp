@@ -10,7 +10,7 @@ public class SetElevatorHeightCommand extends CommandBase {
     public SetElevatorHeightCommand(double targetHeightCm) {
 
         // TODO - probably should validate value of targetHeightCm
-        m_targetHeightCm = targetHeightCm;;
+        m_targetHeightCm = targetHeightCm;
     }
 
     // Called when the command is initially scheduled.

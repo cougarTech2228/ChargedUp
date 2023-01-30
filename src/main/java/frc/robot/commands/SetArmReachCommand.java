@@ -22,7 +22,7 @@ public class SetArmReachCommand extends CommandBase {
             m_targetReachCm = MAXIMUM_REACH_CM;
         }
 
-        System.out.println("Starting SetArmHeightCommand. Target Reach(cm): " + m_targetReachCm);
+        System.out.println("Starting SetArmReachCommand. Target Reach(cm): " + m_targetReachCm);
 
         RobotContainer.getArmSubsystem().enableDistanceSensor(true);
     }

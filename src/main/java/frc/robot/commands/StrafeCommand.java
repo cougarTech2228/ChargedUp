@@ -8,7 +8,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 public class StrafeCommand extends CommandBase {
     private double m_distanceCM;
     private double m_speed;
-    private boolean m_isDone = false;
+    private boolean m_isDone;
 
     double m_currentEncoderCount;
     double m_startCount;
@@ -56,13 +56,12 @@ public class StrafeCommand extends CommandBase {
 
         System.out.println("Strafe Command starting");
         m_isDone = false;
+        m_hasStartedMoving = false;
 
         m_distanceInEncoderCounts = ((m_distanceCM / WHEEL_CIRCUMFERENCE_CM) * TICKS_PER_ROTATION);
 
         m_currentEncoderCount = RobotContainer.getDrivetrainSubsystem().getEncoderCount();
         m_startCount = m_currentEncoderCount;
-
-        m_hasStartedMoving = true;
 
         // System.out.println("Distance in encoder count to travel: " +
         // m_distanceInEncoderCounts);
@@ -76,6 +75,10 @@ public class StrafeCommand extends CommandBase {
                 RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation()));
 
         m_currentEncoderCount = RobotContainer.getDrivetrainSubsystem().getEncoderCount();
+
+        if (m_currentEncoderCount > m_startCount) {
+            m_hasStartedMoving = true;
+        }
 
         // System.out.println("m_currentEncoderCount = " + m_currentEncoderCount + "
         // m_startCount: " + m_startCount);
@@ -96,10 +99,10 @@ public class StrafeCommand extends CommandBase {
         // If we've started moving but then stop moving due to some unforseen issue
         // like being blocked by another robot or field element, we need to end this
         // command.
-        if (m_hasStartedMoving && (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() == 0)) {
-            System.out.println("Robot has stopped moving...StrafeCommand finished");
-            m_isDone = true;
-        }
+        // if ((m_startCount != m_currentEncoderCount) && (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() == 0)) {
+        //     System.out.println("Robot has stopped moving...StrafeCommand finished");
+        //     m_isDone = true;
+        // }
 
         return m_isDone;
     }

@@ -103,8 +103,6 @@ public class RobotContainer {
         new Trigger(m_controller::getBButton)
                 .onTrue(new InstantCommand(() -> cancelAllCommands()));
 
-        new Trigger(m_controller::getYButton).onTrue(new StrafeCommand(10.0, 0.2, false));
-
         // Configure all the buttons and switches on the Custom Button Board
         m_buttonBoardSubsystem.configureButtonBindings();
     }

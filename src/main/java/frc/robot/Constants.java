@@ -123,15 +123,15 @@ public final class Constants {
     public static final int UPPER_ELEVATOR_LIMIT_SWITCH_DIO = 1;
     public static final int LOWER_ELEVATOR_LIMIT_SWITCH_DIO = 2;
 
-    private static final double HIGH_CONE_NODE_HEIGHT_CM = Units.inchesToMeters(46.0) / 100.0;
-    private static final double MIDDLE_CONE_NODE_HEIGHT_CM = Units.inchesToMeters(34.0) / 100.0;
+    private static final double HIGH_CONE_NODE_HEIGHT_CM = Units.inchesToMeters(46.0) * 100.0;
+    private static final double MIDDLE_CONE_NODE_HEIGHT_CM = Units.inchesToMeters(34.0) * 100.0;
     private static final double LOW_CONE_NODE_HEIGHT_CM = 0.0;
 
-    private static final double HIGH_CUBE_NODE_HEIGHT_CM = Units.inchesToMeters(35.5) / 100.0;
-    private static final double MIDDLE_CUBE_NODE_HEIGHT_CM = Units.inchesToMeters(23.5) / 100.0;
+    private static final double HIGH_CUBE_NODE_HEIGHT_CM = Units.inchesToMeters(35.5) * 100.0;
+    private static final double MIDDLE_CUBE_NODE_HEIGHT_CM = Units.inchesToMeters(23.5) * 100.0;
     private static final double LOW_CUBE_NODE_HEIGHT_CM = 0.0;
 
-    private static final double CLEARANCE_MARGIN_CM = Units.inchesToMeters(2.0) / 100.0;
+    private static final double CLEARANCE_MARGIN_CM = Units.inchesToMeters(2.0) * 100.0;
 
     public static final double ARM_HIGH_CONE_HEIGHT_CM = HIGH_CONE_NODE_HEIGHT_CM + CLEARANCE_MARGIN_CM;
     public static final double ARM_MIDDLE_CONE_HEIGHT_CM = MIDDLE_CONE_NODE_HEIGHT_CM + CLEARANCE_MARGIN_CM;
@@ -144,13 +144,13 @@ public final class Constants {
     private static final double CONE_DIAMETER_CM = 21.0;
     private static final double CUBE_WIDTH_CM = 24.0;
 
-    public static final double ARM_HIGH_CONE_REACH_CM = (Units.inchesToMeters(39.75) / 100.0)
+    public static final double ARM_HIGH_CONE_REACH_CM = (Units.inchesToMeters(39.75) * 100.0)
             + (CONE_DIAMETER_CM / 2.0);
-    public static final double ARM_MIDDLE_CONE_REACH_CM = (Units.inchesToMeters(22.75) / 100.0)
+    public static final double ARM_MIDDLE_CONE_REACH_CM = (Units.inchesToMeters(22.75) * 100.0)
             + (CONE_DIAMETER_CM / 2.0);
-    public static final double ARM_LOW_CONE_REACH_CM = (Units.inchesToMeters(8.0) / 100.0) + (CONE_DIAMETER_CM / 2.0);
+    public static final double ARM_LOW_CONE_REACH_CM = (Units.inchesToMeters(8.0) * 100.0) + (CONE_DIAMETER_CM / 2.0);
 
-    public static final double ARM_HIGH_CUBE_REACH_CM = (Units.inchesToMeters(39.75) / 100.0) + (CUBE_WIDTH_CM / 2.0);
-    public static final double ARM_MIDDLE_CUBE_REACH_CM = (Units.inchesToMeters(22.75) / 100.0) + (CUBE_WIDTH_CM / 2.0);
-    public static final double ARM_LOW_CUBE_REACH_CM = (Units.inchesToMeters(8.0) / 100.0) + (CUBE_WIDTH_CM / 2.0);
+    public static final double ARM_HIGH_CUBE_REACH_CM = (Units.inchesToMeters(39.75) * 100.0) + (CUBE_WIDTH_CM / 2.0);
+    public static final double ARM_MIDDLE_CUBE_REACH_CM = (Units.inchesToMeters(22.75) * 100.0) + (CUBE_WIDTH_CM / 2.0);
+    public static final double ARM_LOW_CUBE_REACH_CM = (Units.inchesToMeters(8.0) * 100.0) + (CUBE_WIDTH_CM / 2.0);
 }
