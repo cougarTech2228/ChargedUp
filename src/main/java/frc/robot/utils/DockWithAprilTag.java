@@ -77,8 +77,6 @@ public class DockWithAprilTag implements Runnable {
 
         if (RobotContainer.getAprilTagManager().getTagID() == m_aprilTagId) {
 
-            // m_startTime = Timer.getFPGATimestamp();
-
             m_forwardController.setGoal(0.0);
             m_sidewaysController.setGoal(0.0);
             m_turnController.enableContinuousInput(180, -180);
@@ -196,8 +194,6 @@ public class DockWithAprilTag implements Runnable {
                 // Check to see if we're within docking distance
                 if (distanceToTarget < DOCKING_DISTANCE_GOAL_METERS) {
                     System.out.println("Docked with target. Yipee!!!!!");
-                    // System.out
-                    //         .println("Command completed in " + (Timer.getFPGATimestamp() - m_startTime) + " seconds");
                     break;
                 }
 

@@ -11,11 +11,12 @@ public class StrafeCommand extends CommandBase {
     private boolean m_isDone;
 
     double m_currentEncoderCount;
-    double m_startCount;
+    double m_lastEncoderCount;
+    double m_startEncoderCount;
     double m_distanceInEncoderCounts;
+    int m_robotNotMovingCount;
 
     boolean m_accountForAprilTag;
-    boolean m_hasStartedMoving;
 
     // Based on a 4" swerve wheel
     private final static double WHEEL_CIRCUMFERENCE_CM = 31.9278;
@@ -41,6 +42,8 @@ public class StrafeCommand extends CommandBase {
             System.out.println("ERROR: Speed value passed into StrafeCommand out of [-1, 1]");
             m_speed = 0.0;
         }
+
+        addRequirements(RobotContainer.getDrivetrainSubsystem());
     }
 
     @Override
@@ -56,12 +59,13 @@ public class StrafeCommand extends CommandBase {
 
         System.out.println("Strafe Command starting");
         m_isDone = false;
-        m_hasStartedMoving = false;
 
         m_distanceInEncoderCounts = ((m_distanceCM / WHEEL_CIRCUMFERENCE_CM) * TICKS_PER_ROTATION);
 
         m_currentEncoderCount = RobotContainer.getDrivetrainSubsystem().getEncoderCount();
-        m_startCount = m_currentEncoderCount;
+        m_startEncoderCount = m_currentEncoderCount;
+        m_lastEncoderCount = m_currentEncoderCount;
+        m_robotNotMovingCount = 0;
 
         // System.out.println("Distance in encoder count to travel: " +
         // m_distanceInEncoderCounts);
@@ -76,20 +80,16 @@ public class StrafeCommand extends CommandBase {
 
         m_currentEncoderCount = RobotContainer.getDrivetrainSubsystem().getEncoderCount();
 
-        if (m_currentEncoderCount > m_startCount) {
-            m_hasStartedMoving = true;
-        }
-
-        // System.out.println("m_currentEncoderCount = " + m_currentEncoderCount + "
-        // m_startCount: " + m_startCount);
+        System.out
+                .println("m_currentEncoderCount = " + m_currentEncoderCount + " m_startCount: " + m_startEncoderCount);
     }
 
     @Override
     public boolean isFinished() {
 
         // Checks for both encoder count directions
-        if ((m_currentEncoderCount <= (m_startCount - m_distanceInEncoderCounts)) ||
-                (m_currentEncoderCount >= (m_startCount + m_distanceInEncoderCounts))) {
+        if ((m_currentEncoderCount <= (m_startEncoderCount - m_distanceInEncoderCounts)) ||
+                (m_currentEncoderCount >= (m_startEncoderCount + m_distanceInEncoderCounts))) {
             RobotContainer.getDrivetrainSubsystem().stopMotors();
             RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
             System.out.println("StrafeCommand finished");
@@ -99,10 +99,21 @@ public class StrafeCommand extends CommandBase {
         // If we've started moving but then stop moving due to some unforseen issue
         // like being blocked by another robot or field element, we need to end this
         // command.
-        // if ((m_startCount != m_currentEncoderCount) && (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() == 0)) {
-        //     System.out.println("Robot has stopped moving...StrafeCommand finished");
-        //     m_isDone = true;
-        // }
+        if ((m_startEncoderCount != m_currentEncoderCount) &&
+                (m_lastEncoderCount == m_currentEncoderCount)) {
+
+            // Because of the CAN bus utilization, we've turned down the frequency
+            // at which encoder counts are reported for the Falcon 500s. We need
+            // to wait a few periodic cycles to make sure that the robot has really
+            // stopped moving.
+            if (m_robotNotMovingCount++ > 2) {
+                System.out.println("Robot is obstructed...StrafeCommand finished");
+                m_robotNotMovingCount = 0;
+                m_isDone = true;
+            }
+        } else {
+            m_lastEncoderCount = m_currentEncoderCount;
+        }
 
         return m_isDone;
     }

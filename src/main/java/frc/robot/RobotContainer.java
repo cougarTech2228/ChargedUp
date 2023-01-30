@@ -16,7 +16,6 @@ import frc.robot.commands.AutoOneCommand;
 import frc.robot.commands.AutoThreeCommand;
 import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.StrafeCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
