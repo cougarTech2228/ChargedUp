@@ -23,7 +23,6 @@ public class DockWithAprilTagCommand extends CommandBase {
 
     public DockWithAprilTagCommand(
             boolean isCameraForward,
-            boolean useGryoForPitchCorrection,
             ButtonBoardSubsystem buttonBoardSubsystem) {
         m_isCameraForward = isCameraForward;
         m_buttonBoardSubsystem = buttonBoardSubsystem;

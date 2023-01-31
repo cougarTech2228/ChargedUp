@@ -1,7 +1,6 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -9,13 +8,10 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 public class StrafeCommand extends CommandBase {
     private double m_distanceCM;
     private double m_speed;
-    private boolean m_isDone;
 
     double m_currentEncoderCount;
-    double m_lastEncoderCount;
     double m_startEncoderCount;
     double m_distanceInEncoderCounts;
-    int m_robotNotMovingCount;
 
     boolean m_accountForAprilTag;
 
@@ -29,8 +25,10 @@ public class StrafeCommand extends CommandBase {
      * 
      * @param distance Distance in CM to drive, should always be positive
      * @param speed    speed from [-1, 1]
-     *                 negative speed goes right (FOV), positive speed goes left
-     *                 (FOV)
+     *                 For Field Oriented View (FOV) mode in Teleop, negative
+     *                 speed goes right, positive speed goes left.
+     *                 For Robot Oriented View mode in Autonomous mode,
+     *                 negative speed goes left, positive speed goes right.
      * @throws Exception
      */
     public StrafeCommand(double distanceCM, double speed, boolean accountForAprilTag) {
@@ -50,24 +48,23 @@ public class StrafeCommand extends CommandBase {
     @Override
     public void initialize() {
 
-        // Feild Oriented is inverted for auto, need to invert speed
-        if(DriverStation.isAutonomous()){
-            m_speed *= -1.0;
-        }
-
-
         // If we're strafing away from an April Tag and it's not a manual strafe from
         // the Button Board's joystick, use the last recorded Tx value from the April
         // Tag detection to make a better estimate on how far we need to strafe in
         // order to line up with the Cone Nodes.
         if (m_accountForAprilTag) {
             double offsetInCm = RobotContainer.getAprilTagManager().getTX() * 100.0;
-            System.out.println("offsetInCm: " + offsetInCm);
+            // System.out.println("offsetInCm: " + offsetInCm);
 
             // If we're strafing Right ...
             if (m_speed < 0.0) {
 
+                // Auto is not FOV, need to invert control direction/speed
+                // if (DriverStation.isAutonomous()) {
+                // System.out.println("Strafing Left");
+                // } else {
                 // System.out.println("Strafing Right");
+                // }
 
                 // If offset is positive, subtract from constant, otherwise add to constant
                 if (offsetInCm < 0.0) {
@@ -75,10 +72,15 @@ public class StrafeCommand extends CommandBase {
                 } else {
                     m_distanceCM -= Math.abs(offsetInCm);
                 }
-            } else { 
-                
+            } else {
+
+                // Auto is not FOV, need to invert control direction/speed
+                // if (DriverStation.isAutonomous()) {
+                // System.out.println("Strafing Right");
+                // } else {
                 // System.out.println("Strafing Left");
-                
+                // }
+
                 // We're strafing Left ...
                 // If offset is positive, add to constant, otherwise subtract from constant
                 if (offsetInCm > 0.0) {
@@ -90,18 +92,11 @@ public class StrafeCommand extends CommandBase {
         }
 
         System.out.println("Strafe Command starting");
-        m_isDone = false;
 
         m_distanceInEncoderCounts = ((m_distanceCM / WHEEL_CIRCUMFERENCE_CM) * TICKS_PER_ROTATION);
 
         m_currentEncoderCount = RobotContainer.getDrivetrainSubsystem().getEncoderCount();
         m_startEncoderCount = m_currentEncoderCount;
-        m_lastEncoderCount = m_currentEncoderCount;
-        m_robotNotMovingCount = 0;
-
-        System.out.println("Distance in cm to travel: " + m_distanceCM);
-        // System.out.println("Distance in encoder counts to travel: " +
-        // m_distanceInEncoderCounts);
     }
 
     @Override
@@ -116,37 +111,15 @@ public class StrafeCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-
         // Checks for both encoder count directions
-        if ((m_currentEncoderCount <= (m_startEncoderCount - m_distanceInEncoderCounts)) ||
-                (m_currentEncoderCount >= (m_startEncoderCount + m_distanceInEncoderCounts))) {
-            RobotContainer.getDrivetrainSubsystem().stopMotors();
-            RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
-            System.out.println("StrafeCommand finished");
-            // System.out.println("Start: " + m_startEncoderCount + " Distance: " + m_distanceInEncoderCounts + " Current: " + m_currentEncoderCount);
-            System.out.println("True Distance: " + (m_currentEncoderCount - m_startEncoderCount));
-            m_isDone = true;
-        }
+        return ((m_currentEncoderCount <= (m_startEncoderCount - m_distanceInEncoderCounts)) ||
+                (m_currentEncoderCount >= (m_startEncoderCount + m_distanceInEncoderCounts)));
+    }
 
-        // // If we've started moving but then stop moving due to some unforseen issue
-        // // like being blocked by another robot or field element, we need to end this
-        // // command.
-        // if ((m_startEncoderCount != m_currentEncoderCount) &&
-        //         (m_lastEncoderCount == m_currentEncoderCount)) {
-
-        //     // Because of the CAN bus utilization, we've turned down the frequency
-        //     // at which encoder counts are reported for the Falcon 500s. We need
-        //     // to wait a few periodic cycles to make sure that the robot has really
-        //     // stopped moving.
-        //     if (m_robotNotMovingCount++ > 3) {
-        //         System.out.println("Robot is obstructed...StrafeCommand finished");
-        //         m_robotNotMovingCount = 0;
-        //         m_isDone = true;
-        //     }
-        // } else {
-        //     m_lastEncoderCount = m_currentEncoderCount;
-        // }
-
-        return m_isDone;
+    @Override
+    public void end(boolean interrupted) {
+        RobotContainer.getDrivetrainSubsystem().stopMotors();
+        RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
+        System.out.println("StrafeCommand finished");
     }
 }
