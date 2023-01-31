@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
+import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
@@ -57,15 +58,22 @@ public class StrafeCommand extends CommandBase {
             double offsetInCm = RobotContainer.getAprilTagManager().getTX() * 100.0;
             System.out.println("offsetInCm: " + offsetInCm);
 
-            // If we're strafing right ...
-            if (m_speed < 1.0) {
+            // If we're strafing Right ...
+            if (RobotContainer.getShuffleboardSubsystem().getStagedConeOffsetPosition() == Constants.ConeOffsetPosition.Right) {
+
+                System.out.println("Strafing Right");
+
                 // If offset is positive, subtract from constant, otherwise add to constant
                 if (offsetInCm < 0.0) {
-                    m_distanceCM -= Math.abs(offsetInCm);
-                } else {
                     m_distanceCM += Math.abs(offsetInCm);
+                } else {
+                    m_distanceCM -= Math.abs(offsetInCm);
                 }
-            } else { // We're strafing left ...
+            } else { 
+                
+                System.out.println("Strafing Left");
+                
+                // We're strafing Left ...
                 // If offset is positive, add to constant, otherwise subtract from constant
                 if (offsetInCm > 0.0) {
                     m_distanceCM += Math.abs(offsetInCm);

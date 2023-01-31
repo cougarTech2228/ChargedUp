@@ -365,7 +365,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         getHighLeftConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("High Left Cone"),
                         new DockWithAprilTagCommand(true, true, this),
-                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
                         new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
@@ -383,7 +383,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         getHighRightConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("High Right Cone"),
                         new DockWithAprilTagCommand(true, true, this),
-                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true),
                         new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
@@ -394,7 +394,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         getMiddleLeftConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("Middle Left Cone"),
                         new DockWithAprilTagCommand(true, true, this),
-                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
                        new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_MIDDLE_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_MIDDLE_CONE_REACH_CM)),
@@ -412,7 +412,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         getMiddleRightConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("Middle Right Cone"),
                             new DockWithAprilTagCommand(true, true, this),
-                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true),
                         new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_MIDDLE_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_MIDDLE_CONE_REACH_CM)),
@@ -423,7 +423,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         getLowLeftConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("Low Left Cone"),
                         new DockWithAprilTagCommand(true, true, this),
-                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
                         new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_LOW_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_LOW_CONE_REACH_CM)),
@@ -441,7 +441,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         getLowRightConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("Low Right Cone"),
                          new DockWithAprilTagCommand(true, true, this),
-                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true),
                         new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_LOW_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_LOW_CONE_REACH_CM)),

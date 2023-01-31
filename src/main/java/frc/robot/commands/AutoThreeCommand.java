@@ -61,10 +61,10 @@ public class AutoThreeCommand extends SequentialCommandGroup {
                 new SelectCommand(
                         Map.ofEntries(
                                 Map.entry(CommandSelector.STRAFE_LEFT,
-                                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
+                                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                                 true)),
                                 Map.entry(CommandSelector.STRAFE_RIGHT,
-                                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
+                                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                                 true)),
                                 Map.entry(CommandSelector.STRAFE_NONE,
                                         new PrintCommand("We're already lined up, no strafing necessary"))),
