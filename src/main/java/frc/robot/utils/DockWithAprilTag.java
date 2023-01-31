@@ -12,7 +12,7 @@ import frc.robot.RobotContainer;
 public class DockWithAprilTag implements Runnable {
 
     private double m_aprilTagId;
-    private boolean m_isCameraForward;
+    private boolean m_isFOV;
 
     private boolean m_hasStartedMoving;
 
@@ -62,10 +62,10 @@ public class DockWithAprilTag implements Runnable {
     // private double m_startTime = 0;
 
     public DockWithAprilTag(
-            boolean isCameraForward,
+            boolean isFOV,
             double aprilTagId) {
 
-        m_isCameraForward = isCameraForward;
+        m_isFOV = isFOV;
         m_aprilTagId = aprilTagId;
     }
 
@@ -157,19 +157,20 @@ public class DockWithAprilTag implements Runnable {
                 // System.out.println("Current heading: " +
                 // RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees());
 
-                if (!m_isCameraForward) {
-                    chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
-                            sidewaysVelocity,
-                            m_turnController.calculate(
-                                    RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees(),
-                                    PITCH_CORRECTION_GYRO_ANGLE),
-                            RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
-                } else {
+                if (m_isFOV) {
                     chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
                             -sidewaysVelocity,
                             m_turnController.calculate(
                                     ((RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees()
                                             + 360.0) % 360.0) - 180.0,
+                                    PITCH_CORRECTION_GYRO_ANGLE),
+                            RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
+                } else {
+
+                    chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
+                            sidewaysVelocity,
+                            m_turnController.calculate(
+                                    RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees(),
                                     PITCH_CORRECTION_GYRO_ANGLE),
                             RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
                 }
