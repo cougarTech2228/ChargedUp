@@ -8,6 +8,7 @@ import java.util.Map;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.PigeonIMU;
@@ -297,6 +298,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
      */
     public double getEncoderCount() {
         return m_backLeftDriveMotor.getSelectedSensorPosition();
+    }
+
+    public int getDriveMotorsStatusFramePeriod() {
+        return m_backLeftDriveMotor.getStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0);
+    }
+
+    public void setDriveMotorStatusFramePeriod(int period) {
+        System.out.println("setDriveMotorStatusFramePeriod: " + period);
+        m_backLeftDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, period);
     }
 
     private void calculateEncoderRoC() {

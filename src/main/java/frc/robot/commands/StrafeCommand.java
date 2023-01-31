@@ -15,11 +15,18 @@ public class StrafeCommand extends CommandBase {
 
     boolean m_accountForAprilTag;
 
+    int m_driveMotorStatusFramePeriod;
+
     // Based on a 4" swerve wheel
     private final static double WHEEL_CIRCUMFERENCE_CM = 31.9278;
 
     // Falcon ticks per rotation is 2048 * SDS Mk4i Gear Ratio of 6.75:1
     private final static double TICKS_PER_ROTATION = 2048.0 * 6.75;
+
+    // We need to increase the frequency of the encoder status messages
+    // on the drive motors to get a consistently accurate 'distance
+    // covered' measurement.
+    private final static int STATUS_FRAME_PERIOD = 10;
 
     /**
      * 
@@ -33,20 +40,28 @@ public class StrafeCommand extends CommandBase {
      */
     public StrafeCommand(double distanceCM, double speed, boolean accountForAprilTag) {
 
-        m_distanceCM = Math.abs(distanceCM);
+        m_distanceCM = distanceCM;
         m_speed = speed;
         m_accountForAprilTag = accountForAprilTag;
+    }
+
+    @Override
+    public void initialize() {
+
+        System.out.println("Strafe Command starting");
+
+        m_distanceCM = Math.abs(m_distanceCM);
 
         if (m_speed < -1.0 || m_speed > 1.0) {
             System.out.println("ERROR: Speed value passed into StrafeCommand out of [-1, 1]");
             m_speed = 0.0;
         }
 
-        addRequirements(RobotContainer.getDrivetrainSubsystem());
-    }
+        // Store the current value for the status frame period
+        m_driveMotorStatusFramePeriod = RobotContainer.getDrivetrainSubsystem().getDriveMotorsStatusFramePeriod();
 
-    @Override
-    public void initialize() {
+        // Increase the status frame period just for the life of this command
+        RobotContainer.getDrivetrainSubsystem().setDriveMotorStatusFramePeriod(STATUS_FRAME_PERIOD);
 
         // If we're strafing away from an April Tag and it's not a manual strafe from
         // the Button Board's joystick, use the last recorded Tx value from the April
@@ -66,7 +81,6 @@ public class StrafeCommand extends CommandBase {
                 // System.out.println("Strafing Right");
                 // }
 
-                // If offset is positive, subtract from constant, otherwise add to constant
                 if (offsetInCm < 0.0) {
                     m_distanceCM += Math.abs(offsetInCm);
                 } else {
@@ -81,8 +95,6 @@ public class StrafeCommand extends CommandBase {
                 // System.out.println("Strafing Left");
                 // }
 
-                // We're strafing Left ...
-                // If offset is positive, add to constant, otherwise subtract from constant
                 if (offsetInCm > 0.0) {
                     m_distanceCM += Math.abs(offsetInCm);
                 } else {
@@ -90,8 +102,6 @@ public class StrafeCommand extends CommandBase {
                 }
             }
         }
-
-        System.out.println("Strafe Command starting");
 
         m_distanceInEncoderCounts = ((m_distanceCM / WHEEL_CIRCUMFERENCE_CM) * TICKS_PER_ROTATION);
 
@@ -120,6 +130,10 @@ public class StrafeCommand extends CommandBase {
     public void end(boolean interrupted) {
         RobotContainer.getDrivetrainSubsystem().stopMotors();
         RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
+
+        // Return the status frame period back to its original value
+        RobotContainer.getDrivetrainSubsystem().setDriveMotorStatusFramePeriod(m_driveMotorStatusFramePeriod);
+
         System.out.println("StrafeCommand finished");
     }
 }

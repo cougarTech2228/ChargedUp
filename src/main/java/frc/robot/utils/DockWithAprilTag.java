@@ -112,7 +112,7 @@ public class DockWithAprilTag implements Runnable {
                 // like being blocked by another robot or field element, we need to kill the
                 // thread.
                 if (m_hasStartedMoving && (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() == 0)) {
-                    System.out.println("Robot has stopped moving...");
+                    System.out.println("Robot is blocked and has stopped moving...");
                     break;
                 }
 
