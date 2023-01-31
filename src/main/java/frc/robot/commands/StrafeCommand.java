@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
@@ -50,6 +51,12 @@ public class StrafeCommand extends CommandBase {
     @Override
     public void initialize() {
 
+        // Feild Oriented is inverted for auto, need to invert speed
+        if(DriverStation.isAutonomous()){
+            m_speed *= -1.0;
+        }
+
+
         // If we're strafing away from an April Tag and it's not a manual strafe from
         // the Button Board's joystick, use the last recorded Tx value from the April
         // Tag detection to make a better estimate on how far we need to strafe in
@@ -59,7 +66,7 @@ public class StrafeCommand extends CommandBase {
             System.out.println("offsetInCm: " + offsetInCm);
 
             // If we're strafing Right ...
-            if (RobotContainer.getShuffleboardSubsystem().getStagedConeOffsetPosition() == Constants.ConeOffsetPosition.Right) {
+            if (m_speed < 0.0) {
 
                 System.out.println("Strafing Right");
 
@@ -117,6 +124,8 @@ public class StrafeCommand extends CommandBase {
             RobotContainer.getDrivetrainSubsystem().stopMotors();
             RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
             System.out.println("StrafeCommand finished");
+            // System.out.println("Start: " + m_startEncoderCount + " Distance: " + m_distanceInEncoderCounts + " Current: " + m_currentEncoderCount);
+            System.out.println("True Distance: " + (m_currentEncoderCount - m_startEncoderCount));
             m_isDone = true;
         }
 
