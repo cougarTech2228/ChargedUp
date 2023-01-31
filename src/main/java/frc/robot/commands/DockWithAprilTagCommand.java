@@ -11,17 +11,14 @@ import frc.robot.Constants;
 public class DockWithAprilTagCommand extends CommandBase {
     private double m_aprilTagId;
     private boolean m_isCameraForward;
-    private boolean m_useGryoForPitchCorrection;
     private ButtonBoardSubsystem m_buttonBoardSubsystem;
 
     private Runnable m_dockWithAprilTagRunnable;
     private Thread m_dockWithAprilTagThread;
 
     public DockWithAprilTagCommand(
-            boolean isCameraForward,
-            boolean useGryoForPitchCorrection) {
+            boolean isCameraForward) {
         m_isCameraForward = isCameraForward;
-        m_useGryoForPitchCorrection = useGryoForPitchCorrection;
     }
 
     public DockWithAprilTagCommand(
@@ -29,7 +26,6 @@ public class DockWithAprilTagCommand extends CommandBase {
             boolean useGryoForPitchCorrection,
             ButtonBoardSubsystem buttonBoardSubsystem) {
         m_isCameraForward = isCameraForward;
-        m_useGryoForPitchCorrection = useGryoForPitchCorrection;
         m_buttonBoardSubsystem = buttonBoardSubsystem;
     }
 
@@ -76,8 +72,7 @@ public class DockWithAprilTagCommand extends CommandBase {
 
         m_dockWithAprilTagRunnable = new DockWithAprilTag(
                 m_isCameraForward,
-                m_aprilTagId,
-                m_useGryoForPitchCorrection);
+                m_aprilTagId);
 
         m_dockWithAprilTagThread = new Thread(m_dockWithAprilTagRunnable, "DockWithAprilTagThread");
         m_dockWithAprilTagThread.start();

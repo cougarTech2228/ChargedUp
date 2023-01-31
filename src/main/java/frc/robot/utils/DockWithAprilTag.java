@@ -13,7 +13,6 @@ public class DockWithAprilTag implements Runnable {
 
     private double m_aprilTagId;
     private boolean m_isCameraForward;
-    private boolean m_useGryoForPitchCorrection;
 
     private boolean m_hasStartedMoving;
 
@@ -64,12 +63,10 @@ public class DockWithAprilTag implements Runnable {
 
     public DockWithAprilTag(
             boolean isCameraForward,
-            double aprilTagId,
-            boolean useGryoForPitchCorrection) {
+            double aprilTagId) {
 
         m_isCameraForward = isCameraForward;
-        m_aprilTagId = aprilTagId; 
-        m_useGryoForPitchCorrection = useGryoForPitchCorrection;
+        m_aprilTagId = aprilTagId;
     }
 
     public void run() {
@@ -157,36 +154,24 @@ public class DockWithAprilTag implements Runnable {
 
                 ChassisSpeeds chassisSpeeds;
 
-                // System.out.println("Current heading: " + RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees());
+                // System.out.println("Current heading: " +
+                // RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees());
 
                 if (!m_isCameraForward) {
-                    if (m_useGryoForPitchCorrection) {
-                        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
-                                sidewaysVelocity,
-                                m_turnController.calculate(
-                                        RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees(),
-                                        PITCH_CORRECTION_GYRO_ANGLE),
-                                RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
-                    } else {
-                        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
-                                sidewaysVelocity,
-                                0.0,
-                                RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
-                    }
+                    chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
+                            sidewaysVelocity,
+                            m_turnController.calculate(
+                                    RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees(),
+                                    PITCH_CORRECTION_GYRO_ANGLE),
+                            RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
                 } else {
-                    if (m_useGryoForPitchCorrection) {
-                        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
-                                -sidewaysVelocity,
-                                m_turnController.calculate(
-                                        ((RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees() + 360.0) % 360.0) - 180.0,
-                                        PITCH_CORRECTION_GYRO_ANGLE),
-                                RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
-                    } else {
-                        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
-                                -sidewaysVelocity,
-                                0.0,
-                                RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
-                    }
+                    chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
+                            -sidewaysVelocity,
+                            m_turnController.calculate(
+                                    ((RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees()
+                                            + 360.0) % 360.0) - 180.0,
+                                    PITCH_CORRECTION_GYRO_ANGLE),
+                            RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
                 }
 
                 RobotContainer.getDrivetrainSubsystem().drive(chassisSpeeds);

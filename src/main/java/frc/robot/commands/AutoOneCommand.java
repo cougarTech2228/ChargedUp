@@ -58,7 +58,7 @@ public class AutoOneCommand extends SequentialCommandGroup {
                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto1_back",
                         m_eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new DockWithAprilTagCommand(false, true),
+                new DockWithAprilTagCommand(false),
                 new SelectCommand(
                         Map.ofEntries(
                                 Map.entry(CommandSelector.STRAFE_LEFT,

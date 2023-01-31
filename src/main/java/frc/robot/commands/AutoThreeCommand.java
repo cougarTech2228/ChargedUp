@@ -10,7 +10,6 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
-import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.utils.OutPathFileNameChooser;
 import frc.robot.utils.PlacePieceCommandChooser;
@@ -58,7 +57,7 @@ public class AutoThreeCommand extends SequentialCommandGroup {
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto3_back", m_eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new DockWithAprilTagCommand(false, true),
+                new DockWithAprilTagCommand(false),
                 new SelectCommand(
                         Map.ofEntries(
                                 Map.entry(CommandSelector.STRAFE_LEFT,
