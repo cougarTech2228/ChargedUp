@@ -71,6 +71,7 @@ public class AutoOneCommand extends SequentialCommandGroup {
                                         new PrintCommand("We're already lined up, no strafing necessary"))),
                         this::selectStagedStrafe),
                 m_placeStagedPieceSequentialCommandGroup,
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().reverseGyroscope()),
                 new InstantCommand(() -> printEndCommand()));
     }
 

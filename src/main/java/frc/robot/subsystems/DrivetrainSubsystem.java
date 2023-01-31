@@ -334,6 +334,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_pigeon.setFusedHeading(0.0);
     }
 
+    public void reverseGyroscope() {
+        m_pigeon.setFusedHeading(11520.0);
+    }
+
     public Rotation2d getGyroscopeRotation() {
         return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
     }

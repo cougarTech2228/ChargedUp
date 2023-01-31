@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
+import frc.robot.Robot;
 import frc.robot.RobotContainer;
 import frc.robot.utils.OutPathFileNameChooser;
 import frc.robot.utils.PlacePieceCommandChooser;
@@ -70,6 +71,7 @@ public class AutoThreeCommand extends SequentialCommandGroup {
                                         new PrintCommand("We're already lined up, no strafing necessary"))),
                         this::selectStagedStrafe),
                 m_placeStagedPieceSequentialCommandGroup,
+                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().reverseGyroscope()),
                 new InstantCommand(() -> printEndCommand()));
     }
 

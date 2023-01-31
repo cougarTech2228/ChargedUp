@@ -42,6 +42,7 @@ public class AutoTwoCommand extends SequentialCommandGroup {
                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto2_back",
                         m_eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                        new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().reverseGyroscope()),
                 new InstantCommand(() -> printEndCommand()));
     }
 

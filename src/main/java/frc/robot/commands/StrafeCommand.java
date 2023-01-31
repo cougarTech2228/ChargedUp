@@ -68,7 +68,7 @@ public class StrafeCommand extends CommandBase {
             // If we're strafing Right ...
             if (m_speed < 0.0) {
 
-                System.out.println("Strafing Right");
+                // System.out.println("Strafing Right");
 
                 // If offset is positive, subtract from constant, otherwise add to constant
                 if (offsetInCm < 0.0) {
@@ -78,7 +78,7 @@ public class StrafeCommand extends CommandBase {
                 }
             } else { 
                 
-                System.out.println("Strafing Left");
+                // System.out.println("Strafing Left");
                 
                 // We're strafing Left ...
                 // If offset is positive, add to constant, otherwise subtract from constant
