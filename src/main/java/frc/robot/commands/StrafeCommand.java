@@ -15,18 +15,18 @@ public class StrafeCommand extends CommandBase {
 
     boolean m_accountForAprilTag;
 
-    int m_driveMotorStatusFramePeriod;
-
     // Based on a 4" swerve wheel
     private final static double WHEEL_CIRCUMFERENCE_CM = 31.9278;
 
     // Falcon ticks per rotation is 2048 * SDS Mk4i Gear Ratio of 6.75:1
-    private final static double TICKS_PER_ROTATION = 2048.0 * 6.75;
+    //private final static double TICKS_PER_ROTATION = 2048.0 * 6.75; // 13824
+    private final static double TICKS_PER_ROTATION = 12900.00;
 
     // We need to increase the frequency of the encoder status messages
     // on the drive motors to get a consistently accurate 'distance
     // covered' measurement.
-    private final static int STATUS_FRAME_PERIOD = 10;
+    private final static int ORIGINAL_FRAME_STATUS_PERIOD = 20;
+    private final static int FAST_STATUS_FRAME_PERIOD = 10;
 
     /**
      * 
@@ -57,11 +57,9 @@ public class StrafeCommand extends CommandBase {
             m_speed = 0.0;
         }
 
-        // Store the current value for the status frame period
-        m_driveMotorStatusFramePeriod = RobotContainer.getDrivetrainSubsystem().getDriveMotorsStatusFramePeriod();
-
         // Increase the status frame period just for the life of this command
-        RobotContainer.getDrivetrainSubsystem().setDriveMotorStatusFramePeriod(STATUS_FRAME_PERIOD);
+        // in order to try to get more accuracy in the encoder tick count
+        RobotContainer.getDrivetrainSubsystem().setDriveMotorStatusFramePeriod(FAST_STATUS_FRAME_PERIOD);
 
         // If we're strafing away from an April Tag and it's not a manual strafe from
         // the Button Board's joystick, use the last recorded Tx value from the April
@@ -132,7 +130,7 @@ public class StrafeCommand extends CommandBase {
         RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
 
         // Return the status frame period back to its original value
-        RobotContainer.getDrivetrainSubsystem().setDriveMotorStatusFramePeriod(m_driveMotorStatusFramePeriod);
+        RobotContainer.getDrivetrainSubsystem().setDriveMotorStatusFramePeriod(ORIGINAL_FRAME_STATUS_PERIOD);
 
         System.out.println("StrafeCommand finished");
     }

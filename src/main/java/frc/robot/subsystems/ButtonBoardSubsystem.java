@@ -332,10 +332,10 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // **********************************
         getSubstationDockButton().onTrue(new SequentialCommandGroup(new PrintCommand("Docking with Substation"),
                 new InstantCommand(() -> setDockingStation()),
-                new DockWithAprilTagCommand(true, this),
-                new ConditionalCommand(new StrafeCommand(Constants.SUBSTATION_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
+                new DockWithAprilTagCommand(false, this),
+                new ConditionalCommand(new StrafeCommand(Constants.SUBSTATION_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                         true),
-                        new StrafeCommand(Constants.SUBSTATION_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
+                        new StrafeCommand(Constants.SUBSTATION_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
                         this::isLeftDockingStation),
                 new PrintCommand("TODO - Pick game piece off of shelf")));

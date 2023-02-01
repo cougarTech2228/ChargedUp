@@ -300,12 +300,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return m_backLeftDriveMotor.getSelectedSensorPosition();
     }
 
-    public int getDriveMotorsStatusFramePeriod() {
-        return m_backLeftDriveMotor.getStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0);
-    }
-
     public void setDriveMotorStatusFramePeriod(int period) {
-        System.out.println("setDriveMotorStatusFramePeriod: " + period);
         m_backLeftDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, period);
     }
 
