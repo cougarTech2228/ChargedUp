@@ -33,40 +33,40 @@ public class AutoOneCommand extends SequentialCommandGroup {
         OutPathFileNameChooser outPathFileNameChooser = new OutPathFileNameChooser();
         String outPathFileName = outPathFileNameChooser.getOutPathFileName();
 
-        addCommands(new InstantCommand(() -> printStartCommand()),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
-                        .setPathPlannerDriving(true)),
-                new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
-                new PlacePreloadedPieceCommand(),
-                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), outPathFileName,
-                        eventMap,
-                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto1_back",
-                        eventMap,
-                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
-                        .setPathPlannerDriving(false)),
-                new DockWithAprilTagCommand(false, true),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
-                        .setPathPlannerDriving(true)),
-                new SelectCommand(
-                        Map.ofEntries(
-                                Map.entry(CommandSelector.STRAFE_LEFT,
-                                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-                                                "strafe_left", eventMap,
-                                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true)),
-                                Map.entry(CommandSelector.STRAFE_RIGHT,
-                                        new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
-                                                "strafe_right", eventMap,
-                                                Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true)),
-                                Map.entry(CommandSelector.STRAFE_NONE,
-                                        new PrintCommand("We're already lined up, no strafing necessary"))),
-                        this::selectStagedStrafe),
-                new PlaceStagedPieceCommand(),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
-                        .setPathPlannerDriving(false)),
-                new InstantCommand(() -> printEndCommand()));
+        // addCommands(new InstantCommand(() -> printStartCommand()),
+        //         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
+        //         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
+        //                 .setPathPlannerDriving(true)),
+        //         new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
+        //         new PlacePreloadedPieceCommand(),
+        //         new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), outPathFileName,
+        //                 eventMap,
+        //                 Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+        //         new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto1_back",
+        //                 eventMap,
+        //                 Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+        //         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
+        //                 .setPathPlannerDriving(false)),
+        //         new DockWithAprilTagCommand(false, true),
+        //         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
+        //                 .setPathPlannerDriving(true)),
+        //         new SelectCommand(
+        //                 Map.ofEntries(
+        //                         Map.entry(CommandSelector.STRAFE_LEFT,
+        //                                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
+        //                                         "strafe_left", eventMap,
+        //                                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true)),
+        //                         Map.entry(CommandSelector.STRAFE_RIGHT,
+        //                                 new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(),
+        //                                         "strafe_right", eventMap,
+        //                                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true)),
+        //                         Map.entry(CommandSelector.STRAFE_NONE,
+        //                                 new PrintCommand("We're already lined up, no strafing necessary"))),
+        //                 this::selectStagedStrafe),
+        //         new PlaceStagedPieceCommand(),
+        //         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
+        //                 .setPathPlannerDriving(false)),
+        //         new InstantCommand(() -> printEndCommand()));
     }
 
     // Choose whether or not we have to strafe and in what direction based on

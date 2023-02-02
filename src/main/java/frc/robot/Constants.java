@@ -76,10 +76,21 @@ public final class Constants {
     // right steer offset
 
     public static final int DRIVETRAIN_PIGEON_ID = 61; // Set Pigeon ID
-
-    public static final int ARM_WINCH_MOTOR_ID = 00; // TODO - Need to determine CAN ID for this motor
-
     public static final double BAD_APRIL_TAG_ID = 2228;
+
+    // arm stuff
+    //public static final int ARM_WINCH_MOTOR_ID = 00; //(((******UNSURE IF NEEDED******)))
+    public static final int ELEVATOR_MOTOR_ID = 20; //TODO - Need to determine CAN ID for this motor
+    public static final int ELEVATOR_LOWER_LIMIT_DIO = 1;
+    public static final int ELEVATOR_UPPER_LIMIT_DIO = 0;
+    public static final double ELEVATOR_MOTOR_SPEED = .1; //TODO - Need to determine speed for this motor
+    public static final int EXTENDO_MOTOR_ID = 21; //TODO - Need to determine CAN ID for this motor
+    public static final int EXTENDO_HOME_LIMIT_DIO = 3;
+    public static final double EXTENDO_MOTOR_SPEED = .1; //TODO - Need to determine speed for this motor
+    public static final int ELEVATOR_ENCODER_COUNT_PER_INCH = 5023;
+    public static final int ELEVATOR_ENCODER_SPOT_FLOOR = 0; 
+    public static final int ELEVATOR_ENCODER_SPOT_MIDDLE = 4;
+    public static final int ELEVATOR_ENCODER_SPOT_TOP = 8;
 
     public enum PlacePosition {
         HighCone,

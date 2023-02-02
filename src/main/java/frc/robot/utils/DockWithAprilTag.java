@@ -109,17 +109,17 @@ public class DockWithAprilTag implements Runnable {
                     break;
                 }
 
-                if (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() > 0) {
-                    m_hasStartedMoving = true;
-                }
+                // if (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() > 0) {
+                //     m_hasStartedMoving = true;
+                // }
 
                 // If we've started moving but then stop moving due to some unforseen issue
                 // like being blocked by another robot or field element, we need to kill the
                 // thread.
-                if (m_hasStartedMoving && (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() == 0)) {
-                    System.out.println("Robot has stopped moving...");
-                    break;
-                }
+                // if (m_hasStartedMoving && (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() == 0)) {
+                //     System.out.println("Robot has stopped moving...");
+                //     break;
+                // }
 
                 double distanceToTarget = RobotContainer.getAprilTagManager().getTZ();
                 double offsetTargetDistance = RobotContainer.getAprilTagManager().getTX();
@@ -161,37 +161,37 @@ public class DockWithAprilTag implements Runnable {
 
                 // System.out.println("Current heading: " + RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees());
 
-                if (!m_isCameraForward) {
-                    if (m_useGryoForPitchCorrection) {
-                        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
-                                sidewaysVelocity,
-                                m_turnController.calculate(
-                                        RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees(),
-                                        PITCH_CORRECTION_GYRO_ANGLE),
-                                RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
-                    } else {
-                        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
-                                sidewaysVelocity,
-                                0.0,
-                                RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
-                    }
-                } else {
-                    if (m_useGryoForPitchCorrection) {
-                        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
-                                -sidewaysVelocity,
-                                -m_turnController.calculate(
-                                        RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees(),
-                                        PITCH_CORRECTION_GYRO_ANGLE),
-                                RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
-                    } else {
-                        chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
-                                -sidewaysVelocity,
-                                0.0,
-                                RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
-                    }
-                }
+                // if (!m_isCameraForward) {
+                //     if (m_useGryoForPitchCorrection) {
+                //         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
+                //                 sidewaysVelocity,
+                //                 m_turnController.calculate(
+                //                         RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees(),
+                //                         PITCH_CORRECTION_GYRO_ANGLE),
+                //                 RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
+                //     } else {
+                //         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
+                //                 sidewaysVelocity,
+                //                 0.0,
+                //                 RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
+                //     }
+                // } else {
+                //     if (m_useGryoForPitchCorrection) {
+                //         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
+                //                 -sidewaysVelocity,
+                //                 -m_turnController.calculate(
+                //                         RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees(),
+                //                         PITCH_CORRECTION_GYRO_ANGLE),
+                //                 RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
+                //     } else {
+                //         chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
+                //                 -sidewaysVelocity,
+                //                 0.0,
+                //                 RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
+                //     }
+                // }
 
-                RobotContainer.getDrivetrainSubsystem().drive(chassisSpeeds);
+                // RobotContainer.getDrivetrainSubsystem().drive(chassisSpeeds);
 
                 // Check to see if we're within docking distance
                 if (distanceToTarget < DOCKING_DISTANCE_GOAL_METERS) {
@@ -211,6 +211,6 @@ public class DockWithAprilTag implements Runnable {
             System.out.printf("April tag: %.0f not detected!\n", m_aprilTagId);
         }
 
-        RobotContainer.getDrivetrainSubsystem().stopMotors();
+        // RobotContainer.getDrivetrainSubsystem().stopMotors();
     }
 }

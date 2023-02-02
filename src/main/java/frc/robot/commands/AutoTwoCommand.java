@@ -24,21 +24,21 @@ public class AutoTwoCommand extends SequentialCommandGroup {
         OutPathFileNameChooser outPathFileNameChooser = new OutPathFileNameChooser();
         String outPathFileName = outPathFileNameChooser.getOutPathFileName();
 
-        addCommands(new InstantCommand(() -> printStartCommand()),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
-                        .setPathPlannerDriving(true)),
-                new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
-                new PlacePreloadedPieceCommand(),
-                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), outPathFileName,
-                        eventMap,
-                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto2_back",
-                        eventMap,
-                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
-                        .setPathPlannerDriving(false)),
-                new InstantCommand(() -> printEndCommand()));
+        // addCommands(new InstantCommand(() -> printStartCommand()),
+        //         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
+        //         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
+        //                 .setPathPlannerDriving(true)),
+        //         new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
+        //         new PlacePreloadedPieceCommand(),
+        //         new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), outPathFileName,
+        //                 eventMap,
+        //                 Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+        //         new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto2_back",
+        //                 eventMap,
+        //                 Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+        //         new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem()
+        //                 .setPathPlannerDriving(false)),
+        //         new InstantCommand(() -> printEndCommand()));
     }
      
     private void printStartCommand() {

@@ -9,7 +9,9 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.AutoOneCommand;
 import frc.robot.commands.AutoThreeCommand;
@@ -20,7 +22,9 @@ import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.utils.ButtonBoardManager;
 import frc.robot.utils.ShuffleboardManager;
 import frc.robot.utils.AprilTagManager;
-import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ExtendoSubsystem;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -33,7 +37,7 @@ import frc.robot.subsystems.ArmSubsystem;
  */
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
-    private final static DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+    // private final static DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
 
     private final static XboxController m_controller = new XboxController(0);
 
@@ -41,12 +45,14 @@ public class RobotContainer {
 
     private final static LEDStripSubsystem m_ledStripSubsystem = new LEDStripSubsystem();
 
-    private final static ArmSubsystem m_armSubsystem = new ArmSubsystem();
+    private final static ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
 
     private final static ShuffleboardTab m_autoConfigTab = Shuffleboard.getTab("Auto Config");
     private final static ShuffleboardManager m_shuffleboardManager = new ShuffleboardManager(m_autoConfigTab);
 
     private final static ButtonBoardManager m_buttonBoardManager = new ButtonBoardManager();
+
+    private final static ExtendoSubsystem m_extendo_subsystem = new ExtendoSubsystem();
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -62,14 +68,14 @@ public class RobotContainer {
         // Left stick X axis -> left and right movement
         // Right stick X axis -> rotation
         // isFieldOriented (true or false)
-        m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-                m_drivetrainSubsystem,
-                () -> -modifyAxis(m_controller.getLeftY()) * m_drivetrainSubsystem.getForwardAdjustment()
-                        * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-                () -> -modifyAxis(m_controller.getLeftX()) * m_drivetrainSubsystem.getSidewaysAdjustment()
-                        * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-                () -> -modifyAxis(m_controller.getRightX()) * m_drivetrainSubsystem.getRotationalAdjustment()
-                        * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
+        // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
+        //         m_drivetrainSubsystem,
+        //         () -> -modifyAxis(m_controller.getLeftY()) * m_drivetrainSubsystem.getForwardAdjustment()
+        //                 * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+        //         () -> -modifyAxis(m_controller.getLeftX()) * m_drivetrainSubsystem.getSidewaysAdjustment()
+        //                 * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+        //         () -> -modifyAxis(m_controller.getRightX()) * m_drivetrainSubsystem.getRotationalAdjustment()
+        //                 * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
 
         // Configure the button bindings
         configureButtonBindings();
@@ -86,10 +92,35 @@ public class RobotContainer {
     private void configureButtonBindings() {
 
         // Configure the XboxController buttons
-        new Trigger(m_controller::getBackButton) // Back button zeros the gyroscope
-                .onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
+        // new Trigger(m_controller::getBackButton) // Back button zeros the gyroscope
+        //         .onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
+        // new Trigger(m_controller::getAButton) // TESTING a button raises elevator
+        //         .onTrue(new InstantCommand(m_elevatorSubsystem::raiseElevator));
+        // new Trigger(m_controller::getBButton) // TESTING b button retracts elevator
+        //         .onTrue(new InstantCommand(m_elevatorSubsystem::lowerElevator));
+        // new Trigger(m_controller::getXButton) // TESTING x button extends arm
+        //         .onTrue(new InstantCommand(m_elevatorSubsystem::goToFloor));
+        // new Trigger(m_controller::getYButton) // TESTING y button retracts arm
+        //         .onTrue(new InstantCommand(m_elevatorSubsystem::goToTop));
 
         // Configure all the buttons and switches on the Custom Button Board
+        new Trigger(m_controller::getXButton).onTrue(
+            Commands.runOnce(() -> {
+                    
+                    double current_val = m_elevatorSubsystem.getMeasurement();
+                    System.out.println("X Button: current: " + current_val);
+                    m_elevatorSubsystem.setElevatorPosition(current_val - 5);
+                },
+                m_elevatorSubsystem));
+
+        new Trigger(m_controller::getYButton).onTrue(
+            Commands.runOnce(() -> {
+                    
+                    double current_val = m_elevatorSubsystem.getMeasurement();
+                    System.out.println("Y Button: current: " + current_val);
+                    m_elevatorSubsystem.setElevatorPosition(current_val + 5);
+                },
+                m_elevatorSubsystem));
         m_buttonBoardManager.configureButtonBindings();
     }
 
@@ -134,9 +165,9 @@ public class RobotContainer {
         return value;
     }
 
-    public static DrivetrainSubsystem getDrivetrainSubsystem() {
-        return m_drivetrainSubsystem;
-    }
+    // public static DrivetrainSubsystem getDrivetrainSubsystem() {
+    //     return m_drivetrainSubsystem;
+    // }
 
     public static AprilTagManager getAprilTagManager() {
         return m_aprilTagManager;
@@ -146,8 +177,8 @@ public class RobotContainer {
         return m_ledStripSubsystem;
     }
 
-    public static ArmSubsystem getArmSubsystem() {
-        return m_armSubsystem;
+    public static ElevatorSubsystem getArmSubsystem() {
+        return m_elevatorSubsystem;
     }
 
     public static ShuffleboardManager getShuffleboardManager() {

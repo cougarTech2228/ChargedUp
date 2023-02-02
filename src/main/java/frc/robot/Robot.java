@@ -63,7 +63,7 @@ public class Robot extends TimedRobot {
     public void disabledInit() {
         // Note that this may cause Falcon 500 errors at startup, shouldn't
         // be anything to worry about.
-        RobotContainer.getDrivetrainSubsystem().setMotorsToCoast();
+        // RobotContainer.getDrivetrainSubsystem().setMotorsToCoast();
         RobotContainer.getLEDStripSubsystem().resetStrip();
     }
 
@@ -77,8 +77,8 @@ public class Robot extends TimedRobot {
      */
     @Override
     public void autonomousInit() {
-        RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
-        RobotContainer.getDrivetrainSubsystem().primeDrivetrain();
+        // RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
+        // RobotContainer.getDrivetrainSubsystem().primeDrivetrain();
 
         m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
@@ -95,8 +95,8 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
-        RobotContainer.getDrivetrainSubsystem().primeDrivetrain();
+        // RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
+        // RobotContainer.getDrivetrainSubsystem().primeDrivetrain();
         
         // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to

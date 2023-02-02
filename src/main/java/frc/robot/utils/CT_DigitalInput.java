@@ -21,6 +21,8 @@ public class CT_DigitalInput {
 
     private boolean m_handleInterrupts;
     private String m_lastEdgeTriggered;
+
+    
     
     /**
      * The sole reason for seperate interrupt "state" flags (m_handleInterrupts and m_isInterruptLatched)
