@@ -125,7 +125,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private double m_tempEncoderCount = 0;
     private int m_encoderIteration = 0;
     private double m_encoderRateOfChange = 0;
-    private int m_encoderUpdateCounter = 0;
 
     private static final double ROC_DT_SECONDS = 0.02;
 
@@ -306,12 +305,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private void calculateEncoderRoC() {
         if(m_encoderIteration == (ROC_DT_SECONDS * 50)) {
-
-            double encoderCount = getEncoderCount();
-
-            m_encoderRateOfChange = (encoderCount - m_tempEncoderCount) / ROC_DT_SECONDS;
+            m_encoderRateOfChange = (getEncoderCount() - m_tempEncoderCount) / ROC_DT_SECONDS;
             m_encoderIteration = 0;
-            m_tempEncoderCount = encoderCount;
+            m_tempEncoderCount = getEncoderCount();
         } else {
             m_encoderIteration++;
         }
@@ -438,12 +434,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        // Calling calculateEncoderRoc every period causes loop overruns
-        // so we'll only do it once a second.
-        if (m_encoderUpdateCounter > 50) {
-            calculateEncoderRoC();
-            m_encoderUpdateCounter = 0;
-        }
+        calculateEncoderRoC();
 
         m_odometry.update(getGyroscopeRotation(), getSwerveModulePositions());
 

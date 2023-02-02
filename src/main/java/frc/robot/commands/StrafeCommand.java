@@ -15,11 +15,13 @@ public class StrafeCommand extends CommandBase {
 
     boolean m_accountForAprilTag;
 
+    boolean m_hasStartedMoving;
+
     // Based on a 4" swerve wheel
     private final static double WHEEL_CIRCUMFERENCE_CM = 31.9278;
 
     // Falcon ticks per rotation is 2048 * SDS Mk4i Gear Ratio of 6.75:1
-    //private final static double TICKS_PER_ROTATION = 2048.0 * 6.75; // 13824
+    // private final static double TICKS_PER_ROTATION = 2048.0 * 6.75; // 13824
     private final static double TICKS_PER_ROTATION = 12900.00;
 
     // We need to increase the frequency of the encoder status messages
@@ -105,10 +107,16 @@ public class StrafeCommand extends CommandBase {
 
         m_currentEncoderCount = RobotContainer.getDrivetrainSubsystem().getEncoderCount();
         m_startEncoderCount = m_currentEncoderCount;
+
+        m_hasStartedMoving = false;
     }
 
     @Override
     public void execute() {
+        if (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() > 0.0) {
+            m_hasStartedMoving = true;
+        }
+
         RobotContainer.getDrivetrainSubsystem().drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0,
                 m_speed * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
                 0.0,
@@ -119,9 +127,15 @@ public class StrafeCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        // Checks for both encoder count directions
-        return ((m_currentEncoderCount <= (m_startEncoderCount - m_distanceInEncoderCounts)) ||
-                (m_currentEncoderCount >= (m_startEncoderCount + m_distanceInEncoderCounts)));
+        // Check to see if the robot has stopped moving prematurely
+        if (m_hasStartedMoving && (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() == 0.0)) {
+            System.out.println("Robot is obstructed, ending strafe command");
+            return true;
+        } else {
+            // Checks for both encoder count directions
+            return ((m_currentEncoderCount <= (m_startEncoderCount - m_distanceInEncoderCounts)) ||
+                    (m_currentEncoderCount >= (m_startEncoderCount + m_distanceInEncoderCounts)));
+        }
     }
 
     @Override
