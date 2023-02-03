@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.RobotContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -71,33 +72,30 @@ public class StrafeCommand extends CommandBase {
             offsetInCm = RobotContainer.getAprilTagManager().getTX() * 100.0;
             System.out.println("offsetInCm: " + offsetInCm);
 
-            // correctedDistanceCM = m_distanceCM + offsetInCm;
-
-            // If we're strafing Right ...
             if (m_speed < 0.0) {
 
                 // Auto is not FOV, need to invert control direction/speed
-                // if (DriverStation.isAutonomous()) {
-                // System.out.println("Strafing Left");
-                // } else {
-                // System.out.println("Strafing Right");
-                // }
-
-                correctedDistanceCM -= offsetInCm;
+                if (DriverStation.isAutonomous()) {
+                    System.out.println("Strafing Left");
+                    correctedDistanceCM += offsetInCm;
+                } else {
+                    System.out.println("Strafing Right");
+                    correctedDistanceCM -= offsetInCm;
+                }
             } else {
 
                 // Auto is not FOV, need to invert control direction/speed
-                // if (DriverStation.isAutonomous()) {
-                // System.out.println("Strafing Right");
-                // } else {
-                // System.out.println("Strafing Left");
-                // }
-
-                correctedDistanceCM += offsetInCm;
+                if (DriverStation.isAutonomous()) {
+                    System.out.println("Strafing Right");
+                    correctedDistanceCM -= offsetInCm;
+                } else {
+                    System.out.println("Strafing Left");
+                    correctedDistanceCM += offsetInCm;
+                }
             }
         }
 
-        System.out.println("offsetInCm: " + offsetInCm + " Calc. m_distanceCM: " + correctedDistanceCM);
+        System.out.println("offsetInCm: " + offsetInCm + " correctedDistanceCM: " + correctedDistanceCM);
 
         m_distanceInEncoderCounts = ((correctedDistanceCM / WHEEL_CIRCUMFERENCE_CM) * TICKS_PER_ROTATION);
 
