@@ -96,16 +96,19 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
 
-        // TODO Let's change the zeroGyroscope call to the "A" button? instead of the
-        // tiny Back button
-        new Trigger(m_controller::getBackButton) // Back button zeros the gyroscope
+        // TODO get rid of this eventually once everyone is used to the new button
+        // assignments.
+        new Trigger(m_controller::getBackButton)
+                .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.zeroGyroscope()));
+
+        new Trigger(m_controller::getXButton)
                 .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.zeroGyroscope()));
 
         new Trigger(m_controller::getBButton)
                 .onTrue(new InstantCommand(() -> cancelAllCommands()));
 
-        new Trigger(m_controller::getYButton)
-                .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()));
+        // new Trigger(m_controller::getYButton)
+        // .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()));
 
         // Configure all the buttons and switches on the Custom Button Board
         m_buttonBoardSubsystem.configureButtonBindings();

@@ -83,6 +83,7 @@ public final class Constants {
     public static final int ARM_WINCH_MOTOR_ID = 59;
 
     public static final double BAD_APRIL_TAG_ID = 2228;
+    public static final double WAIT_TIME_AFTER_APRIL_TAG_DOCK_S = 0.3;
 
     public enum PlacePosition {
         HighCone,
