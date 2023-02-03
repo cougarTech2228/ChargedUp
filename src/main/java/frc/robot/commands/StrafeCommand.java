@@ -52,8 +52,6 @@ public class StrafeCommand extends CommandBase {
 
         System.out.println("Strafe Command starting");
 
-        m_distanceCM = Math.abs(m_distanceCM);
-
         if (m_speed < -1.0 || m_speed > 1.0) {
             System.out.println("ERROR: Speed value passed into StrafeCommand out of [-1, 1]");
             m_speed = 0.0;
@@ -63,13 +61,17 @@ public class StrafeCommand extends CommandBase {
         // in order to try to get more accuracy in the encoder tick count
         RobotContainer.getDrivetrainSubsystem().setDriveMotorStatusFramePeriod(FAST_STATUS_FRAME_PERIOD);
 
+        double correctedDistanceCM = m_distanceCM;
+        double offsetInCm = 0.0;
         // If we're strafing away from an April Tag and it's not a manual strafe from
         // the Button Board's joystick, use the last recorded Tx value from the April
         // Tag detection to make a better estimate on how far we need to strafe in
         // order to line up with the Cone Nodes.
         if (m_accountForAprilTag) {
-            double offsetInCm = RobotContainer.getAprilTagManager().getTX() * 100.0;
-            // System.out.println("offsetInCm: " + offsetInCm);
+            offsetInCm = RobotContainer.getAprilTagManager().getTX() * 100.0;
+            System.out.println("offsetInCm: " + offsetInCm);
+
+            // correctedDistanceCM = m_distanceCM + offsetInCm;
 
             // If we're strafing Right ...
             if (m_speed < 0.0) {
@@ -81,11 +83,7 @@ public class StrafeCommand extends CommandBase {
                 // System.out.println("Strafing Right");
                 // }
 
-                if (offsetInCm < 0.0) {
-                    m_distanceCM += Math.abs(offsetInCm);
-                } else {
-                    m_distanceCM -= Math.abs(offsetInCm);
-                }
+                correctedDistanceCM -= offsetInCm;
             } else {
 
                 // Auto is not FOV, need to invert control direction/speed
@@ -95,15 +93,13 @@ public class StrafeCommand extends CommandBase {
                 // System.out.println("Strafing Left");
                 // }
 
-                if (offsetInCm > 0.0) {
-                    m_distanceCM += Math.abs(offsetInCm);
-                } else {
-                    m_distanceCM -= Math.abs(offsetInCm);
-                }
+                correctedDistanceCM += offsetInCm;
             }
         }
 
-        m_distanceInEncoderCounts = ((m_distanceCM / WHEEL_CIRCUMFERENCE_CM) * TICKS_PER_ROTATION);
+        System.out.println("offsetInCm: " + offsetInCm + " Calc. m_distanceCM: " + correctedDistanceCM);
+
+        m_distanceInEncoderCounts = ((correctedDistanceCM / WHEEL_CIRCUMFERENCE_CM) * TICKS_PER_ROTATION);
 
         m_currentEncoderCount = RobotContainer.getDrivetrainSubsystem().getEncoderCount();
         m_startEncoderCount = m_currentEncoderCount;
@@ -113,9 +109,9 @@ public class StrafeCommand extends CommandBase {
 
     @Override
     public void execute() {
-        if (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() > 0.0) {
-            m_hasStartedMoving = true;
-        }
+        // if (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() > 0.0) {
+        // m_hasStartedMoving = true;
+        // }
 
         RobotContainer.getDrivetrainSubsystem().drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0,
                 m_speed * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
@@ -127,15 +123,17 @@ public class StrafeCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
+        // TODO - Sometimes the robot stops without being obstructed, WTF?
         // Check to see if the robot has stopped moving prematurely
-        if (m_hasStartedMoving && (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() == 0.0)) {
-            System.out.println("Robot is obstructed, ending strafe command");
-            return true;
-        } else {
-            // Checks for both encoder count directions
-            return ((m_currentEncoderCount <= (m_startEncoderCount - m_distanceInEncoderCounts)) ||
-                    (m_currentEncoderCount >= (m_startEncoderCount + m_distanceInEncoderCounts)));
-        }
+        // if (m_hasStartedMoving &&
+        // (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() == 0.0)) {
+        // System.out.println("Robot is obstructed, ending strafe command");
+        // return true;
+        // } else {
+        // Checks for both encoder count directions
+        return ((m_currentEncoderCount <= (m_startEncoderCount - m_distanceInEncoderCounts)) ||
+                (m_currentEncoderCount >= (m_startEncoderCount + m_distanceInEncoderCounts)));
+        // }
     }
 
     @Override

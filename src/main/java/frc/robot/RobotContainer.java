@@ -62,6 +62,8 @@ public class RobotContainer {
      */
     public RobotContainer() {
 
+        // DriverStation.silenceJoystickConnectionWarning(true);
+
         // This has to be called first to setup the Shuffleboard controls which
         // are used in the configureButtonBindings method.
         m_shuffleboardSubsystem.configureShuffleboard();
@@ -102,7 +104,7 @@ public class RobotContainer {
         new Trigger(m_controller::getBButton)
                 .onTrue(new InstantCommand(() -> cancelAllCommands()));
 
-        new Trigger(m_controller::getYButton) // Back button zeros the gyroscope
+        new Trigger(m_controller::getYButton)
                 .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()));
 
         // Configure all the buttons and switches on the Custom Button Board

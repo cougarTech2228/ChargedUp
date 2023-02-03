@@ -14,7 +14,7 @@ public class DockWithAprilTag implements Runnable {
     private double m_aprilTagId;
     private boolean m_isFOV;
 
-    private boolean m_hasStartedMoving;
+    //private boolean m_hasStartedMoving;
 
     private static double kDt = 0.02;
 
@@ -48,7 +48,7 @@ public class DockWithAprilTag implements Runnable {
 
     // We'll make this a little larger to give the AprilTag detector some time to
     // process
-    private static final double DOCKING_DISTANCE_GOAL_METERS = Units.inchesToMeters(24.0);
+    private static final double DOCKING_DISTANCE_GOAL_METERS = Units.inchesToMeters(26.0);
 
     private static final double MIN_FORWARD_VELOCITY = 0.2;
     private static final double MIN_SIDEWAYS_VELOCITY = 0.2;
@@ -70,7 +70,7 @@ public class DockWithAprilTag implements Runnable {
     }
 
     public void run() {
-        m_hasStartedMoving = false;
+        // m_hasStartedMoving = false;
 
         if (RobotContainer.getAprilTagManager().getTagID() == m_aprilTagId) {
 
@@ -96,6 +96,7 @@ public class DockWithAprilTag implements Runnable {
                 if ((detectionLostTime != 0.0) &&
                         ((Timer.getFPGATimestamp() - detectionLostTime) > MAX_DETECTION_LOST_TIME_SEC)) {
                     System.out.println("Completely Lost April Tag Detection...");
+                    // TODO - should we do this? CommandScheduler.getInstance().cancelAll();
                     break;
                 }
 
@@ -104,17 +105,19 @@ public class DockWithAprilTag implements Runnable {
                     break;
                 }
 
-                if (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() > 0) {
-                    m_hasStartedMoving = true;
-                }
+                // if (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() > 0) {
+                //     m_hasStartedMoving = true;
+                // }
 
                 // If we've started moving but then stop moving due to some unforseen issue
                 // like being blocked by another robot or field element, we need to kill the
                 // thread.
-                if (m_hasStartedMoving && (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() == 0)) {
-                    System.out.println("Robot is blocked and has stopped moving...");
-                    break;
-                }
+                // TODO - This happens when the robot is not blocked, same as Strafe. Something
+                // is going on in the DriveTrainSubystem with the RoC calc.
+                // if (m_hasStartedMoving && (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() == 0)) {
+                //     System.out.println("Robot is blocked and has stopped moving...");
+                //     break;
+                // }
 
                 double distanceToTarget = RobotContainer.getAprilTagManager().getTZ();
                 double offsetTargetDistance = RobotContainer.getAprilTagManager().getTX();
