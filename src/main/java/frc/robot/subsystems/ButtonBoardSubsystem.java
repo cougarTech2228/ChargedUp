@@ -380,7 +380,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a bit
                 new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_HIGH_CUBE_HEIGHT_CM),
                         new SetArmReachCommand(Constants.ARM_HIGH_CUBE_REACH_CM)),
-                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
+                new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getHighRightConeButton().onTrue(new ConditionalCommand(
@@ -391,7 +392,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                 true),
                         new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
-                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
+                        new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         // Place middle game pieces
@@ -412,7 +414,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a bit
                 new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_MIDDLE_CUBE_HEIGHT_CM),
                         new SetArmReachCommand(Constants.ARM_MIDDLE_CUBE_REACH_CM)),
-                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
+                new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getMiddleRightConeButton().onTrue(new ConditionalCommand(
@@ -423,7 +426,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                 true),
                         new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_MIDDLE_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_MIDDLE_CONE_REACH_CM)),
-                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
+                        new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         // Place low game pieces
@@ -444,7 +448,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a bit
                 new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_LOW_CUBE_HEIGHT_CM),
                         new SetArmReachCommand(Constants.ARM_LOW_CUBE_REACH_CM)),
-                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
+                new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getLowRightConeButton().onTrue(new ConditionalCommand(
@@ -455,7 +460,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                 true),
                         new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_LOW_CONE_HEIGHT_CM),
                                 new SetArmReachCommand(Constants.ARM_LOW_CONE_REACH_CM)),
-                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
+                        new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         // Set the desired grid position where the game piece will
