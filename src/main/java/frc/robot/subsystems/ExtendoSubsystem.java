@@ -3,8 +3,6 @@ package frc.robot.subsystems;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import javax.print.attribute.standard.Destination;
-
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
@@ -12,15 +10,14 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.ProfiledPIDSubsystem;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.utils.CT_DigitalInput;
 
 import com.revrobotics.Rev2mDistanceSensor;
-import com.revrobotics.Rev2mDistanceSensor.Port;
 import com.revrobotics.Rev2mDistanceSensor.Unit;
 
 public class ExtendoSubsystem extends ProfiledPIDSubsystem {
@@ -33,13 +30,14 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
 
     private double m_currentArmReachCm;
     private Rev2mDistanceSensor m_distMxp;
-    public static final double kSVolts = 0;
-    public static final double kGVolts = 0;
-    public static final double kVVolt = 0.01;
-    public static final double kAVolt = 0.1;
-    public static final double kP = 0.3;
-    public static final double kMaxVelocityTicksPerSecond = 5;
-    public static final double kMaxAccelerationTicksPerSecSquared = 4;
+    private static final double kSVolts = 0;
+    private static final double kGVolts = -.2;
+    private static final double kVVolt = 0.01;
+    private static final double kAVolt = 0.1;
+    private static final double kP = 0.3;
+    private static final double kMaxVelocityTicksPerSecond = 15;
+    private static final double kMaxAccelerationTicksPerSecSquared = 4;
+    public static final double DISTANCE_BOT = 22.5;
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
                 kP,
                 1,
@@ -59,19 +57,17 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         retracting
     };
 
-    public ExtendoSubsystem() {
+    public ExtendoSubsystem(DistanceSensorSubsystem distanceSensorSubsystem) {
         super(pidController, 0);
         pidController.setTolerance(0.1);
         m_extendoHomeLimit = new CT_DigitalInput(Constants.EXTENDO_HOME_LIMIT_DIO);
         m_extendoMotor = new WPI_TalonFX(Constants.EXTENDO_MOTOR_ID);
         m_extendoMotor.setNeutralMode(NeutralMode.Brake);
-        m_distMxp = new Rev2mDistanceSensor(Port.kMXP);
+        m_distMxp = distanceSensorSubsystem.getExtendoArmSensor();
 
         m_extendoHomeLimit.setMethodToRun(() -> { // home limit hit
             stopExtending();
         });
-
-        enableDistanceSensor(true);
 
         m_sbTab = Shuffleboard.getTab("Extendo");
 
@@ -100,31 +96,23 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
                 return getMeasurement();
             };
         });
-
     }
 
     @Override
     public void periodic() {
         super.periodic();
-        // We can use timestamp updates to see if the measurement's value is 'stale'
-        if (m_distMxp.isEnabled() && m_distMxp.isRangeValid()) {
-            // System.out.println(m_distMxp.getTimestamp() + ": Range: " +
-            // m_distMxp.getRange());
-            m_currentArmReachCm = m_distMxp.getRange(Unit.kMillimeters) / 10.0;
-            // System.out.println(getCurrentArmReachCm());
-        }
 
-        if (pidController.atGoal()) {
-            //System.out.println("At Goal!!!!");
-            //disable();
-            // m_elevatorMotor.setNeutralMode(NeutralMode.Brake);
-            // m_elevatorMotor.set(0);
-            // m_elevatorMotor.
+        if (m_distMxp.isEnabled() && m_distMxp.isRangeValid()) {
+            m_currentArmReachCm = m_distMxp.getRange(Unit.kMillimeters) / 10.0;
+        }
+        if(DriverStation.isDisabled()){
+            pidController.setGoal(getCurrentArmReachCm());
+            disable();
+            return;
         }
 
         if(isExtendoHomeLimitReached() && extendoState == ExtendoState.retracting){
             stopExtending();
-            disable();
             extendoState = ExtendoState.stopped;
             System.out.println("Extendo home limit reached");
         }
@@ -136,22 +124,12 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         enable();
     }
 
-
     public double getCurrentArmReachCm() {
-        // TODO - This is needed from the ButtonBoard to make incremental
-        // reach changes with the Joystick
         return m_currentArmReachCm;
     }
 
-    @Override
-    public void enable() {
-        // TODO Auto-generated method stub
-        m_distMxp.setAutomaticMode(true);
-        super.enable();
-    }
-
-    public void enableDistanceSensor(boolean isEnabled) {
-        m_distMxp.setAutomaticMode(isEnabled);
+    public boolean atGoal(){
+        return pidController.atGoal();
     }
 
     private void stopExtending(){
@@ -196,9 +174,6 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
             val = Math.min(8, newOutput);
         }
 
-        // double scaled = (val / 20) ; // -1V to +1v
-        // System.out.println("clamped output: " + val + ", scaled: " + scaled);
-
         if(!(extendoState == ExtendoState.retracting && isExtendoHomeLimitReached())){
             m_extendoMotor.setVoltage(val);
         }
@@ -214,7 +189,6 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
 
     @Override
         public double getMeasurement() {
-            double distance = getCurrentArmReachCm();
-            return distance;
+            return getCurrentArmReachCm();
     }
 }

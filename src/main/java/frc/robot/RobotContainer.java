@@ -5,14 +5,18 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.ArmCommand;
 import frc.robot.commands.AutoOneCommand;
 import frc.robot.commands.AutoThreeCommand;
 import frc.robot.commands.AutoTwoCommand;
@@ -24,6 +28,8 @@ import frc.robot.utils.ShuffleboardManager;
 import frc.robot.utils.AprilTagManager;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtendoSubsystem;
+import frc.robot.subsystems.PneumaticSubsystem;
+import frc.robot.subsystems.DistanceSensorSubsystem;
 
 
 /**
@@ -37,22 +43,30 @@ import frc.robot.subsystems.ExtendoSubsystem;
  */
 public class RobotContainer {
     // The robot's subsystems and commands are defined here...
-    // private final static DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
+    // private final static DrivetrainSubsystem m_drivetrainSubsystem = new
+    // DrivetrainSubsystem();
 
     private final static XboxController m_controller = new XboxController(0);
+    // private Joystick m_buttonBox2 = new Joystick(2);
 
     private final static AprilTagManager m_aprilTagManager = new AprilTagManager();
 
     private final static LEDStripSubsystem m_ledStripSubsystem = new LEDStripSubsystem();
+    
+    private final static DistanceSensorSubsystem m_distance_sensor_sensor_subsystem = new DistanceSensorSubsystem();
 
-    private final static ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
+    private final static ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem(m_distance_sensor_sensor_subsystem);
 
     private final static ShuffleboardTab m_autoConfigTab = Shuffleboard.getTab("Auto Config");
     private final static ShuffleboardManager m_shuffleboardManager = new ShuffleboardManager(m_autoConfigTab);
 
-    private final static ButtonBoardManager m_buttonBoardManager = new ButtonBoardManager();
+    // private final static ButtonBoardManager m_buttonBoardManager = new ButtonBoardManager();
 
-    private final static ExtendoSubsystem m_extendo_subsystem = new ExtendoSubsystem();
+    private final static ExtendoSubsystem m_extendo_subsystem = new ExtendoSubsystem(m_distance_sensor_sensor_subsystem);
+
+    private final static PneumaticSubsystem m_pneumatic_subsystem = new PneumaticSubsystem();
+
+
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -69,13 +83,16 @@ public class RobotContainer {
         // Right stick X axis -> rotation
         // isFieldOriented (true or false)
         // m_drivetrainSubsystem.setDefaultCommand(new DefaultDriveCommand(
-        //         m_drivetrainSubsystem,
-        //         () -> -modifyAxis(m_controller.getLeftY()) * m_drivetrainSubsystem.getForwardAdjustment()
-        //                 * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-        //         () -> -modifyAxis(m_controller.getLeftX()) * m_drivetrainSubsystem.getSidewaysAdjustment()
-        //                 * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-        //         () -> -modifyAxis(m_controller.getRightX()) * m_drivetrainSubsystem.getRotationalAdjustment()
-        //                 * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
+        // m_drivetrainSubsystem,
+        // () -> -modifyAxis(m_controller.getLeftY()) *
+        // m_drivetrainSubsystem.getForwardAdjustment()
+        // * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+        // () -> -modifyAxis(m_controller.getLeftX()) *
+        // m_drivetrainSubsystem.getSidewaysAdjustment()
+        // * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+        // () -> -modifyAxis(m_controller.getRightX()) *
+        // m_drivetrainSubsystem.getRotationalAdjustment()
+        // * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
 
         // Configure the button bindings
         configureButtonBindings();
@@ -93,35 +110,74 @@ public class RobotContainer {
 
         // Configure the XboxController buttons
         // new Trigger(m_controller::getBackButton) // Back button zeros the gyroscope
-        //         .onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
+        // .onTrue(new InstantCommand(m_drivetrainSubsystem::zeroGyroscope));
         // new Trigger(m_controller::getAButton) // TESTING a button raises elevator
-        //         .onTrue(new InstantCommand(m_elevatorSubsystem::raiseElevator));
+        // .onTrue(new InstantCommand(m_elevatorSubsystem::raiseElevator));
         // new Trigger(m_controller::getBButton) // TESTING b button retracts elevator
-        //         .onTrue(new InstantCommand(m_elevatorSubsystem::lowerElevator));
+        // .onTrue(new InstantCommand(m_elevatorSubsystem::lowerElevator));
         // new Trigger(m_controller::getXButton) // TESTING x button extends arm
-        //         .onTrue(new InstantCommand(m_elevatorSubsystem::goToFloor));
+        // .onTrue(new InstantCommand(m_elevatorSubsystem::goToFloor));
         // new Trigger(m_controller::getYButton) // TESTING y button retracts arm
-        //         .onTrue(new InstantCommand(m_elevatorSubsystem::goToTop));
+        // .onTrue(new InstantCommand(m_elevatorSubsystem::goToTop));
 
         // Configure all the buttons and switches on the Custom Button Board
         new Trigger(m_controller::getXButton).onTrue(
-            Commands.runOnce(() -> {
-                    
+                Commands.runOnce(() -> {
                     double current_val = m_elevatorSubsystem.getMeasurement();
                     System.out.println("X Button: current: " + current_val);
-                    m_elevatorSubsystem.setElevatorPosition(current_val - 5);
-                },
-                m_elevatorSubsystem));
+                    m_elevatorSubsystem.setElevatorPosition(30);
+                },m_elevatorSubsystem));
 
         new Trigger(m_controller::getYButton).onTrue(
-            Commands.runOnce(() -> {
-                    
+                Commands.runOnce(() -> {
                     double current_val = m_elevatorSubsystem.getMeasurement();
                     System.out.println("Y Button: current: " + current_val);
-                    m_elevatorSubsystem.setElevatorPosition(current_val + 5);
-                },
-                m_elevatorSubsystem));
-        m_buttonBoardManager.configureButtonBindings();
+                    m_elevatorSubsystem.setElevatorPosition(0);
+                }, m_elevatorSubsystem));
+
+        new Trigger(m_controller::getAButton).onTrue(
+                Commands.runOnce(() -> {
+                    System.out.println("A Button: current: ");
+                    m_extendo_subsystem.goToDisanceCM(78);
+                }, m_elevatorSubsystem));
+
+        new Trigger(m_controller::getBButton).onTrue(
+                Commands.runOnce(() -> {
+                    System.out.println("B Button: current: ");
+                    m_extendo_subsystem.goToDisanceCM(22.5);
+                }, m_elevatorSubsystem));
+
+        // m_buttonBoardManager.configureButtonBindings();
+
+        new Trigger(m_controller::getRightBumper).onTrue(
+            new ArmCommand(m_extendo_subsystem, m_elevatorSubsystem, ArmCommand.Destination.bot)
+        );
+
+        new Trigger(m_controller::getLeftBumper).onTrue(
+                Commands.runOnce(() -> {
+                    m_pneumatic_subsystem.closeGripper();
+                }, m_pneumatic_subsystem));
+
+        // new Trigger(new JoystickButton(m_buttonBox2, 3)).onTrue(
+        //             Commands.runOnce(() -> {
+        //                 m_extendo_subsystem.goToDisanceCM(78);
+        //                 //System.out.println("Right High");
+        //             }));
+        // new Trigger(new JoystickButton(m_buttonBox2, 6)).onTrue(
+        //             Commands.runOnce(() -> {
+        //                 m_extendo_subsystem.goToDisanceCM(38);
+        //                 //System.out.println("Right Mid");
+        //             }));
+        // new Trigger(new JoystickButton(m_buttonBox2, 9)).onTrue(
+        //             Commands.runOnce(() -> {
+        //                 m_extendo_subsystem.goToDisanceCM(22.5);
+        //                 System.out.println("Right Low");
+        // //             }));
+        
+        // new Trigger(new JoystickButton(m_buttonBox2, 12)).onTrue(
+        //             );
+                
+
     }
 
     /**
@@ -166,7 +222,7 @@ public class RobotContainer {
     }
 
     // public static DrivetrainSubsystem getDrivetrainSubsystem() {
-    //     return m_drivetrainSubsystem;
+    // return m_drivetrainSubsystem;
     // }
 
     public static AprilTagManager getAprilTagManager() {
@@ -185,9 +241,9 @@ public class RobotContainer {
         return m_shuffleboardManager;
     }
 
-    public static ButtonBoardManager getButtonBoardManager() {
-        return m_buttonBoardManager;
-    }
+    // public static ButtonBoardManager getButtonBoardManager() {
+    //     return m_buttonBoardManager;
+    // }
 
     public static XboxController getXboxController() {
         return m_controller;
