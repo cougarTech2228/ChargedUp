@@ -5,6 +5,7 @@
 package frc.robot.subsystems;
 
 import java.util.Map;
+import java.util.logging.Handler;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
@@ -12,6 +13,7 @@ import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonImuJNI;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
@@ -25,12 +27,23 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.util.Color;
+
+import com.ctre.phoenix.ErrorCode;
+import com.ctre.phoenix.ParamEnum;
+import com.ctre.phoenix.ErrorCollection;
+import com.ctre.phoenix.CustomParamConfigUtil;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
+import frc.robot.utils.CT_LEDStrip.ColorPattern;
+import frc.robot.utils.CT_LEDStrip.GlowColor;
+import frc.robot.utils.CT_LEDStrip.Speed;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     /**
@@ -343,6 +356,27 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
     }
 
+    public double getYaw() {
+        double[] ypr= new double[3];
+        m_pigeon.getYawPitchRoll(ypr);
+        return ypr[0];
+        //return Math.IEEEremainder(ypr[0], 360.0d);
+    }
+
+    public double getPitch() {
+        double[] ypr= new double[3];
+        m_pigeon.getYawPitchRoll(ypr);
+        return ypr[1];
+        //return Math.IEEEremainder(ypr[0], 360.0d);
+    }
+
+    public double getRoll() {
+        double[] ypr= new double[3];
+        m_pigeon.getYawPitchRoll(ypr);
+        return ypr[2];
+        //return Math.IEEEremainder(ypr[0], 360.0d);
+    }
+
     public void drive(ChassisSpeeds chassisSpeeds) {
         m_chassisSpeeds = chassisSpeeds;
     }
@@ -444,5 +478,20 @@ public class DrivetrainSubsystem extends SubsystemBase {
             SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
             setModuleStates(states);
         }
+
+        // System.out.print(getYaw());
+        // System.out.print(" ");
+        // System.out.print(getPitch());
+        // System.out.print(" ");
+        // System.out.println(getRoll());
+
+        // System.out.println(DriverStation.getMatchTime());
+
+        // if (DriverStation.getMatchTime() < 30.0 && getRoll() < -2.0 || getRoll() > 2.0){
+        //     RobotContainer.getLEDStripSubsystem().moveColor(Speed.Ludicrous, Color.kBlue, Color.kRed);
+        //     // System.out.println("Robot Is Tilted");
+        // } else {
+        //     // System.out.println("Robot Is Level");
+        // }
     }
 }

@@ -18,6 +18,8 @@ import frc.robot.commands.DockWithAprilTagCommand;
 import frc.robot.commands.SetElevatorHeightCommand;
 import frc.robot.commands.SetArmReachCommand;
 import frc.robot.commands.StrafeCommand;
+import frc.robot.subsystems.LEDStripSubsystem;
+import frc.robot.utils.CT_LEDStrip.GlowColor;
 
 public class ButtonBoardSubsystem extends SubsystemBase {
 
@@ -143,11 +145,15 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     public boolean isAprilTagIDMatch() {
         if ((m_aprilTagID == RobotContainer.getAprilTagManager().getTagID())
                 && (m_aprilTagID != Constants.BAD_APRIL_TAG_ID)) {
+            RobotContainer.getLEDStripSubsystem().glow(GlowColor.Green);
             return true;
         } else {
+            RobotContainer.getLEDStripSubsystem().glow(GlowColor.Red);
             return false;
         }
     }
+
+
 
     private void resetAprilTagID() {
         m_aprilTagID = Constants.BAD_APRIL_TAG_ID;
