@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -18,7 +17,6 @@ import frc.robot.RobotContainer;
 import frc.robot.commands.ArmCommand;
 import frc.robot.commands.DockWithAprilTagCommand;
 import frc.robot.commands.StrafeCommand;
-import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.utils.CT_LEDStrip.GlowColor;
 
 public class ButtonBoardSubsystem extends SubsystemBase {
@@ -314,10 +312,10 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         if (m_armReachReset && isManualOperationMode()) {
 
             if (m_armReachJoystick == 1.0) { // Arm Extend
-                m_extendoSubsystem.goToDisanceCM(RobotContainer.getExtendoSubsystem().getCurrentArmReachCm() + INCREMENTAL_ARM_REACH_CHANGE_CM);
+                m_extendoSubsystem.goToDistanceCM(RobotContainer.getExtendoSubsystem().getCurrentArmReachCm() + INCREMENTAL_ARM_REACH_CHANGE_CM);
                 m_armReachReset = false;
             } else if (m_armReachJoystick == -1.0) {
-                m_extendoSubsystem.goToDisanceCM(RobotContainer.getExtendoSubsystem().getCurrentArmReachCm() - INCREMENTAL_ARM_REACH_CHANGE_CM);
+                m_extendoSubsystem.goToDistanceCM(RobotContainer.getExtendoSubsystem().getCurrentArmReachCm() - INCREMENTAL_ARM_REACH_CHANGE_CM);
                 m_armReachReset = false;
             }
         }

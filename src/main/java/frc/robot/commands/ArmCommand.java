@@ -27,7 +27,7 @@ public class ArmCommand extends CommandBase{
     public void initialize() {
         super.initialize();
         if(m_destination == Destination.bot){
-            m_extendoSubsystem.goToDisanceCM(ExtendoSubsystem.DISTANCE_BOT);
+            m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_BOT);
         }
         flag = false;
     }

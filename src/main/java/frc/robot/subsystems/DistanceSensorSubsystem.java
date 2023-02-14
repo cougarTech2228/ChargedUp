@@ -1,7 +1,6 @@
 package frc.robot.subsystems;
 import com.revrobotics.Rev2mDistanceSensor;
 
-import edu.wpi.first.wpilibj.DigitalOutput;
 import frc.robot.Constants;
 
 import edu.wpi.first.wpilibj.I2C;

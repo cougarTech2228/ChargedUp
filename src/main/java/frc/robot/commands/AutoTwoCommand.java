@@ -2,8 +2,6 @@ package frc.robot.commands;
 
 import java.util.HashMap;
 
-import javax.lang.model.element.Element;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;

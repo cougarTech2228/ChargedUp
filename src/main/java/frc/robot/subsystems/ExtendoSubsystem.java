@@ -118,7 +118,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         }
     }
 
-    public void goToDisanceCM(double distanceCM){
+    public void goToDistanceCM(double distanceCM){
         System.out.println("setting position: " + distanceCM);
         pidController.setGoal(distanceCM);
         enable();
