@@ -10,26 +10,21 @@ import frc.robot.Constants;
 
 public class DockWithAprilTagCommand extends CommandBase {
     private double m_aprilTagId;
-    private boolean m_isCameraForward;
-    private boolean m_useGryoForPitchCorrection;
+    private boolean m_isFOV;
     private ButtonBoardSubsystem m_buttonBoardSubsystem;
 
     private Runnable m_dockWithAprilTagRunnable;
     private Thread m_dockWithAprilTagThread;
 
     public DockWithAprilTagCommand(
-            boolean isCameraForward,
-            boolean useGryoForPitchCorrection) {
-        m_isCameraForward = isCameraForward;
-        m_useGryoForPitchCorrection = useGryoForPitchCorrection;
+            boolean isFOV) {
+        m_isFOV = isFOV;
     }
 
     public DockWithAprilTagCommand(
-            boolean isCameraForward,
-            boolean useGryoForPitchCorrection,
+            boolean isFOV,
             ButtonBoardSubsystem buttonBoardSubsystem) {
-        m_isCameraForward = isCameraForward;
-        m_useGryoForPitchCorrection = useGryoForPitchCorrection;
+        m_isFOV = isFOV;
         m_buttonBoardSubsystem = buttonBoardSubsystem;
     }
 
@@ -75,9 +70,8 @@ public class DockWithAprilTagCommand extends CommandBase {
         System.out.println("Running auto dock with AprilTag command for tag ID: " + m_aprilTagId);
 
         m_dockWithAprilTagRunnable = new DockWithAprilTag(
-                m_isCameraForward,
-                m_aprilTagId,
-                m_useGryoForPitchCorrection);
+                m_isFOV,
+                m_aprilTagId);
 
         m_dockWithAprilTagThread = new Thread(m_dockWithAprilTagRunnable, "DockWithAprilTagThread");
         m_dockWithAprilTagThread.start();

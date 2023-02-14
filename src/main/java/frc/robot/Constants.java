@@ -131,8 +131,8 @@ public final class Constants {
     public static final double MAX_AUTO_VELOCITY = 4.0;
     public static final double MAX_AUTO_ACCELERATION = 3.0;
 
-    public static final double GRID_STRAFE_DISTANCE = 56.0;
-    public static final double SUBSTATION_STRAFE_DISTANCE = 56.0;
+    public static final double GRID_STRAFE_DISTANCE = 55.88;
+    public static final double SUBSTATION_STRAFE_DISTANCE = 55.88;
     public static final double NUDGE_STRAFE_DISTANCE = 3.0;
     public static final double STRAFE_SPEED = 0.2;
 

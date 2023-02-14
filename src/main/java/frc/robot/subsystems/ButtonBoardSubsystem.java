@@ -11,12 +11,15 @@ import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
 import frc.robot.commands.ArmCommand;
 import frc.robot.commands.DockWithAprilTagCommand;
 import frc.robot.commands.StrafeCommand;
+import frc.robot.subsystems.LEDStripSubsystem;
+import frc.robot.utils.CT_LEDStrip.GlowColor;
 
 public class ButtonBoardSubsystem extends SubsystemBase {
 
@@ -148,11 +151,15 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     public boolean isAprilTagIDMatch() {
         if ((m_aprilTagID == RobotContainer.getAprilTagManager().getTagID())
                 && (m_aprilTagID != Constants.BAD_APRIL_TAG_ID)) {
+            RobotContainer.getLEDStripSubsystem().glow(GlowColor.Green);
             return true;
         } else {
+            RobotContainer.getLEDStripSubsystem().glow(GlowColor.Red);
             return false;
         }
     }
+
+
 
     private void resetAprilTagID() {
         m_aprilTagID = Constants.BAD_APRIL_TAG_ID;
@@ -334,7 +341,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // **********************************
         getSubstationDockButton().onTrue(new SequentialCommandGroup(new PrintCommand("Docking with Substation"),
                 new InstantCommand(() -> setDockingStation()),
-                new DockWithAprilTagCommand(false, true, this),
+                new DockWithAprilTagCommand(false, this),
                 new ConditionalCommand(new StrafeCommand(Constants.SUBSTATION_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                         true),
                         new StrafeCommand(Constants.SUBSTATION_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
@@ -386,8 +393,9 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // Place high game pieces
         getHighLeftConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("High Left Cone"),
-                        new DockWithAprilTagCommand(true, true, this),
-                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
+                        new DockWithAprilTagCommand(true, this),
+                        new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a bit
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
                         new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.high),
                         new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper()),
@@ -395,25 +403,30 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getHighCubeButton().onTrue(new ConditionalCommand(new SequentialCommandGroup(new PrintCommand("High Cube"),
-                new DockWithAprilTagCommand(true, true, this),
+                new DockWithAprilTagCommand(true, this),
+                new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a bit
                 new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.high),
-                new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper())),
+                new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper()),
+                new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getHighRightConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("High Right Cone"),
-                        new DockWithAprilTagCommand(true, true, this),
-                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
+                        new DockWithAprilTagCommand(true, this),
+                        new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a bit
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true),
                         new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.high),
-                        new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper())),
+                        new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper()),
+                        new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         // Place middle game pieces
         getMiddleLeftConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("Middle Left Cone"),
-                        new DockWithAprilTagCommand(true, true, this),
-                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
+                        new DockWithAprilTagCommand(true, this),
+                        new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a bit
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
                        new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.mid),
                         new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper()),
@@ -421,25 +434,30 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getMiddleCubeButton().onTrue(new ConditionalCommand(new SequentialCommandGroup(new PrintCommand("Middle Cube"),
-                new DockWithAprilTagCommand(true, true, this),
+                new DockWithAprilTagCommand(true, this),
+                new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a bit
                 new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.mid),
-                new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper())),
+                new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper()),
+                new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getMiddleRightConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("Middle Right Cone"),
-                            new DockWithAprilTagCommand(true, true, this),
-                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
+                            new DockWithAprilTagCommand(true, this),
+                            new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a bit
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true),
                         new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.mid),
-                        new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper())),
+                        new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper()),
+                        new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         // Place low game pieces
         getLowLeftConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("Low Left Cone"),
-                        new DockWithAprilTagCommand(true, true, this),
-                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
+                        new DockWithAprilTagCommand(true, this),
+                        new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a bit
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
                         new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.low),
                         new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper()),
@@ -447,18 +465,22 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getLowCubeButton().onTrue(new ConditionalCommand(new SequentialCommandGroup(new PrintCommand("Low Cube"),
-                new DockWithAprilTagCommand(true, true, this),
+                new DockWithAprilTagCommand(true, this),
+                new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a bit
                 new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.low),
-                new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper())),
+                new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper()),
+                new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getLowRightConeButton().onTrue(new ConditionalCommand(
                 new SequentialCommandGroup(new PrintCommand("Low Right Cone"),
-                         new DockWithAprilTagCommand(true, true, this),
-                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
+                         new DockWithAprilTagCommand(true, this),
+                         new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a bit
+                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true),
                         new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.low),
-                        new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper())),
+                        new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper()),
+                        new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         // Set the desired grid position where the game piece will

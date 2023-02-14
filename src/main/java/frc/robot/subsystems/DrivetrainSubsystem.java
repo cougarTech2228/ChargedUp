@@ -5,12 +5,15 @@
 package frc.robot.subsystems;
 
 import java.util.Map;
+import java.util.logging.Handler;
 
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.sensors.PigeonIMU;
+import com.ctre.phoenix.sensors.PigeonImuJNI;
 import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
 import com.swervedrivespecialties.swervelib.SdsModuleConfigurations;
 import com.swervedrivespecialties.swervelib.SwerveModule;
@@ -24,12 +27,23 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.util.Color;
+
+import com.ctre.phoenix.ErrorCode;
+import com.ctre.phoenix.ParamEnum;
+import com.ctre.phoenix.ErrorCollection;
+import com.ctre.phoenix.CustomParamConfigUtil;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
+import frc.robot.utils.CT_LEDStrip.ColorPattern;
+import frc.robot.utils.CT_LEDStrip.GlowColor;
+import frc.robot.utils.CT_LEDStrip.Speed;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     /**
@@ -121,12 +135,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private boolean m_pathPlannerDriving;
 
-    private double m_tempEncoderCount = 0;
-    private int m_encoderIteration = 0;
-    private double m_encoderRateOfChange = 0;
-    private int m_encoderUpdateCounter = 0;
+    // private double m_tempEncoderCount = 0;
+    // private int m_encoderIteration = 0;
+    // private double m_encoderRateOfChange = 0;
 
-    private static final double ROC_DT_SECONDS = 0.02;
+    // private static final double ROC_DT_SECONDS = 0.02;
 
     public DrivetrainSubsystem() {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -299,22 +312,23 @@ public class DrivetrainSubsystem extends SubsystemBase {
         return m_backLeftDriveMotor.getSelectedSensorPosition();
     }
 
-    private void calculateEncoderRoC() {
-        if(m_encoderIteration == (ROC_DT_SECONDS * 50)) {
-
-            double encoderCount = getEncoderCount();
-
-            m_encoderRateOfChange = (encoderCount - m_tempEncoderCount) / ROC_DT_SECONDS;
-            m_encoderIteration = 0;
-            m_tempEncoderCount = encoderCount;
-        } else {
-            m_encoderIteration++;
-        }
+    public void setDriveMotorStatusFramePeriod(int period) {
+        m_backLeftDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, period);
     }
 
-    public double getEncoderRateOfChange() {
-        return m_encoderRateOfChange;
-    }
+    // private void calculateEncoderRoC() {
+    //     if(m_encoderIteration == (ROC_DT_SECONDS * 50)) {
+    //         m_encoderRateOfChange = (getEncoderCount() - m_tempEncoderCount) / ROC_DT_SECONDS;
+    //         m_encoderIteration = 0;
+    //         m_tempEncoderCount = getEncoderCount();
+    //     } else {
+    //         m_encoderIteration++;
+    //     }
+    // }
+
+    // public double getEncoderRateOfChange() {
+    //     return m_encoderRateOfChange;
+    // }
 
     public SwerveModulePosition[] getSwerveModulePositions() {
         return new SwerveModulePosition[] {
@@ -334,8 +348,33 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_pigeon.setFusedHeading(0.0);
     }
 
+    public void reverseGyroscope() {
+        m_pigeon.setFusedHeading(11520.0);
+    }
+
     public Rotation2d getGyroscopeRotation() {
         return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
+    }
+
+    public double getYaw() {
+        double[] ypr= new double[3];
+        m_pigeon.getYawPitchRoll(ypr);
+        return ypr[0];
+        //return Math.IEEEremainder(ypr[0], 360.0d);
+    }
+
+    public double getPitch() {
+        double[] ypr= new double[3];
+        m_pigeon.getYawPitchRoll(ypr);
+        return ypr[1];
+        //return Math.IEEEremainder(ypr[0], 360.0d);
+    }
+
+    public double getRoll() {
+        double[] ypr= new double[3];
+        m_pigeon.getYawPitchRoll(ypr);
+        return ypr[2];
+        //return Math.IEEEremainder(ypr[0], 360.0d);
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
@@ -429,12 +468,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        // Calling calculateEncoderRoc every period causes loop overruns
-        // so we'll only do it once a second.
-        if (m_encoderUpdateCounter > 50) {
-            calculateEncoderRoC();
-            m_encoderUpdateCounter = 0;
-        }
+        // TODO - this causes premature stoppages in both DockWithAprilTagCommand
+        // and StrafeCommand. WTF?
+        //calculateEncoderRoC();
 
         m_odometry.update(getGyroscopeRotation(), getSwerveModulePositions());
 
@@ -442,5 +478,20 @@ public class DrivetrainSubsystem extends SubsystemBase {
             SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
             setModuleStates(states);
         }
+
+        // System.out.print(getYaw());
+        // System.out.print(" ");
+        // System.out.print(getPitch());
+        // System.out.print(" ");
+        // System.out.println(getRoll());
+
+        // System.out.println(DriverStation.getMatchTime());
+
+        // if (DriverStation.getMatchTime() < 30.0 && getRoll() < -2.0 || getRoll() > 2.0){
+        //     RobotContainer.getLEDStripSubsystem().moveColor(Speed.Ludicrous, Color.kBlue, Color.kRed);
+        //     // System.out.println("Robot Is Tilted");
+        // } else {
+        //     // System.out.println("Robot Is Level");
+        // }
     }
 }
