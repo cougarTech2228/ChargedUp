@@ -11,10 +11,15 @@ import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ExtendoSubsystem;
 import frc.robot.utils.OutPathFileNameChooser;
 import frc.robot.utils.PlacePieceCommandChooser;
 
 public class AutoOneCommand extends SequentialCommandGroup {
+
+    private static ElevatorSubsystem m_elevatorSubsystem;
+    private static ExtendoSubsystem m_extendoSubsystem;
 
     private enum CommandSelector {
 
@@ -25,7 +30,10 @@ public class AutoOneCommand extends SequentialCommandGroup {
 
     private double m_startTime = 0;
 
-    public AutoOneCommand() {
+    public AutoOneCommand(ElevatorSubsystem elevatorSubsystem, ExtendoSubsystem extendoSubsystem) {
+
+        m_elevatorSubsystem = elevatorSubsystem;
+        m_extendoSubsystem = extendoSubsystem;
 
         // TODO - do we want to do something cool at each stage like with LEDs?
         // We could create multiple eventMaps
@@ -36,14 +44,14 @@ public class AutoOneCommand extends SequentialCommandGroup {
 
         // Get the appropriate command group to place the Preloaded Game Piece
         PlacePieceCommandChooser m_placePreloadedPieceCommandChooser = new PlacePieceCommandChooser(
-                RobotContainer.getShuffleboardSubsystem()
+            m_elevatorSubsystem, m_extendoSubsystem, RobotContainer.getShuffleboardSubsystem()
                         .getPreloadedPieceLevel());
         SequentialCommandGroup m_placePreloadedPieceSequentialCommandGroup = m_placePreloadedPieceCommandChooser
                 .getPlacePieceCommand();
 
         // Get the appropriate command group to place the Staged Game Piece
         PlacePieceCommandChooser m_placeStagedPieceCommandChooser = new PlacePieceCommandChooser(
-                RobotContainer.getShuffleboardSubsystem()
+            m_elevatorSubsystem, m_extendoSubsystem, RobotContainer.getShuffleboardSubsystem()
                         .getStagedPieceLevel());
         SequentialCommandGroup m_placeStagedPieceSequentialCommandGroup = m_placeStagedPieceCommandChooser
                 .getPlacePieceCommand();

@@ -1,18 +1,26 @@
 package frc.robot.utils;
 
+import com.revrobotics.jni.DistanceSensorJNIWrapper;
+
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
-import frc.robot.commands.SetElevatorHeightCommand;
-import frc.robot.commands.SetArmReachCommand;
+import frc.robot.commands.ArmCommand;
+import frc.robot.subsystems.DistanceSensorSubsystem;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ExtendoSubsystem;
 
 public class PlacePieceCommandChooser {
 
     Constants.PlacePosition m_pieceLevel;
+    private static ElevatorSubsystem m_elevatorSubsystem;
+    private static ExtendoSubsystem m_extendoSubsystem;
 
-    public PlacePieceCommandChooser(Constants.PlacePosition pieceLevel) {
+    public PlacePieceCommandChooser(ElevatorSubsystem elevatorSubsystem, ExtendoSubsystem extendoSubsystem, Constants.PlacePosition pieceLevel) {
+        m_elevatorSubsystem = elevatorSubsystem;
+        m_extendoSubsystem = extendoSubsystem;
         m_pieceLevel = pieceLevel;
     }
 
@@ -23,41 +31,20 @@ public class PlacePieceCommandChooser {
         // Constants.PlacePosition preloadedPieceLevel = RobotContainer.getShuffleboardSubsystem()
         //         .getPreloadedPieceLevel();
 
-        if (m_pieceLevel == Constants.PlacePosition.HighCone) {
+        if (m_pieceLevel == Constants.PlacePosition.HighCone || m_pieceLevel == Constants.PlacePosition.HighCube) {
             return new SequentialCommandGroup(
-                    new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
-                            new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
-                    new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)));
+                new InstantCommand(() -> new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.high)),
+                new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper()));
 
-        } else if (m_pieceLevel == Constants.PlacePosition.MiddleCone) {
+        } else if (m_pieceLevel == Constants.PlacePosition.MiddleCone || m_pieceLevel == Constants.PlacePosition.MiddleCube) {
             return new SequentialCommandGroup(
-                    new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_MIDDLE_CONE_HEIGHT_CM),
-                            new SetArmReachCommand(Constants.ARM_MIDDLE_CONE_REACH_CM)),
-                    new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)));
+                new InstantCommand(() -> new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.mid)),
+                new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper()));
 
-        } else if (m_pieceLevel == Constants.PlacePosition.LowCone) {
+        } else if (m_pieceLevel == Constants.PlacePosition.LowCone || m_pieceLevel == Constants.PlacePosition.LowCube) {
             return new SequentialCommandGroup(
-                    new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_LOW_CONE_HEIGHT_CM),
-                            new SetArmReachCommand(Constants.ARM_LOW_CONE_REACH_CM)),
-                    new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)));
-
-        } else if (m_pieceLevel == Constants.PlacePosition.HighCube) {
-            return new SequentialCommandGroup(
-                    new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_HIGH_CUBE_HEIGHT_CM),
-                            new SetArmReachCommand(Constants.ARM_HIGH_CUBE_REACH_CM)),
-                    new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)));
-
-        } else if (m_pieceLevel == Constants.PlacePosition.MiddleCube) {
-            return new SequentialCommandGroup(
-                    new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_MIDDLE_CUBE_HEIGHT_CM),
-                            new SetArmReachCommand(Constants.ARM_MIDDLE_CUBE_REACH_CM)),
-                    new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)));
-
-        } else if (m_pieceLevel == Constants.PlacePosition.LowCube) {
-            return new SequentialCommandGroup(
-                    new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_LOW_CUBE_HEIGHT_CM),
-                            new SetArmReachCommand(Constants.ARM_LOW_CUBE_REACH_CM)),
-                    new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)));
+                new InstantCommand(() -> new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.low)),
+                new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper()));
 
         } else {
             System.out.println("Error selecting place position");

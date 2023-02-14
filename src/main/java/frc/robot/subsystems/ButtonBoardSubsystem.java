@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
@@ -13,9 +14,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.commands.ArmCommand;
 import frc.robot.commands.DockWithAprilTagCommand;
-import frc.robot.commands.SetElevatorHeightCommand;
-import frc.robot.commands.SetArmReachCommand;
 import frc.robot.commands.StrafeCommand;
 
 public class ButtonBoardSubsystem extends SubsystemBase {
@@ -55,12 +55,18 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     private boolean m_strafeReset = true;
     private boolean m_armReachReset = true;
 
+    private static ExtendoSubsystem m_extendoSubsystem;
+    private static ElevatorSubsystem m_elevatorSubsystem;
+
     private static final double INCREMENTAL_ARM_HEIGHT_CHANGE_CM = 2.0;
     private static final double INCREMENTAL_ARM_REACH_CHANGE_CM = 2.0;
 
-    public ButtonBoardSubsystem() {
+    public ButtonBoardSubsystem(ElevatorSubsystem elevatorSubsystem, ExtendoSubsystem extendoSubsystem) {
         m_joystick1 = new Joystick(kJoystickChannel1);
         m_joystick2 = new Joystick(kJoystickChannel2);
+
+        m_elevatorSubsystem = elevatorSubsystem;
+        m_extendoSubsystem = extendoSubsystem;
 
         setSubstationShelfPosition();
         setAutoManualOperationMode();
@@ -246,7 +252,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
             if (isManualOperationMode()) {
                 // If we're already closed don't do anything, otherwise close the gripper
                 if (m_gripperMode != GripperMode.Closed) {
-                    new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(false));
+                    new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper());
                     m_gripperMode = GripperMode.Closed;
                 }
             }
@@ -255,7 +261,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
             if (isManualOperationMode()) {
                 // If we're already open don't do anything, otherwise open the gripper
                 if (m_gripperMode != GripperMode.Open) {
-                    new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true));
+                    new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper());
                     m_gripperMode = GripperMode.Open;
                 }
             }
@@ -301,14 +307,10 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         if (m_armReachReset && isManualOperationMode()) {
 
             if (m_armReachJoystick == 1.0) { // Arm Extend
-                new SetArmReachCommand(
-                        RobotContainer.getArmSubsystem().getCurrentArmReachCm() + INCREMENTAL_ARM_REACH_CHANGE_CM)
-                        .schedule();
+                m_extendoSubsystem.goToDisanceCM(RobotContainer.getExtendoSubsystem().getCurrentArmReachCm() + INCREMENTAL_ARM_REACH_CHANGE_CM);
                 m_armReachReset = false;
             } else if (m_armReachJoystick == -1.0) {
-                new SetArmReachCommand( // Arm Retract
-                        RobotContainer.getArmSubsystem().getCurrentArmReachCm() - INCREMENTAL_ARM_REACH_CHANGE_CM)
-                        .schedule();
+                m_extendoSubsystem.goToDisanceCM(RobotContainer.getExtendoSubsystem().getCurrentArmReachCm() - INCREMENTAL_ARM_REACH_CHANGE_CM);
                 m_armReachReset = false;
             }
         }
@@ -343,19 +345,39 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // **********************************
         // Arm Button Handling
         // **********************************
-        getArmUpButton().onTrue(new ConditionalCommand(
-                new SetElevatorHeightCommand(
-                        RobotContainer.getElevatorSubsystem().getCurrentElevatorHeightCm()
-                                + INCREMENTAL_ARM_HEIGHT_CHANGE_CM),
+        getArmUpButton().onTrue(
+            new ConditionalCommand(
+                // True command
+                Commands.runOnce(() -> {
+                    if (isManualOperationMode()){
+                        m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement() 
+                            + INCREMENTAL_ARM_HEIGHT_CHANGE_CM);
+                    }
+                }),
+                // False command
                 new PrintCommand("You must be in manual mode to move the arm up"),
-                this::isManualOperationMode));
 
-        getArmDownButton().onTrue(new ConditionalCommand(
-                new SetElevatorHeightCommand(
-                        RobotContainer.getElevatorSubsystem().getCurrentElevatorHeightCm()
-                                - INCREMENTAL_ARM_HEIGHT_CHANGE_CM),
-                new PrintCommand("You must be in manual mode to move the arm down"),
-                this::isManualOperationMode));
+                // variable
+                this::isManualOperationMode
+            )
+        );
+
+        getArmDownButton().onTrue(
+            new ConditionalCommand(
+            // True command
+            Commands.runOnce(() -> {
+                if (isManualOperationMode()){
+                    m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement() 
+                        - INCREMENTAL_ARM_HEIGHT_CHANGE_CM);
+                }
+            }),
+            // False command
+            new PrintCommand("You must be in manual mode to move the arm up"),
+
+            // variable
+            this::isManualOperationMode
+        )
+    );
 
         // **********************************
         // Placing Position Button Handling
@@ -367,17 +389,15 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         new DockWithAprilTagCommand(true, true, this),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true),
-                        new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
-                                new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
-                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
+                        new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.high),
+                        new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper()),
                         new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getHighCubeButton().onTrue(new ConditionalCommand(new SequentialCommandGroup(new PrintCommand("High Cube"),
                 new DockWithAprilTagCommand(true, true, this),
-                new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_HIGH_CUBE_HEIGHT_CM),
-                        new SetArmReachCommand(Constants.ARM_HIGH_CUBE_REACH_CM)),
-                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.high),
+                new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getHighRightConeButton().onTrue(new ConditionalCommand(
@@ -385,9 +405,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         new DockWithAprilTagCommand(true, true, this),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
-                        new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_HIGH_CONE_HEIGHT_CM),
-                                new SetArmReachCommand(Constants.ARM_HIGH_CONE_REACH_CM)),
-                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                        new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.high),
+                        new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         // Place middle game pieces
@@ -396,17 +415,15 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         new DockWithAprilTagCommand(true, true, this),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true),
-                       new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_MIDDLE_CONE_HEIGHT_CM),
-                                new SetArmReachCommand(Constants.ARM_MIDDLE_CONE_REACH_CM)),
-                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
+                       new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.mid),
+                        new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper()),
                         new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getMiddleCubeButton().onTrue(new ConditionalCommand(new SequentialCommandGroup(new PrintCommand("Middle Cube"),
                 new DockWithAprilTagCommand(true, true, this),
-                new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_MIDDLE_CUBE_HEIGHT_CM),
-                        new SetArmReachCommand(Constants.ARM_MIDDLE_CUBE_REACH_CM)),
-                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.mid),
+                new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getMiddleRightConeButton().onTrue(new ConditionalCommand(
@@ -414,9 +431,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                             new DockWithAprilTagCommand(true, true, this),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
-                        new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_MIDDLE_CONE_HEIGHT_CM),
-                                new SetArmReachCommand(Constants.ARM_MIDDLE_CONE_REACH_CM)),
-                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                        new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.mid),
+                        new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         // Place low game pieces
@@ -425,17 +441,15 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         new DockWithAprilTagCommand(true, true, this),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true),
-                        new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_LOW_CONE_HEIGHT_CM),
-                                new SetArmReachCommand(Constants.ARM_LOW_CONE_REACH_CM)),
-                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true)),
+                        new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.low),
+                        new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper()),
                         new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getLowCubeButton().onTrue(new ConditionalCommand(new SequentialCommandGroup(new PrintCommand("Low Cube"),
                 new DockWithAprilTagCommand(true, true, this),
-                new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_LOW_CUBE_HEIGHT_CM),
-                        new SetArmReachCommand(Constants.ARM_LOW_CUBE_REACH_CM)),
-                new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.low),
+                new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         getLowRightConeButton().onTrue(new ConditionalCommand(
@@ -443,9 +457,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                          new DockWithAprilTagCommand(true, true, this),
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true),
-                        new ParallelCommandGroup(new SetElevatorHeightCommand(Constants.ARM_LOW_CONE_HEIGHT_CM),
-                                new SetArmReachCommand(Constants.ARM_LOW_CONE_REACH_CM)),
-                        new InstantCommand(() -> RobotContainer.getArmSubsystem().setGripperOpen(true))),
+                        new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.low),
+                        new InstantCommand(() -> RobotContainer.getPneumaticSubsystem().openGripper())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
 
         // Set the desired grid position where the game piece will

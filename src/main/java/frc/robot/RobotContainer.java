@@ -18,11 +18,13 @@ import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ExtendoSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.subsystems.ShuffleboardSubsystem;
 import frc.robot.subsystems.ButtonBoardSubsystem;
 import frc.robot.utils.AprilTagManager;
-import frc.robot.subsystems.ArmSubsystem;
+import frc.robot.subsystems.DistanceSensorSubsystem;
+import frc.robot.subsystems.PneumaticSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -51,11 +53,15 @@ public class RobotContainer {
 
     private final static LEDStripSubsystem m_ledStripSubsystem = new LEDStripSubsystem();
 
-    private final static ArmSubsystem m_armSubsystem = new ArmSubsystem();
+    private final static DistanceSensorSubsystem m_distanceSensorSubsystem = new DistanceSensorSubsystem();
 
-    private final static ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem();
+    private final static ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem(m_distanceSensorSubsystem);
 
-    private final static ButtonBoardSubsystem m_buttonBoardSubsystem = new ButtonBoardSubsystem();
+    private final static ExtendoSubsystem m_extendoSubsystem = new ExtendoSubsystem(m_distanceSensorSubsystem);
+
+    private final static PneumaticSubsystem m_pneumaticSubsystem = new PneumaticSubsystem();
+    
+    private final static ButtonBoardSubsystem m_buttonBoardSubsystem = new ButtonBoardSubsystem(m_elevatorSubsystem, m_extendoSubsystem);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -114,11 +120,11 @@ public class RobotContainer {
 
     public static Command getAutonomousCommand() {
         if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position1) {
-            return new AutoOneCommand();
+            return new AutoOneCommand(m_elevatorSubsystem, m_extendoSubsystem);
         } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position2) {
-            return new AutoTwoCommand();
+            return new AutoTwoCommand(m_elevatorSubsystem, m_extendoSubsystem);
         } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position3) {
-            return new AutoThreeCommand();
+            return new AutoThreeCommand(m_elevatorSubsystem, m_extendoSubsystem);
         } else {
             System.out.println("Invalid position received from Shufflboard");
             return null;
@@ -163,8 +169,8 @@ public class RobotContainer {
         return m_ledStripSubsystem;
     }
 
-    public static ArmSubsystem getArmSubsystem() {
-        return m_armSubsystem;
+    public static ExtendoSubsystem getExtendoSubsystem() {
+        return m_extendoSubsystem;
     }
 
     public static ShuffleboardSubsystem getShuffleboardSubsystem() {
@@ -181,5 +187,9 @@ public class RobotContainer {
 
     public static XboxController getXboxController() {
         return m_controller;
+    }
+
+    public static PneumaticSubsystem getPneumaticSubsystem(){
+        return m_pneumaticSubsystem;
     }
 }

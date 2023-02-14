@@ -2,20 +2,29 @@ package frc.robot.commands;
 
 import java.util.HashMap;
 
+import javax.lang.model.element.Element;
+
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
 import frc.robot.RobotContainer;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.ExtendoSubsystem;
 import frc.robot.utils.OutPathFileNameChooser;
 import frc.robot.utils.PlacePieceCommandChooser;
 
 public class AutoTwoCommand extends SequentialCommandGroup {
 
     private double m_startTime = 0;
+    private static ElevatorSubsystem m_elevatorSubsystem;
+    private static ExtendoSubsystem m_extendoSubsystem;
 
-    public AutoTwoCommand() {
+    public AutoTwoCommand(ElevatorSubsystem elevatorSubsystem, ExtendoSubsystem extendoSubsystem) {
+
+        m_elevatorSubsystem = elevatorSubsystem;
+        m_extendoSubsystem = extendoSubsystem;
 
         // TODO - do we want to do something cool at each stage like with LEDs?
         // We could create multiple eventMaps
@@ -27,7 +36,7 @@ public class AutoTwoCommand extends SequentialCommandGroup {
 
         // Get the appropriate command group to place the Preloaded Game Piece
         PlacePieceCommandChooser m_placePreloadedPieceCommandChooser = new PlacePieceCommandChooser(
-                RobotContainer.getShuffleboardSubsystem()
+                m_elevatorSubsystem, m_extendoSubsystem, RobotContainer.getShuffleboardSubsystem()
                         .getPreloadedPieceLevel());
         SequentialCommandGroup m_placePreloadedPieceSequentialCommandGroup = m_placePreloadedPieceCommandChooser
                 .getPlacePieceCommand();
