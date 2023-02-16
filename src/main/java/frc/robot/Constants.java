@@ -81,7 +81,7 @@ public final class Constants {
     public static final double WAIT_TIME_AFTER_APRIL_TAG_DOCK_S = 0.3;
 
     // arm stuff
-    public static final int ELEVATOR_MOTOR_ID = 20; //TODO - Need to determine CAN ID for this motor
+    public static final int ELEVATOR_MOTOR_ID = 58;
     public static final int ELEVATOR_LOWER_LIMIT_DIO = 1;
     public static final int ELEVATOR_UPPER_LIMIT_DIO = 0;
     public static final double ELEVATOR_MOTOR_SPEED = .1; //TODO - Need to determine speed for this motor
@@ -90,7 +90,7 @@ public final class Constants {
     public static final int ELEVATOR_ENCODER_SPOT_MIDDLE = 4;
     public static final int ELEVATOR_ENCODER_SPOT_TOP = 8;
 
-    public static final int EXTENDO_MOTOR_ID = 21; //TODO - Need to determine CAN ID for this motor
+    public static final int EXTENDO_MOTOR_ID = 59;
     public static final int EXTENDO_HOME_LIMIT_DIO = 3;
     public static final double EXTENDO_MOTOR_SPEED = .1; //TODO - Need to determine speed for this motor
     
