@@ -84,16 +84,16 @@ public final class Constants {
     public static final int ELEVATOR_MOTOR_ID = 58;
     public static final int ELEVATOR_LOWER_LIMIT_DIO = 1;
     public static final int ELEVATOR_UPPER_LIMIT_DIO = 0;
-    public static final double ELEVATOR_MOTOR_SPEED = .1; //TODO - Need to determine speed for this motor
+    public static final double ELEVATOR_MOTOR_SPEED = .1; // TODO - Need to determine speed for this motor
     public static final int ELEVATOR_ENCODER_COUNT_PER_INCH = 5023;
-    public static final int ELEVATOR_ENCODER_SPOT_FLOOR = 0; 
+    public static final int ELEVATOR_ENCODER_SPOT_FLOOR = 0;
     public static final int ELEVATOR_ENCODER_SPOT_MIDDLE = 4;
     public static final int ELEVATOR_ENCODER_SPOT_TOP = 8;
 
     public static final int EXTENDO_MOTOR_ID = 59;
     public static final int EXTENDO_HOME_LIMIT_DIO = 3;
-    public static final double EXTENDO_MOTOR_SPEED = .1; //TODO - Need to determine speed for this motor
-    
+    public static final double EXTENDO_MOTOR_SPEED = .1; // TODO - Need to determine speed for this motor
+
     public static final int GRIPPER_PCM_PORT = 2;
     public static final int PCM_CAN_ID = 5;
     public static final int I2C_MUX_DIO = 2;
@@ -133,9 +133,4 @@ public final class Constants {
     public static final double SUBSTATION_STRAFE_DISTANCE = 55.88;
     public static final double NUDGE_STRAFE_DISTANCE = 3.0;
     public static final double STRAFE_SPEED = 0.2;
-
-    // Constants for the Arm Subsystem and Commands
-    public static final int MINIMUM_REACH_LIMIT_SWITCH_DIO = 0;
-    public static final int UPPER_ELEVATOR_LIMIT_SWITCH_DIO = 1;
-    public static final int LOWER_ELEVATOR_LIMIT_SWITCH_DIO = 2;
 }

@@ -1,7 +1,7 @@
 package frc.robot.utils;
 
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
+import frc.robot.subsystems.ShuffleboardSubsystem;
 
 public class OutPathFileNameChooser {
 
@@ -10,11 +10,11 @@ public class OutPathFileNameChooser {
     private Constants.ConeOffsetPosition m_coneOffsetPosition;
     private String m_outPathFileName;
 
-    public OutPathFileNameChooser() {
+    public OutPathFileNameChooser(ShuffleboardSubsystem shuffleboardSubsystem) {
 
-        m_autoPosition =  RobotContainer.getShuffleboardSubsystem().getAutoPosition();
-        m_preloadedPieceLevel = RobotContainer.getShuffleboardSubsystem().getPreloadedPieceLevel();
-        m_coneOffsetPosition = RobotContainer.getShuffleboardSubsystem().getPreloadedConeOffsetPosition();
+        m_autoPosition = shuffleboardSubsystem.getAutoPosition();
+        m_preloadedPieceLevel = shuffleboardSubsystem.getPreloadedPieceLevel();
+        m_coneOffsetPosition = shuffleboardSubsystem.getPreloadedConeOffsetPosition();
 
         m_outPathFileName = null;
     }

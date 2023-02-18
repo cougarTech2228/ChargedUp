@@ -16,7 +16,7 @@ import frc.robot.utils.CT_LEDStrip.Speed;
 // RobotContainer.getLEDStripSubsystem().moveColorPattern(Speed.Ridiculous, ColorPattern.SnakePacman);
 
 public class LEDStripSubsystem extends SubsystemBase {
-    
+
     private final static int LED_STRIP_PWM = 0;
 
     private static CT_LEDStrip m_ledStrip = new CT_LEDStrip(LED_STRIP_PWM);
@@ -66,7 +66,7 @@ public class LEDStripSubsystem extends SubsystemBase {
         m_currentColorArray = colorArray;
         m_ledStripState = StripState.SnakingColors;
     }
-    
+
     public void snakePattern(Speed speed, Color color, ColorPattern colorPattern) {
         m_currentSpeed = speed;
         m_currentBackgroundColor = color;
@@ -96,34 +96,34 @@ public class LEDStripSubsystem extends SubsystemBase {
             case DoingNothing: {
                 initStrip();
             }
-            break;
+                break;
             case MovingColor: {
                 m_ledStrip.doMovingColors(m_currentSpeed, m_currentColorArray);
             }
-            break;
+                break;
             case MovingColorPattern: {
                 m_ledStrip.doMovingColors(m_currentSpeed, m_currentColorPattern);
             }
-            break;
+                break;
             case SnakingColors: {
                 m_ledStrip.doSnake(m_currentSpeed, m_currentBackgroundColor, m_currentColorArray);
             }
-            break;           
+                break;
             case SnakingPattern: {
                 m_ledStrip.doSnake(m_currentSpeed, m_currentBackgroundColor, m_currentColorPattern);
             }
-            break;
+                break;
             case Rainbow: {
                 m_ledStrip.doRainbow();
             }
-            break;
+                break;
             case Glowing: {
                 m_ledStrip.doGlow(m_currentGlowColor);
             }
-            break;
+                break;
             default:
                 initStrip();
         }
-        
+
     }
 }

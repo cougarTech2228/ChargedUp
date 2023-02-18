@@ -25,6 +25,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -131,12 +132,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public DrivetrainSubsystem() {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
-        m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(/* 
-                // This parameter is optional, but will allow you to see the current state of
-                // the module on the dashboard.
-                tab.getLayout("Front Left Module", BuiltInLayouts.kList)
+        m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(/*
+                                                                    * // This parameter is optional, but will allow you
+                                                                    * to see the current state of
+                                                                    * // the module on the dashboard.
+                                                                    */
+                tab.getLayout("Front Left Module",
+                        BuiltInLayouts.kList)
                         .withSize(2, 3)
-                        .withPosition(0, 0),*/
+                        .withPosition(0, 0),
+
                 // This can either be STANDARD or FAST depending on your gear configuration
                 Mk4iSwerveModuleHelper.GearRatio.L2,
                 // This is the ID of the drive motor
@@ -150,30 +155,33 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 Constants.FRONT_LEFT_MODULE_STEER_OFFSET);
 
         // We will do the same for the other modules
-        m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(/*
-                tab.getLayout("Front Right Module", BuiltInLayouts.kList)
-                        .withSize(2, 3)
-                        .withPosition(2, 0),*/
+        m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(tab.getLayout("Front Right Module",
+                BuiltInLayouts.kList)
+                .withSize(2, 3)
+                .withPosition(2, 0),
+
                 Mk4iSwerveModuleHelper.GearRatio.L2,
                 Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID,
                 Constants.FRONT_RIGHT_MODULE_STEER_MOTOR_ID,
                 Constants.FRONT_RIGHT_MODULE_STEER_ENCODER_ID,
                 Constants.FRONT_RIGHT_MODULE_STEER_OFFSET);
 
-        m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(/*
-                tab.getLayout("Back Left Module", BuiltInLayouts.kList)
-                        .withSize(2, 3)
-                        .withPosition(4, 0),*/
+        m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(tab.getLayout("Back Left Module",
+                BuiltInLayouts.kList)
+                .withSize(2, 3)
+                .withPosition(4, 0),
+
                 Mk4iSwerveModuleHelper.GearRatio.L2,
                 Constants.BACK_LEFT_MODULE_DRIVE_MOTOR_ID,
                 Constants.BACK_LEFT_MODULE_STEER_MOTOR_ID,
                 Constants.BACK_LEFT_MODULE_STEER_ENCODER_ID,
                 Constants.BACK_LEFT_MODULE_STEER_OFFSET);
 
-        m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500(/*
-                tab.getLayout("Back Right Module", BuiltInLayouts.kList)
-                        .withSize(2, 3)
-                        .withPosition(6, 0),*/
+        m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500(tab.getLayout("Back Right Module",
+                BuiltInLayouts.kList)
+                .withSize(2, 3)
+                .withPosition(6, 0),
+
                 Mk4iSwerveModuleHelper.GearRatio.L2,
                 Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR_ID,
                 Constants.BACK_RIGHT_MODULE_STEER_MOTOR_ID,
@@ -184,7 +192,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_frontRightDriveMotor = (TalonFX) m_frontRightModule.getDriveMotor();
         m_backLeftDriveMotor = (TalonFX) m_backLeftModule.getDriveMotor();
         m_backRightDriveMotor = (TalonFX) m_backRightModule.getDriveMotor();
-    
+
         m_frontLeftSteerMotor = (TalonFX) m_frontLeftModule.getSteerMotor();
         m_frontRightSteerMotor = (TalonFX) m_frontRightModule.getSteerMotor();
         m_backLeftSteerMotor = (TalonFX) m_backLeftModule.getSteerMotor();
@@ -196,10 +204,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
         configureDriveMotor(m_backRightDriveMotor);
 
         m_pathPlannerDriving = false;
-                       
+
         zeroGyroscope();
 
-        m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation(), getSwerveModulePositions(), new Pose2d());
+        m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation(), getSwerveModulePositions(),
+                new Pose2d());
 
         // Add widgets to adjust controller input values and robot-v-field orientation
         m_forwardAdjustmentTableEntry = tab.add("Forward Adj", INITIAL_INPUT_ADJUSTMENT)
@@ -232,7 +241,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 15, 0.5));
     }
 
-    // The following code is "inspired" from Team Spectrum 3847 to get swerve to work with
+    // The following code is "inspired" from Team Spectrum 3847 to get swerve to
+    // work with
     // the 2023 WPILib changes. The original code can be found here:
     // https://github.com/Spectrum3847/Flash-2023/blob/main/src/main/java/frc/robot/swerve/SwerveModule.java
 
@@ -245,7 +255,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     private double falconToMPS(
-        double velocitycounts, double circumference, double gearRatio) {
+            double velocitycounts, double circumference, double gearRatio) {
         double wheelRPM = falconToRPM(velocitycounts, gearRatio);
         double wheelMPS = (wheelRPM * circumference) / 60;
         return wheelMPS;
@@ -262,27 +272,24 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     private SwerveModuleState getState(TalonFX driveMotor, TalonFX angleMotor) {
-        double velocity =
-                falconToMPS(
-                        driveMotor.getSelectedSensorVelocity(),
-                        SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI,
-                        MK4i_L2_angleGearRatio);
-        Rotation2d angle =
-                Rotation2d.fromDegrees(
-                        falconToDegrees(
-                                angleMotor.getSelectedSensorPosition(),
-                                MK4i_L2_angleGearRatio));
+        double velocity = falconToMPS(
+                driveMotor.getSelectedSensorVelocity(),
+                SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI,
+                MK4i_L2_angleGearRatio);
+        Rotation2d angle = Rotation2d.fromDegrees(
+                falconToDegrees(
+                        angleMotor.getSelectedSensorPosition(),
+                        MK4i_L2_angleGearRatio));
         return new SwerveModuleState(velocity, angle);
     }
 
     private SwerveModulePosition getPosition(TalonFX driveMotor, TalonFX angleMotor) {
         SwerveModuleState moduleState = getState(driveMotor, angleMotor);
 
-        double position =
-                falconToMeters(
-                        driveMotor.getSelectedSensorPosition(),
-                        SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI,
-                        MK4i_L2_angleGearRatio);
+        double position = falconToMeters(
+                driveMotor.getSelectedSensorPosition(),
+                SdsModuleConfigurations.MK4I_L2.getWheelDiameter() * Math.PI,
+                MK4i_L2_angleGearRatio);
         return new SwerveModulePosition(position, moduleState.angle);
     }
 
@@ -304,17 +311,18 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     // private void calculateEncoderRoC() {
-    //     if(m_encoderIteration == (ROC_DT_SECONDS * 50)) {
-    //         m_encoderRateOfChange = (getEncoderCount() - m_tempEncoderCount) / ROC_DT_SECONDS;
-    //         m_encoderIteration = 0;
-    //         m_tempEncoderCount = getEncoderCount();
-    //     } else {
-    //         m_encoderIteration++;
-    //     }
+    // if(m_encoderIteration == (ROC_DT_SECONDS * 50)) {
+    // m_encoderRateOfChange = (getEncoderCount() - m_tempEncoderCount) /
+    // ROC_DT_SECONDS;
+    // m_encoderIteration = 0;
+    // m_tempEncoderCount = getEncoderCount();
+    // } else {
+    // m_encoderIteration++;
+    // }
     // }
 
     // public double getEncoderRateOfChange() {
-    //     return m_encoderRateOfChange;
+    // return m_encoderRateOfChange;
     // }
 
     public SwerveModulePosition[] getSwerveModulePositions() {
@@ -323,7 +331,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 getPosition(m_frontRightDriveMotor, m_frontRightSteerMotor),
                 getPosition(m_backLeftDriveMotor, m_backLeftSteerMotor),
                 getPosition(m_backRightDriveMotor, m_backRightSteerMotor)
-         };
+        };
     }
 
     /**
@@ -344,24 +352,24 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public double getYaw() {
-        double[] ypr= new double[3];
+        double[] ypr = new double[3];
         m_pigeon.getYawPitchRoll(ypr);
         return ypr[0];
-        //return Math.IEEEremainder(ypr[0], 360.0d);
+        // return Math.IEEEremainder(ypr[0], 360.0d);
     }
 
     public double getPitch() {
-        double[] ypr= new double[3];
+        double[] ypr = new double[3];
         m_pigeon.getYawPitchRoll(ypr);
         return ypr[1];
-        //return Math.IEEEremainder(ypr[0], 360.0d);
+        // return Math.IEEEremainder(ypr[0], 360.0d);
     }
 
     public double getRoll() {
-        double[] ypr= new double[3];
+        double[] ypr = new double[3];
         m_pigeon.getYawPitchRoll(ypr);
         return ypr[2];
-        //return Math.IEEEremainder(ypr[0], 360.0d);
+        // return Math.IEEEremainder(ypr[0], 360.0d);
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
@@ -412,7 +420,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     // This is an attempt to get rid of the "dead wheel" issue when the CANCoder
-    // isn't initialized properly. 
+    // isn't initialized properly.
     public void primeDrivetrain() {
         System.out.println("primeDrivetrain");
         ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
@@ -442,7 +450,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public SwerveDriveOdometry getOdometry() {
         return m_odometry;
-    } 
+    }
 
     public SwerveDriveKinematics getKinematics() {
         return m_kinematics;
@@ -457,11 +465,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         // TODO - this causes premature stoppages in both DockWithAprilTagCommand
         // and StrafeCommand. WTF?
-        //calculateEncoderRoC();
+        // calculateEncoderRoC();
 
         m_odometry.update(getGyroscopeRotation(), getSwerveModulePositions());
 
-        if(!m_pathPlannerDriving) {
+        if (!m_pathPlannerDriving) {
             SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
             setModuleStates(states);
         }
@@ -474,11 +482,13 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         // System.out.println(DriverStation.getMatchTime());
 
-        // if (DriverStation.getMatchTime() < 30.0 && getRoll() < -2.0 || getRoll() > 2.0){
-        //     RobotContainer.getLEDStripSubsystem().moveColor(Speed.Ludicrous, Color.kBlue, Color.kRed);
-        //     // System.out.println("Robot Is Tilted");
+        // if (DriverStation.getMatchTime() < 30.0 && getRoll() < -2.0 || getRoll() >
+        // 2.0){
+        // RobotContainer.getLEDStripSubsystem().moveColor(Speed.Ludicrous, Color.kBlue,
+        // Color.kRed);
+        // // System.out.println("Robot Is Tilted");
         // } else {
-        //     // System.out.println("Robot Is Level");
+        // // System.out.println("Robot Is Level");
         // }
     }
 }

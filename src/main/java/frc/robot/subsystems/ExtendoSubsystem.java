@@ -24,7 +24,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     WPI_TalonFX m_extendoMotor;
 
     private ShuffleboardTab m_sbTab;
-    
+
     private CT_DigitalInput m_extendoHomeLimit;
     private ExtendoState extendoState = ExtendoState.stopped;
 
@@ -39,15 +39,14 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double kMaxAccelerationTicksPerSecSquared = 4;
     public static final double DISTANCE_BOT = 22.5;
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
-                kP,
-                1,
-                0,
-                new TrapezoidProfile.Constraints(
+            kP,
+            1,
+            0,
+            new TrapezoidProfile.Constraints(
                     kMaxVelocityTicksPerSecond,
                     kMaxAccelerationTicksPerSecSquared));
-    
-    private final ElevatorFeedforward m_feedforward =
-        new ElevatorFeedforward(
+
+    private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(
             kSVolts, kGVolts,
             kVVolt, kAVolt);
 
@@ -104,21 +103,32 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
 
         if (m_distMxp.isEnabled() && m_distMxp.isRangeValid()) {
             m_currentArmReachCm = m_distMxp.getRange(Unit.kMillimeters) / 10.0;
+
+            // KAS DEBUG
+            System.out.println("Current Arm Reach = " + m_currentArmReachCm);
+            // KAS DEBUG
+
         }
-        if(DriverStation.isDisabled()){
+        if (DriverStation.isDisabled()) {
             pidController.setGoal(getCurrentArmReachCm());
             disable();
             return;
         }
 
-        if(isExtendoHomeLimitReached() && extendoState == ExtendoState.retracting){
+        if (isExtendoHomeLimitReached() && (extendoState == ExtendoState.retracting)) {
             stopExtending();
             extendoState = ExtendoState.stopped;
             System.out.println("Extendo home limit reached");
         }
+
+        // KAS DEBUG
+        if (isExtendoHomeLimitReached()) {
+            System.out.println("Extendo Home Limit Reached");
+        }
+        // KAS DEBUG
     }
 
-    public void goToDistanceCM(double distanceCM){
+    public void goToDistanceCM(double distanceCM) {
         System.out.println("setting position: " + distanceCM);
         pidController.setGoal(distanceCM);
         enable();
@@ -128,17 +138,17 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         return m_currentArmReachCm;
     }
 
-    public boolean atGoal(){
+    public boolean atGoal() {
         return pidController.atGoal();
     }
 
-    private void stopExtending(){
+    private void stopExtending() {
         System.out.println("stopping extendo arm");
         m_extendoMotor.stopMotor();
     }
 
     public void extendArm() {
-        if(extendoState != ExtendoState.extending){
+        if (extendoState != ExtendoState.extending) {
             extendoState = ExtendoState.extending;
             m_extendoMotor.set(ControlMode.PercentOutput, Constants.EXTENDO_MOTOR_SPEED);
         } else {
@@ -147,7 +157,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     }
 
     public void retractArm() {
-        if(extendoState != ExtendoState.retracting){
+        if (extendoState != ExtendoState.retracting) {
             extendoState = ExtendoState.retracting;
             m_extendoMotor.set(ControlMode.PercentOutput, -Constants.EXTENDO_MOTOR_SPEED);
         } else {
@@ -174,21 +184,21 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
             val = Math.min(8, newOutput);
         }
 
-        if(!(extendoState == ExtendoState.retracting && isExtendoHomeLimitReached())){
+        if (!((extendoState == ExtendoState.retracting) && isExtendoHomeLimitReached())) {
             m_extendoMotor.setVoltage(val);
         }
 
-        if(val > 0){
+        if (val > 0) {
             extendoState = ExtendoState.extending;
-        } else if(val < 0){
+        } else if (val < 0) {
             extendoState = ExtendoState.retracting;
-        } else{
+        } else {
             extendoState = ExtendoState.stopped;
         }
     }
 
     @Override
-        public double getMeasurement() {
-            return getCurrentArmReachCm();
+    public double getMeasurement() {
+        return getCurrentArmReachCm();
     }
 }

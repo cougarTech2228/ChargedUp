@@ -11,9 +11,12 @@ import edu.wpi.first.wpilibj2.command.SelectCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
+import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtendoSubsystem;
+import frc.robot.subsystems.PneumaticSubsystem;
+import frc.robot.subsystems.ShuffleboardSubsystem;
+import frc.robot.utils.AprilTagManager;
 import frc.robot.utils.OutPathFileNameChooser;
 import frc.robot.utils.PlacePieceCommandChooser;
 
@@ -29,57 +32,68 @@ public class AutoThreeCommand extends SequentialCommandGroup {
     private double m_startTime = 0;
     private static ElevatorSubsystem m_elevatorSubsystem;
     private static ExtendoSubsystem m_extendoSubsystem;
+    private static DrivetrainSubsystem m_drivetrainSubsystem;
+    private static ShuffleboardSubsystem m_shuffleboardSubsystem;
+    private static AprilTagManager m_aprilTagManager;
+    private static PneumaticSubsystem m_pneumaticSubsystem;
 
-    public AutoThreeCommand(ElevatorSubsystem elevatorSubsystem, ExtendoSubsystem extendoSubsystem) {
+    public AutoThreeCommand(ElevatorSubsystem elevatorSubsystem, ExtendoSubsystem extendoSubsystem,
+            DrivetrainSubsystem drivetrainSubystem, ShuffleboardSubsystem shuffleboardSubsystem,
+            AprilTagManager aprilTagManager, PneumaticSubsystem pneumaticSubsystem) {
 
         m_elevatorSubsystem = elevatorSubsystem;
         m_extendoSubsystem = extendoSubsystem;
+        m_drivetrainSubsystem = drivetrainSubystem;
+        m_shuffleboardSubsystem = shuffleboardSubsystem;
+        m_aprilTagManager = aprilTagManager;
+        m_pneumaticSubsystem = pneumaticSubsystem;
 
         // TODO - do we want to do something cool at each stage like with LEDs?
         // We could create multiple eventMaps
         HashMap<String, Command> m_eventMap = new HashMap<>();
 
         // Select the "out path" file based on Shuffleboard configuration
-        OutPathFileNameChooser m_outPathFileNameChooser = new OutPathFileNameChooser();
+        OutPathFileNameChooser m_outPathFileNameChooser = new OutPathFileNameChooser(m_shuffleboardSubsystem);
         String m_outPathFileName = m_outPathFileNameChooser.getOutPathFileName();
 
         // Get the appropriate command group to place the Preloaded Game Piece
         PlacePieceCommandChooser m_placePreloadedPieceCommandChooser = new PlacePieceCommandChooser(
-            m_elevatorSubsystem, m_extendoSubsystem, RobotContainer.getShuffleboardSubsystem()
+                m_elevatorSubsystem, m_extendoSubsystem, m_pneumaticSubsystem, m_shuffleboardSubsystem
                         .getPreloadedPieceLevel());
         SequentialCommandGroup m_placePreloadedPieceSequentialCommandGroup = m_placePreloadedPieceCommandChooser
                 .getPlacePieceCommand();
 
         // Get the appropriate command group to place the Staged Game Piece
         PlacePieceCommandChooser m_placeStagedPieceCommandChooser = new PlacePieceCommandChooser(
-            m_elevatorSubsystem, m_extendoSubsystem, RobotContainer.getShuffleboardSubsystem()
+                m_elevatorSubsystem, m_extendoSubsystem,  m_pneumaticSubsystem, m_shuffleboardSubsystem
                         .getStagedPieceLevel());
         SequentialCommandGroup m_placeStagedPieceSequentialCommandGroup = m_placeStagedPieceCommandChooser
                 .getPlacePieceCommand();
 
         addCommands(new InstantCommand(() -> printStartCommand()),
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().zeroGyroscope()),
-                new InstantCommand(RobotContainer.getDrivetrainSubsystem()::setMotorsToBrake),
+                new InstantCommand(m_drivetrainSubsystem::zeroGyroscope),
+                new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
                 m_placePreloadedPieceSequentialCommandGroup,
-                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), m_outPathFileName, m_eventMap,
+                new FollowTrajectoryCommand(m_drivetrainSubsystem, m_outPathFileName, m_eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new FollowTrajectoryCommand(RobotContainer.getDrivetrainSubsystem(), "auto3_back", m_eventMap,
+                new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto3_back", m_eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new DockWithAprilTagCommand(false),
-                new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a bit
+                new DockWithAprilTagCommand(false, m_shuffleboardSubsystem, m_aprilTagManager, m_drivetrainSubsystem),
+                new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a
+                                                                             // bit
                 new SelectCommand(
                         Map.ofEntries(
                                 Map.entry(CommandSelector.STRAFE_LEFT,
                                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
-                                                true)),
+                                                true, m_drivetrainSubsystem, m_aprilTagManager)),
                                 Map.entry(CommandSelector.STRAFE_RIGHT,
                                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
-                                                true)),
+                                                true, m_drivetrainSubsystem, m_aprilTagManager)),
                                 Map.entry(CommandSelector.STRAFE_NONE,
                                         new PrintCommand("We're already lined up, no strafing necessary"))),
                         this::selectStagedStrafe),
                 m_placeStagedPieceSequentialCommandGroup,
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().reverseGyroscope()),
+                new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()),
                 new InstantCommand(() -> printEndCommand()));
     }
 
@@ -87,8 +101,8 @@ public class AutoThreeCommand extends SequentialCommandGroup {
     // Shuffleboard inputs
     private CommandSelector selectStagedStrafe() {
 
-        Constants.PlacePosition placePosition = RobotContainer.getShuffleboardSubsystem().getStagedPieceLevel();
-        Constants.ConeOffsetPosition conePosition = RobotContainer.getShuffleboardSubsystem()
+        Constants.PlacePosition placePosition = m_shuffleboardSubsystem.getStagedPieceLevel();
+        Constants.ConeOffsetPosition conePosition = m_shuffleboardSubsystem
                 .getStagedConeOffsetPosition();
 
         if ((placePosition == Constants.PlacePosition.HighCone) ||

@@ -3,12 +3,14 @@ package frc.robot.commands;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.utils.AprilTagManager;
 
 public class StrafeCommand extends CommandBase {
     private double m_distanceCM;
     private double m_speed;
+    private DrivetrainSubsystem m_drivetrainSubsystem;
+    private AprilTagManager m_aprilTagManager;
 
     double m_currentEncoderCount;
     double m_startEncoderCount;
@@ -41,11 +43,14 @@ public class StrafeCommand extends CommandBase {
      *                 negative speed goes left, positive speed goes right.
      * @throws Exception
      */
-    public StrafeCommand(double distanceCM, double speed, boolean accountForAprilTag) {
+    public StrafeCommand(double distanceCM, double speed, boolean accountForAprilTag,
+            DrivetrainSubsystem drivetrainSubsystem, AprilTagManager aprilTagManager) {
 
         m_distanceCM = distanceCM;
         m_speed = speed;
         m_accountForAprilTag = accountForAprilTag;
+        m_drivetrainSubsystem = drivetrainSubsystem;
+        m_aprilTagManager = aprilTagManager;
     }
 
     @Override
@@ -60,7 +65,7 @@ public class StrafeCommand extends CommandBase {
 
         // Increase the status frame period just for the life of this command
         // in order to try to get more accuracy in the encoder tick count
-        RobotContainer.getDrivetrainSubsystem().setDriveMotorStatusFramePeriod(FAST_STATUS_FRAME_PERIOD);
+        m_drivetrainSubsystem.setDriveMotorStatusFramePeriod(FAST_STATUS_FRAME_PERIOD);
 
         double correctedDistanceCM = m_distanceCM;
         double offsetInCm = 0.0;
@@ -69,7 +74,7 @@ public class StrafeCommand extends CommandBase {
         // Tag detection to make a better estimate on how far we need to strafe in
         // order to line up with the Cone Nodes.
         if (m_accountForAprilTag) {
-            offsetInCm = RobotContainer.getAprilTagManager().getTX() * 100.0;
+            offsetInCm = m_aprilTagManager.getTX() * 100.0;
             System.out.println("offsetInCm: " + offsetInCm);
 
             if (m_speed < 0.0) {
@@ -99,7 +104,7 @@ public class StrafeCommand extends CommandBase {
 
         m_distanceInEncoderCounts = ((correctedDistanceCM / WHEEL_CIRCUMFERENCE_CM) * TICKS_PER_ROTATION);
 
-        m_currentEncoderCount = RobotContainer.getDrivetrainSubsystem().getEncoderCount();
+        m_currentEncoderCount = m_drivetrainSubsystem.getEncoderCount();
         m_startEncoderCount = m_currentEncoderCount;
 
         m_hasStartedMoving = false;
@@ -107,16 +112,16 @@ public class StrafeCommand extends CommandBase {
 
     @Override
     public void execute() {
-        // if (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() > 0.0) {
+        // if (m_drivetrainSubsystem.getEncoderRateOfChange() > 0.0) {
         // m_hasStartedMoving = true;
         // }
 
-        RobotContainer.getDrivetrainSubsystem().drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0,
+        m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0,
                 m_speed * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
                 0.0,
-                RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation()));
+                m_drivetrainSubsystem.getGyroscopeRotation()));
 
-        m_currentEncoderCount = RobotContainer.getDrivetrainSubsystem().getEncoderCount();
+        m_currentEncoderCount = m_drivetrainSubsystem.getEncoderCount();
     }
 
     @Override
@@ -124,7 +129,7 @@ public class StrafeCommand extends CommandBase {
         // TODO - Sometimes the robot stops without being obstructed, WTF?
         // Check to see if the robot has stopped moving prematurely
         // if (m_hasStartedMoving &&
-        // (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() == 0.0)) {
+        // (m_drivetrainSubsystem.getEncoderRateOfChange() == 0.0)) {
         // System.out.println("Robot is obstructed, ending strafe command");
         // return true;
         // } else {
@@ -136,11 +141,11 @@ public class StrafeCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        RobotContainer.getDrivetrainSubsystem().stopMotors();
-        RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
+        m_drivetrainSubsystem.stopMotors();
+        m_drivetrainSubsystem.setMotorsToBrake();
 
         // Return the status frame period back to its original value
-        RobotContainer.getDrivetrainSubsystem().setDriveMotorStatusFramePeriod(ORIGINAL_FRAME_STATUS_PERIOD);
+        m_drivetrainSubsystem.setDriveMotorStatusFramePeriod(ORIGINAL_FRAME_STATUS_PERIOD);
 
         System.out.println("StrafeCommand finished");
     }

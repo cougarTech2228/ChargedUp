@@ -3,29 +3,45 @@ package frc.robot.commands;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.ButtonBoardSubsystem;
+import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.ShuffleboardSubsystem;
+import frc.robot.utils.AprilTagManager;
 import frc.robot.utils.DockWithAprilTag;
 import frc.robot.Constants;
 
 public class DockWithAprilTagCommand extends CommandBase {
     private double m_aprilTagId;
     private boolean m_isFOV;
+
     private ButtonBoardSubsystem m_buttonBoardSubsystem;
+    private ShuffleboardSubsystem m_shuffleboardSubsystem;
+    private AprilTagManager m_aprilTagManager;
+    private DrivetrainSubsystem m_drivetrainSubsystem;
 
     private Runnable m_dockWithAprilTagRunnable;
     private Thread m_dockWithAprilTagThread;
 
     public DockWithAprilTagCommand(
-            boolean isFOV) {
+            boolean isFOV,
+            ShuffleboardSubsystem shuffleboardSubsystem,
+            AprilTagManager aprilTagManager,
+            DrivetrainSubsystem drivetrainSubsystem) {
         m_isFOV = isFOV;
+        m_shuffleboardSubsystem = shuffleboardSubsystem;
+        m_aprilTagManager = aprilTagManager;
+        m_drivetrainSubsystem = drivetrainSubsystem;
     }
 
     public DockWithAprilTagCommand(
             boolean isFOV,
-            ButtonBoardSubsystem buttonBoardSubsystem) {
+            ButtonBoardSubsystem buttonBoardSubsystem,
+            AprilTagManager aprilTagManager,
+            DrivetrainSubsystem drivetrainSubsystem) {
         m_isFOV = isFOV;
         m_buttonBoardSubsystem = buttonBoardSubsystem;
+        m_aprilTagManager = aprilTagManager;
+        m_drivetrainSubsystem = drivetrainSubsystem;
     }
 
     // Called when the command is initially scheduled.
@@ -42,19 +58,19 @@ public class DockWithAprilTagCommand extends CommandBase {
         // initialization.
         if (m_buttonBoardSubsystem == null) {
             // Get the correct AprilTag ID based on Position and Alliance Color
-            if (RobotContainer.getShuffleboardSubsystem().getAutoPosition() == Constants.AutoPosition.Position1) {
+            if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position1) {
                 if (DriverStation.getAlliance() == Alliance.Blue) {
                     m_aprilTagId = 6.0;
                 } else {
                     m_aprilTagId = 1.0;
                 }
-            } else if (RobotContainer.getShuffleboardSubsystem().getAutoPosition() == Constants.AutoPosition.Position2) {
+            } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position2) {
                 if (DriverStation.getAlliance() == Alliance.Blue) {
                     m_aprilTagId = 7.0;
                 } else {
                     m_aprilTagId = 2.0;
                 }
-            } else if (RobotContainer.getShuffleboardSubsystem().getAutoPosition() == Constants.AutoPosition.Position3) {
+            } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position3) {
                 if (DriverStation.getAlliance() == Alliance.Blue) {
                     m_aprilTagId = 8.0;
                 } else {
@@ -71,7 +87,9 @@ public class DockWithAprilTagCommand extends CommandBase {
 
         m_dockWithAprilTagRunnable = new DockWithAprilTag(
                 m_isFOV,
-                m_aprilTagId);
+                m_aprilTagId,
+                m_aprilTagManager,
+                m_drivetrainSubsystem);
 
         m_dockWithAprilTagThread = new Thread(m_dockWithAprilTagRunnable, "DockWithAprilTagThread");
         m_dockWithAprilTagThread.start();

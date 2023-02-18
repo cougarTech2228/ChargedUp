@@ -60,8 +60,10 @@ public class RobotContainer {
     private final static ExtendoSubsystem m_extendoSubsystem = new ExtendoSubsystem(m_distanceSensorSubsystem);
 
     private final static PneumaticSubsystem m_pneumaticSubsystem = new PneumaticSubsystem();
-    
-    private final static ButtonBoardSubsystem m_buttonBoardSubsystem = new ButtonBoardSubsystem(m_elevatorSubsystem, m_extendoSubsystem);
+
+    private final static ButtonBoardSubsystem m_buttonBoardSubsystem = new ButtonBoardSubsystem(m_elevatorSubsystem,
+            m_extendoSubsystem, m_aprilTagManager, m_ledStripSubsystem, m_pneumaticSubsystem, m_drivetrainSubsystem,
+            m_shuffleboardSubsystem);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -102,11 +104,6 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
 
-        // TODO get rid of this eventually once everyone is used to the new button
-        // assignments.
-        new Trigger(m_controller::getBackButton)
-                .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.zeroGyroscope()));
-
         new Trigger(m_controller::getXButton)
                 .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.zeroGyroscope()));
 
@@ -128,11 +125,14 @@ public class RobotContainer {
 
     public static Command getAutonomousCommand() {
         if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position1) {
-            return new AutoOneCommand(m_elevatorSubsystem, m_extendoSubsystem);
+            return new AutoOneCommand(m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
+                    m_shuffleboardSubsystem, m_aprilTagManager, m_pneumaticSubsystem);
         } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position2) {
-            return new AutoTwoCommand(m_elevatorSubsystem, m_extendoSubsystem);
+            return new AutoTwoCommand(m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
+                    m_shuffleboardSubsystem, m_pneumaticSubsystem);
         } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position3) {
-            return new AutoThreeCommand(m_elevatorSubsystem, m_extendoSubsystem);
+            return new AutoThreeCommand(m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
+                    m_shuffleboardSubsystem, m_aprilTagManager, m_pneumaticSubsystem);
         } else {
             System.out.println("Invalid position received from Shufflboard");
             return null;
@@ -169,35 +169,15 @@ public class RobotContainer {
         return m_drivetrainSubsystem;
     }
 
-    public static AprilTagManager getAprilTagManager() {
-        return m_aprilTagManager;
-    }
-
     public static LEDStripSubsystem getLEDStripSubsystem() {
         return m_ledStripSubsystem;
-    }
-
-    public static ExtendoSubsystem getExtendoSubsystem() {
-        return m_extendoSubsystem;
-    }
-
-    public static ShuffleboardSubsystem getShuffleboardSubsystem() {
-        return m_shuffleboardSubsystem;
     }
 
     public static ButtonBoardSubsystem getButtonBoardSubsystem() {
         return m_buttonBoardSubsystem;
     }
 
-    public static ElevatorSubsystem getElevatorSubsystem() {
-        return m_elevatorSubsystem;
-    }
-
-    public static XboxController getXboxController() {
-        return m_controller;
-    }
-
-    public static PneumaticSubsystem getPneumaticSubsystem(){
-        return m_pneumaticSubsystem;
+    public static AprilTagManager getAprilTagManager() {
+        return m_aprilTagManager;
     }
 }

@@ -7,14 +7,16 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
-import frc.robot.RobotContainer;
+import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class DockWithAprilTag implements Runnable {
 
     private double m_aprilTagId;
     private boolean m_isFOV;
+    private AprilTagManager m_aprilTagManager;
+    private DrivetrainSubsystem m_drivetrainSubsystem;
 
-    //private boolean m_hasStartedMoving;
+    // private boolean m_hasStartedMoving;
 
     private static double kDt = 0.02;
 
@@ -63,16 +65,20 @@ public class DockWithAprilTag implements Runnable {
 
     public DockWithAprilTag(
             boolean isFOV,
-            double aprilTagId) {
+            double aprilTagId,
+            AprilTagManager aprilTagManager,
+            DrivetrainSubsystem driveTrainSubsystem) {
 
         m_isFOV = isFOV;
         m_aprilTagId = aprilTagId;
+        m_aprilTagManager = aprilTagManager;
+        m_drivetrainSubsystem = driveTrainSubsystem;
     }
 
     public void run() {
         // m_hasStartedMoving = false;
 
-        if (RobotContainer.getAprilTagManager().getTagID() == m_aprilTagId) {
+        if (m_aprilTagManager.getTagID() == m_aprilTagId) {
 
             m_forwardController.setGoal(0.0);
             m_sidewaysController.setGoal(0.0);
@@ -86,10 +92,10 @@ public class DockWithAprilTag implements Runnable {
                 // If the AprilTag comes up as 2228 that means the detector can't see a
                 // tag. We should wait a bit to see if the detection loss is just transitory
                 // before giving up on it.
-                if ((RobotContainer.getAprilTagManager().getTagID() == Constants.BAD_APRIL_TAG_ID) &&
+                if ((m_aprilTagManager.getTagID() == Constants.BAD_APRIL_TAG_ID) &&
                         (detectionLostTime == 0.0)) {
                     detectionLostTime = Timer.getFPGATimestamp();
-                } else if (RobotContainer.getAprilTagManager().getTagID() == m_aprilTagId) {
+                } else if (m_aprilTagManager.getTagID() == m_aprilTagId) {
                     detectionLostTime = 0.0;
                 }
 
@@ -100,13 +106,8 @@ public class DockWithAprilTag implements Runnable {
                     break;
                 }
 
-                if (RobotContainer.getXboxController().getBButton()) {
-                    System.out.println("Driver cancelled command...");
-                    break;
-                }
-
-                // if (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() > 0) {
-                //     m_hasStartedMoving = true;
+                // if (m_drivetrainSubsystem.getEncoderRateOfChange() > 0) {
+                // m_hasStartedMoving = true;
                 // }
 
                 // If we've started moving but then stop moving due to some unforseen issue
@@ -114,13 +115,14 @@ public class DockWithAprilTag implements Runnable {
                 // thread.
                 // TODO - This happens when the robot is not blocked, same as Strafe. Something
                 // is going on in the DriveTrainSubystem with the RoC calc.
-                // if (m_hasStartedMoving && (RobotContainer.getDrivetrainSubsystem().getEncoderRateOfChange() == 0)) {
-                //     System.out.println("Robot is blocked and has stopped moving...");
-                //     break;
+                // if (m_hasStartedMoving && (m_drivetrainSubsystem.getEncoderRateOfChange() ==
+                // 0)) {
+                // System.out.println("Robot is blocked and has stopped moving...");
+                // break;
                 // }
 
-                double distanceToTarget = RobotContainer.getAprilTagManager().getTZ();
-                double offsetTargetDistance = RobotContainer.getAprilTagManager().getTX();
+                double distanceToTarget = m_aprilTagManager.getTZ();
+                double offsetTargetDistance = m_aprilTagManager.getTX();
 
                 double forwardSpeed = -m_forwardController.calculate(distanceToTarget);
                 double sidewaysSpeed = m_sidewaysController.calculate(offsetTargetDistance);
@@ -158,27 +160,27 @@ public class DockWithAprilTag implements Runnable {
                 ChassisSpeeds chassisSpeeds;
 
                 // System.out.println("Current heading: " +
-                // RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees());
+                // m_drivetrainSubsystem.getGyroscopeRotation().getDegrees());
 
                 if (m_isFOV) {
                     chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(-forwardVelocity,
                             -sidewaysVelocity,
                             m_turnController.calculate(
-                                    ((RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees()
+                                    ((m_drivetrainSubsystem.getGyroscopeRotation().getDegrees()
                                             + 360.0) % 360.0) - 180.0,
                                     PITCH_CORRECTION_GYRO_ANGLE),
-                            RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
+                            m_drivetrainSubsystem.getGyroscopeRotation());
                 } else {
 
                     chassisSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(forwardVelocity,
                             sidewaysVelocity,
                             m_turnController.calculate(
-                                    RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation().getDegrees(),
+                                    m_drivetrainSubsystem.getGyroscopeRotation().getDegrees(),
                                     PITCH_CORRECTION_GYRO_ANGLE),
-                            RobotContainer.getDrivetrainSubsystem().getGyroscopeRotation());
+                            m_drivetrainSubsystem.getGyroscopeRotation());
                 }
 
-                RobotContainer.getDrivetrainSubsystem().drive(chassisSpeeds);
+                m_drivetrainSubsystem.drive(chassisSpeeds);
 
                 // Check to see if we're within docking distance
                 if (distanceToTarget < DOCKING_DISTANCE_GOAL_METERS) {
@@ -196,6 +198,6 @@ public class DockWithAprilTag implements Runnable {
             System.out.printf("April tag: %.0f not detected!\n", m_aprilTagId);
         }
 
-        RobotContainer.getDrivetrainSubsystem().stopMotors();
+        m_drivetrainSubsystem.stopMotors();
     }
 }

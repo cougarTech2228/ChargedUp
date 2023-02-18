@@ -9,7 +9,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.RobotContainer;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
 import java.util.HashMap;
@@ -38,9 +37,9 @@ public class FollowTrajectoryCommand extends SequentialCommandGroup {
                 swerveCommand,
                 path.getMarkers(),
                 eventMap);
-                
+
         addCommands(
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(true)),
+                new InstantCommand(() -> drivetrain.setPathPlannerDriving(true)),
                 new InstantCommand(() -> {
                     // Reset odometry for the first path you run during auto
                     if (isFirstPath) {
@@ -49,7 +48,6 @@ public class FollowTrajectoryCommand extends SequentialCommandGroup {
                     }
                 }),
                 command,
-                new InstantCommand(() -> RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false))
-        );
+                new InstantCommand(() -> drivetrain.setPathPlannerDriving(false)));
     }
 }
