@@ -17,7 +17,9 @@ import frc.robot.commands.AutoOneCommand;
 import frc.robot.commands.AutoThreeCommand;
 import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
+import frc.robot.commands.ParallelArmCommand;
 import frc.robot.commands.ArmCommand.Destination;
+import frc.robot.commands.ParallelArmCommand.ArmDestination;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtendoSubsystem;
@@ -119,7 +121,7 @@ public class RobotContainer {
                 .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.setBoostMode(false)));
 
         new Trigger(m_controller::getAButton)
-                .onTrue(new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Destination.bot));
+                .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmDestination.bot));
 
         // new Trigger(m_controller::getYButton)
         // .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()));
