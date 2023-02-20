@@ -24,11 +24,11 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     WPI_TalonFX m_elevatorMotor;
     private CT_DigitalInput m_elevatorDownLimit;
     private CT_DigitalInput m_elevatorUpLimit;
-    private ElevatorState elevatorState = ElevatorState.stopped;
+    private ElevatorState m_elevatorState = ElevatorState.stopped;
     private double m_feedforwardVal = 0;
 
     private Rev2mDistanceSensor m_distMxp;
-    private double elevatorHight;
+    private double m_elevatorHeight;
 
     private static final double kSVolts = 0;
     private static final double kGVolts = 0;
@@ -42,8 +42,8 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     private static final double kMotorVoltageLimit = 8.0;
     private static final double kPositionErrorTolerance = 0.1;
 
-    public static final double DISTANCE_BOT = 0.0;
-  
+    public static final double DISTANCE_BOT = 51.0;
+
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
             kP, kI, kD,
             new TrapezoidProfile.Constraints(
@@ -76,6 +76,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
         m_elevatorUpLimit = new CT_DigitalInput(Constants.ELEVATOR_UPPER_LIMIT_DIO);
         m_elevatorMotor = new WPI_TalonFX(Constants.ELEVATOR_MOTOR_ID);
         m_elevatorMotor.setNeutralMode(NeutralMode.Brake);
+        m_elevatorMotor.setInverted(true);
 
         m_distMxp = distanceSensorSubsystem.getElevatorSensor();
 
@@ -87,7 +88,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
                 return isEnabled();
             };
         });
-        
+
         m_sbTab.addDouble("PID goal", new DoubleSupplier() {
             @Override
             public double getAsDouble() {
@@ -105,7 +106,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
         m_sbTab.addDouble("Current Height:", new DoubleSupplier() {
             @Override
             public double getAsDouble() {
-                return elevatorHight;
+                return m_elevatorHeight;
             };
         });
 
@@ -122,7 +123,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
         super.periodic();
 
         if (m_distMxp.isEnabled() && m_distMxp.isRangeValid()) {
-            elevatorHight = m_distMxp.getRange(Unit.kMillimeters) / 10.0;
+            m_elevatorHeight = m_distMxp.getRange(Unit.kMillimeters) / 10.0;
         }
 
         if (DriverStation.isDisabled()) {
@@ -132,19 +133,16 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
             return;
         }
 
-        if (isElevatorUpperLimitReached() && (elevatorState == ElevatorState.raising)) {
+        if (isElevatorUpperLimitReached() && (m_elevatorState == ElevatorState.raising)) {
             stopElevator();
-        } else if (isElevatorLowerLimitReached() && (elevatorState == ElevatorState.lowering)) {
+            System.out.println("Elevator Upper Limit Reached");
+        } else if (isElevatorLowerLimitReached() && (m_elevatorState == ElevatorState.lowering)) {
             stopElevator();
+            System.out.println("Elevator Lower Limit Reached");
         }
 
-        if (isElevatorLowerLimitReached()) {
-            m_elevatorMotor.setSelectedSensorPosition(0);
-        }
-
-        if (isElevatorUpperLimitReached()) {
-            System.out.println(m_elevatorMotor.getSelectedSensorPosition());
-            System.out.println("Elevator Upper Limit Reached"); // KAS DEBUG
+        if (pidController.atGoal()) {
+            stopElevator();
         }
     }
 
@@ -153,12 +151,23 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     }
 
     private void stopElevator() {
-        System.out.println("stopping elevator");
-        elevatorState = ElevatorState.stopped;
-        m_elevatorMotor.stopMotor();
+        if (m_elevatorState != ElevatorState.stopped) {
+            System.out.println("stopping elevator");
+            m_elevatorState = ElevatorState.stopped;
+            m_elevatorMotor.stopMotor();
+            disable();
+        }
     }
 
     public void setElevatorPosition(double height) {
+        if (height > m_elevatorHeight) {
+            m_elevatorState = ElevatorState.raising;
+        } else if (height < m_elevatorHeight) {
+            m_elevatorState = ElevatorState.lowering;
+        } else {
+            m_elevatorState = ElevatorState.stopped;
+        }
+
         System.out.println("setting height: " + height);
         this.m_controller.reset(getMeasurement());
         pidController.setGoal(height);
@@ -190,18 +199,10 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
         }
 
         m_elevatorMotor.setVoltage(val);
-
-        if (val > 0) {
-            elevatorState = ElevatorState.raising;
-        } else if (val < 0) {
-            elevatorState = ElevatorState.lowering;
-        } else {
-            elevatorState = ElevatorState.stopped;
-        }
     }
 
     @Override
     public double getMeasurement() {
-        return elevatorHight;
+        return m_elevatorHeight;
     }
 }

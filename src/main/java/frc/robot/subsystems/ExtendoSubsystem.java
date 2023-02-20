@@ -26,7 +26,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private ShuffleboardTab m_sbTab;
 
     private CT_DigitalInput m_extendoHomeLimit;
-    private ExtendoState extendoState = ExtendoState.stopped;
+    private ExtendoState m_extendoState = ExtendoState.stopped;
 
     private double m_currentArmReachCm;
     private Rev2mDistanceSensor m_distMxp;
@@ -45,7 +45,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double kMotorVoltageLimit = 8.0;
     private static final double kPositionErrorTolerance = 0.1;
 
-    public static final double DISTANCE_BOT = 22.5;
+    public static final double DISTANCE_BOT = 15.5;
 
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
             kP,
@@ -74,10 +74,6 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         m_extendoMotor = new WPI_TalonFX(Constants.EXTENDO_MOTOR_ID);
         m_extendoMotor.setNeutralMode(NeutralMode.Brake);
         m_distMxp = distanceSensorSubsystem.getExtendoArmSensor();
-
-        m_extendoHomeLimit.setMethodToRun(() -> { // home limit hit
-            stopExtending();
-        });
 
         m_sbTab = Shuffleboard.getTab("Extendo");
 
@@ -115,21 +111,34 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         if (m_distMxp.isEnabled() && m_distMxp.isRangeValid()) {
             m_currentArmReachCm = m_distMxp.getRange(Unit.kMillimeters) / 10.0;
         }
-        
+
         if (DriverStation.isDisabled()) {
             pidController.setGoal(getCurrentArmReachCm());
             disable();
             return;
         }
 
-        if (isExtendoHomeLimitReached() && (extendoState == ExtendoState.retracting)) {
+        if (pidController.atGoal()) {
             stopExtending();
-            extendoState = ExtendoState.stopped;
+        }
+
+        // Need to handle the special case where we may be commanding the
+        // arm to retract passed the limit switch.
+        if (isExtendoHomeLimitReached() && (m_extendoState == ExtendoState.retracting)) {
+            stopExtending();
             System.out.println("Extendo home limit reached");
         }
     }
 
     public void goToDistanceCM(double distanceCM) {
+        if (distanceCM > m_currentArmReachCm) {
+            m_extendoState = ExtendoState.extending;
+        } else if (distanceCM < m_currentArmReachCm) {
+            m_extendoState = ExtendoState.retracting;
+        } else {
+            m_extendoState = ExtendoState.stopped;
+        }
+
         System.out.println("setting position: " + distanceCM);
         pidController.setGoal(distanceCM);
         enable();
@@ -144,64 +153,38 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     }
 
     private void stopExtending() {
-        System.out.println("stopping extendo arm");
-        m_extendoMotor.stopMotor();
-    }
-
-    public void extendArm() {
-        if (extendoState != ExtendoState.extending) {
-            extendoState = ExtendoState.extending;
-            m_extendoMotor.set(ControlMode.PercentOutput, Constants.EXTENDO_MOTOR_SPEED);
-        } else {
-            stopExtending();
-        }
-    }
-
-    public void retractArm() {
-        if (extendoState != ExtendoState.retracting) {
-            extendoState = ExtendoState.retracting;
-            m_extendoMotor.set(ControlMode.PercentOutput, -Constants.EXTENDO_MOTOR_SPEED);
-        } else {
-            stopExtending();
+        if (m_extendoState != ExtendoState.stopped) {
+            m_extendoMotor.stopMotor();
+            m_extendoState = ExtendoState.stopped;
+            System.out.println("stopping extendo arm");
+            disable();
         }
     }
 
     public boolean isExtendoHomeLimitReached() {
-
-        // KAS DEBUG
-        if (!m_extendoHomeLimit.get()) {
-            System.out.println("Extendo Home Limit Reached");
-        }
-        // KAS DEBUG
-
         return !m_extendoHomeLimit.get();
     }
 
     @Override
     public void useOutput(double output, TrapezoidProfile.State setpoint) {
-        // Calculate the feedforward from the sepoint
-        double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
-        double newOutput = output + feedforward;
-        // Add the feedforward to the PID output to get the motor output
 
-        // clamp the output to a sane range
-        double val;
-        if (newOutput < 0) {
-            val = Math.max(-kMotorVoltageLimit, newOutput);
-        } else {
-            val = Math.min(kMotorVoltageLimit, newOutput);
-        }
+        if (m_extendoState != ExtendoState.stopped) {
+            // Calculate the feedforward from the sepoint
+            double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
+            double newOutput = output + feedforward;
+            // Add the feedforward to the PID output to get the motor output
 
-        if (!((extendoState == ExtendoState.retracting) && isExtendoHomeLimitReached())) {
-            m_extendoMotor.setVoltage(val);
-        }
+            // clamp the output to a sane range
+            double val;
+            if (newOutput < 0) {
+                val = Math.max(-kMotorVoltageLimit, newOutput);
+            } else {
+                val = Math.min(kMotorVoltageLimit, newOutput);
+            }
 
-        if (val > 0) {
-            extendoState = ExtendoState.extending;
-        } else if (val < 0) {
-            extendoState = ExtendoState.retracting;
-        } else {
-            extendoState = ExtendoState.stopped;
+            if (!((m_extendoState == ExtendoState.retracting) && isExtendoHomeLimitReached())) {
+                m_extendoMotor.setVoltage(val);
+            }
         }
     }
 

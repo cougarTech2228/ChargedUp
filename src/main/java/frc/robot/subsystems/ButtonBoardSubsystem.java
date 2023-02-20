@@ -58,7 +58,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     private static DrivetrainSubsystem m_drivetrainSubystem;
     private static ShuffleboardSubsystem m_shuffleboardSubsystem;
 
-    private static final double INCREMENTAL_ARM_HEIGHT_CHANGE_CM = 2.0;
+    private static final double INCREMENTAL_ARM_HEIGHT_CHANGE_CM = 1.0;
     private static final double INCREMENTAL_ARM_REACH_CHANGE_CM = 2.0;
 
     public ButtonBoardSubsystem(ElevatorSubsystem elevatorSubsystem, ExtendoSubsystem extendoSubsystem,

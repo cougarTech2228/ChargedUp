@@ -26,6 +26,7 @@ public class ArmCommand extends CommandBase {
 
     @Override
     public void initialize() {
+        System.out.println("Initializing ArmCommand");
         if (m_destination == Destination.bot) {
             m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_BOT);
         }
