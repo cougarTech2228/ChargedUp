@@ -100,7 +100,7 @@ public class Robot extends TimedRobot {
 
     @Override
     public void teleopInit() {
-        RobotContainer.getDrivetrainSubsystem().setMotorsToBrake();
+        RobotContainer.getDrivetrainSubsystem().setMotorsToCoast();
         RobotContainer.getDrivetrainSubsystem().primeDrivetrain();
         
         // This makes sure that the autonomous stops running when

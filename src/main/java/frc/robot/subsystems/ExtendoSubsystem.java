@@ -30,18 +30,27 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
 
     private double m_currentArmReachCm;
     private Rev2mDistanceSensor m_distMxp;
+
     private static final double kSVolts = 0;
     private static final double kGVolts = -.2;
     private static final double kVVolt = 0.01;
     private static final double kAVolt = 0.1;
+
     private static final double kP = 0.3;
+    private static final double kI = 1.0;
+    private static final double kD = 0.0;
+
     private static final double kMaxVelocityTicksPerSecond = 15;
     private static final double kMaxAccelerationTicksPerSecSquared = 4;
+    private static final double kMotorVoltageLimit = 8.0;
+    private static final double kPositionErrorTolerance = 0.1;
+
     public static final double DISTANCE_BOT = 22.5;
+
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
             kP,
-            1,
-            0,
+            kI,
+            kD,
             new TrapezoidProfile.Constraints(
                     kMaxVelocityTicksPerSecond,
                     kMaxAccelerationTicksPerSecSquared));
@@ -58,7 +67,9 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
 
     public ExtendoSubsystem(DistanceSensorSubsystem distanceSensorSubsystem) {
         super(pidController, 0);
-        pidController.setTolerance(0.1);
+
+        pidController.setTolerance(kPositionErrorTolerance);
+
         m_extendoHomeLimit = new CT_DigitalInput(Constants.EXTENDO_HOME_LIMIT_DIO);
         m_extendoMotor = new WPI_TalonFX(Constants.EXTENDO_MOTOR_ID);
         m_extendoMotor.setNeutralMode(NeutralMode.Brake);
@@ -103,12 +114,8 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
 
         if (m_distMxp.isEnabled() && m_distMxp.isRangeValid()) {
             m_currentArmReachCm = m_distMxp.getRange(Unit.kMillimeters) / 10.0;
-
-            // KAS DEBUG
-            System.out.println("Current Arm Reach = " + m_currentArmReachCm);
-            // KAS DEBUG
-
         }
+        
         if (DriverStation.isDisabled()) {
             pidController.setGoal(getCurrentArmReachCm());
             disable();
@@ -120,12 +127,6 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
             extendoState = ExtendoState.stopped;
             System.out.println("Extendo home limit reached");
         }
-
-        // KAS DEBUG
-        if (isExtendoHomeLimitReached()) {
-            System.out.println("Extendo Home Limit Reached");
-        }
-        // KAS DEBUG
     }
 
     public void goToDistanceCM(double distanceCM) {
@@ -166,6 +167,13 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     }
 
     public boolean isExtendoHomeLimitReached() {
+
+        // KAS DEBUG
+        if (!m_extendoHomeLimit.get()) {
+            System.out.println("Extendo Home Limit Reached");
+        }
+        // KAS DEBUG
+
         return !m_extendoHomeLimit.get();
     }
 
@@ -179,9 +187,9 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         // clamp the output to a sane range
         double val;
         if (newOutput < 0) {
-            val = Math.max(-8, newOutput);
+            val = Math.max(-kMotorVoltageLimit, newOutput);
         } else {
-            val = Math.min(8, newOutput);
+            val = Math.min(kMotorVoltageLimit, newOutput);
         }
 
         if (!((extendoState == ExtendoState.retracting) && isExtendoHomeLimitReached())) {

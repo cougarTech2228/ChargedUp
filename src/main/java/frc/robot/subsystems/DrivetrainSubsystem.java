@@ -25,7 +25,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -121,7 +120,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private SwerveDriveOdometry m_odometry;
 
-    private boolean m_pathPlannerDriving;
+    private boolean m_isPathPlannerDriving;
+
+    private boolean m_isBoostModeSet; // Cranks the drive speed to the max
+
+    // TODO once 'normal speeds' are determined, hard-code them and get rid of
+    // Shuffleboard Tab
+    private static final double kXYNormalSpeed = 0.33;
+    private static final double kRotationalNormalSpeed = 0.25;
+    private static final double kXYBoostSpeed = 0.75;
+    private static final double kRotationalBoostSpeed = 0.5;
 
     // private double m_tempEncoderCount = 0;
     // private int m_encoderIteration = 0;
@@ -137,10 +145,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                                                     * to see the current state of
                                                                     * // the module on the dashboard.
                                                                     */
-                tab.getLayout("Front Left Module",
-                        BuiltInLayouts.kList)
-                        .withSize(2, 3)
-                        .withPosition(0, 0),
+                // tab.getLayout("Front Left Module",
+                // BuiltInLayouts.kList)
+                // .withSize(2, 3)
+                // .withPosition(0, 0),
 
                 // This can either be STANDARD or FAST depending on your gear configuration
                 Mk4iSwerveModuleHelper.GearRatio.L2,
@@ -155,10 +163,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 Constants.FRONT_LEFT_MODULE_STEER_OFFSET);
 
         // We will do the same for the other modules
-        m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(tab.getLayout("Front Right Module",
-                BuiltInLayouts.kList)
-                .withSize(2, 3)
-                .withPosition(2, 0),
+        m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+                // tab.getLayout("Front Right Module",
+                // BuiltInLayouts.kList)
+                // .withSize(2, 3)
+                // .withPosition(2, 0),
 
                 Mk4iSwerveModuleHelper.GearRatio.L2,
                 Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID,
@@ -166,10 +175,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 Constants.FRONT_RIGHT_MODULE_STEER_ENCODER_ID,
                 Constants.FRONT_RIGHT_MODULE_STEER_OFFSET);
 
-        m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(tab.getLayout("Back Left Module",
-                BuiltInLayouts.kList)
-                .withSize(2, 3)
-                .withPosition(4, 0),
+        m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
+                // tab.getLayout("Back Left Module",
+                // BuiltInLayouts.kList)
+                // .withSize(2, 3)
+                // .withPosition(4, 0),
 
                 Mk4iSwerveModuleHelper.GearRatio.L2,
                 Constants.BACK_LEFT_MODULE_DRIVE_MOTOR_ID,
@@ -177,10 +187,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 Constants.BACK_LEFT_MODULE_STEER_ENCODER_ID,
                 Constants.BACK_LEFT_MODULE_STEER_OFFSET);
 
-        m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500(tab.getLayout("Back Right Module",
-                BuiltInLayouts.kList)
-                .withSize(2, 3)
-                .withPosition(6, 0),
+        m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
+                // tab.getLayout("Back Right Module",
+                // BuiltInLayouts.kList)
+                // .withSize(2, 3)
+                // .withPosition(6, 0),
 
                 Mk4iSwerveModuleHelper.GearRatio.L2,
                 Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR_ID,
@@ -203,7 +214,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         configureDriveMotor(m_backLeftDriveMotor);
         configureDriveMotor(m_backRightDriveMotor);
 
-        m_pathPlannerDriving = false;
+        m_isPathPlannerDriving = false;
+        m_isBoostModeSet = false;
 
         zeroGyroscope();
 
@@ -379,6 +391,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void stopMotors() {
         System.out.println("stopMotors");
         drive(new ChassisSpeeds(0.0, 0.0, 0.0));
+
+        // m_tempEncoderCount = 0;
+        // m_encoderIteration = 0;
+        // m_encoderRateOfChange = 0;
     }
 
     public void setMotorsToCoast() {
@@ -408,15 +424,36 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public double getForwardAdjustment() {
-        return m_forwardAdjustmentTableEntry.getDouble(INITIAL_INPUT_ADJUSTMENT);
+
+        // return m_forwardAdjustmentTableEntry.getDouble(INITIAL_INPUT_ADJUSTMENT);
+
+        if (m_isBoostModeSet) {
+            return kXYBoostSpeed;
+        } else {
+            return m_forwardAdjustmentTableEntry.getDouble(INITIAL_INPUT_ADJUSTMENT);
+            // return kXYNormalSpeed; // TODO once this is determined, just hard-code it
+        }
     }
 
     public double getSidewaysAdjustment() {
-        return m_sidewaysAdjustmentTableEntry.getDouble(INITIAL_INPUT_ADJUSTMENT);
+
+        if (m_isBoostModeSet) {
+            return kXYBoostSpeed;
+        } else {
+            return m_sidewaysAdjustmentTableEntry.getDouble(INITIAL_INPUT_ADJUSTMENT);
+            // return kXYNormalSpeed; // TODO once this is determined, just hard-code it
+        }
     }
 
     public double getRotationalAdjustment() {
-        return m_rotationalAdjustmentTableEntry.getDouble(INITIAL_INPUT_ADJUSTMENT);
+
+        if (m_isBoostModeSet) {
+            return kRotationalBoostSpeed;
+        } else {
+            return m_rotationalAdjustmentTableEntry.getDouble(INITIAL_INPUT_ADJUSTMENT);
+            // return kRotationalNormalSpeed; // TODO once this is determined, just
+            // hard-code it
+        }
     }
 
     // This is an attempt to get rid of the "dead wheel" issue when the CANCoder
@@ -445,7 +482,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void setPathPlannerDriving(boolean isPathPlannerDriving) {
-        m_pathPlannerDriving = isPathPlannerDriving;
+        m_isPathPlannerDriving = isPathPlannerDriving;
     }
 
     public SwerveDriveOdometry getOdometry() {
@@ -460,6 +497,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_odometry.resetPosition(getGyroscopeRotation(), getSwerveModulePositions(), pose);
     }
 
+    public void setBoostMode(boolean boostModeSet) {
+        m_isBoostModeSet = boostModeSet;
+    }
+
     @Override
     public void periodic() {
 
@@ -469,7 +510,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         m_odometry.update(getGyroscopeRotation(), getSwerveModulePositions());
 
-        if (!m_pathPlannerDriving) {
+        if (!m_isPathPlannerDriving) {
             SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
             setModuleStates(states);
         }

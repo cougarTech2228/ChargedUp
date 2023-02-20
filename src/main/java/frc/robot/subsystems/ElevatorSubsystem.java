@@ -29,6 +29,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
     private Rev2mDistanceSensor m_distMxp;
     private double elevatorHight;
+
     private static final double kSVolts = 0;
     private static final double kGVolts = 0;
     private static final double kVVolt = 0;
@@ -38,7 +39,11 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     private static final double kD = 0;
     private static final double kMaxVelocity = 10;
     private static final double kMaxAcceleration = 2;
-    public static final double DISTANCE_BOT = 0;
+    private static final double kMotorVoltageLimit = 8.0;
+    private static final double kPositionErrorTolerance = 0.1;
+
+    public static final double DISTANCE_BOT = 0.0;
+  
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
             kP, kI, kD,
             new TrapezoidProfile.Constraints(
@@ -64,7 +69,8 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
     public ElevatorSubsystem(DistanceSensorSubsystem distanceSensorSubsystem) {
         super(pidController, 0);
-        pidController.setTolerance(0.1);
+
+        pidController.setTolerance(kPositionErrorTolerance);
 
         m_elevatorDownLimit = new CT_DigitalInput(Constants.ELEVATOR_LOWER_LIMIT_DIO);
         m_elevatorUpLimit = new CT_DigitalInput(Constants.ELEVATOR_UPPER_LIMIT_DIO);
@@ -81,12 +87,14 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
                 return isEnabled();
             };
         });
+        
         m_sbTab.addDouble("PID goal", new DoubleSupplier() {
             @Override
             public double getAsDouble() {
                 return m_controller.getGoal().position;
             };
         });
+
         m_sbTab.addDouble("PID output", new DoubleSupplier() {
             @Override
             public double getAsDouble() {
@@ -124,9 +132,9 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
             return;
         }
 
-        if (isElevatorUpperLimitReached() && elevatorState == ElevatorState.raising) {
+        if (isElevatorUpperLimitReached() && (elevatorState == ElevatorState.raising)) {
             stopElevator();
-        } else if (isElevatorLowerLimitReached() && elevatorState == ElevatorState.lowering) {
+        } else if (isElevatorLowerLimitReached() && (elevatorState == ElevatorState.lowering)) {
             stopElevator();
         }
 
@@ -136,17 +144,8 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
         if (isElevatorUpperLimitReached()) {
             System.out.println(m_elevatorMotor.getSelectedSensorPosition());
+            System.out.println("Elevator Upper Limit Reached"); // KAS DEBUG
         }
-
-        // KAS DEBUG
-        if (isElevatorUpperLimitReached()) {
-            System.out.println("Elevator Upper Limit Reached");
-        }
-
-        if (isElevatorLowerLimitReached()) {
-            System.out.println("Elevator Lower Limit Reached");
-        }
-        // KAS DEBUG
     }
 
     public boolean atGoal() {
@@ -185,9 +184,9 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
         // clamp the output to a sane range
         double val;
         if (newOutput < 0) {
-            val = Math.max(-8, newOutput);
+            val = Math.max(-kMotorVoltageLimit, newOutput);
         } else {
-            val = Math.min(8, newOutput);
+            val = Math.min(kMotorVoltageLimit, newOutput);
         }
 
         m_elevatorMotor.setVoltage(val);

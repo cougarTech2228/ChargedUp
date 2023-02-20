@@ -26,7 +26,6 @@ public class ArmCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        // super.initialize();
         if (m_destination == Destination.bot) {
             m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_BOT);
         }
@@ -42,10 +41,8 @@ public class ArmCommand extends CommandBase {
 
     @Override
     public void execute() {
-        // super.execute();
         if (m_destination == Destination.bot) {
             if (m_extendoSubsystem.getCurrentArmReachCm() <= safteyValue) {
-                System.out.println("Inside execute if");
                 if (!flag) {
                     m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.DISTANCE_BOT);
                     flag = true;

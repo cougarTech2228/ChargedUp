@@ -13,12 +13,12 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 public class PneumaticSubsystem extends SubsystemBase {
 
     private Solenoid m_gripper;
-    PneumaticHub m_pnPneumaticHub;
+    PneumaticHub m_pneumaticHub;
     private ShuffleboardTab m_sbTab;
 
     public PneumaticSubsystem() {
-        m_pnPneumaticHub = new PneumaticHub(Constants.PCM_CAN_ID);
-        m_gripper = m_pnPneumaticHub.makeSolenoid(Constants.GRIPPER_PCM_PORT);
+        m_pneumaticHub = new PneumaticHub(Constants.PCM_CAN_ID);
+        m_gripper = m_pneumaticHub.makeSolenoid(Constants.GRIPPER_PCM_PORT);
         m_sbTab = Shuffleboard.getTab("Pneumatics");
 
         m_sbTab.addDouble("Pressure", new DoubleSupplier() {
@@ -30,12 +30,12 @@ public class PneumaticSubsystem extends SubsystemBase {
     }
 
     public void openGripper() {
-        System.out.println("Open Gripper");
+        //System.out.println("Open Gripper");
         m_gripper.set(true);
     }
 
     public void closeGripper() {
-        System.out.println("Close Gripper");
+        //System.out.println("Close Gripper");
         m_gripper.set(false);
     }
 
@@ -44,6 +44,6 @@ public class PneumaticSubsystem extends SubsystemBase {
     }
 
     public double getPressure() {
-        return m_pnPneumaticHub.getPressure(0);
+        return m_pneumaticHub.getPressure(0);
     }
 }

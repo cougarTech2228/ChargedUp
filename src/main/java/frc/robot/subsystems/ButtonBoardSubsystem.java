@@ -31,11 +31,6 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         Auto
     }
 
-    private enum GripperMode {
-        Open,
-        Closed
-    }
-
     private final int kJoystickChannel1 = 1;
     private final int kJoystickChannel2 = 2;
 
@@ -48,7 +43,6 @@ public class ButtonBoardSubsystem extends SubsystemBase {
 
     private SubstationShelfPosition m_substationShelfPosition;
     private ButtonBoardOperationMode m_operationMode;
-    private GripperMode m_gripperMode;
 
     private double m_armReachJoystick;
     private double m_strafeJoystick;
@@ -83,7 +77,6 @@ public class ButtonBoardSubsystem extends SubsystemBase {
 
         setSubstationShelfPosition();
         setAutoManualOperationMode();
-        setGripperMode();
     }
 
     private JoystickButton getHighLeftConeButton() {
@@ -247,14 +240,6 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         }
     }
 
-    private void setGripperMode() {
-        if (getOpenCloseGripperToggleSwitch().getAsBoolean()) {
-            m_gripperMode = GripperMode.Closed;
-        } else {
-            m_gripperMode = GripperMode.Open;
-        }
-    }
-
     @Override
     public void periodic() {
 
@@ -265,20 +250,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         if (getOpenCloseGripperToggleSwitch().getAsBoolean()) { // Switch is in Closed position
             // Only allow changes in Manual mode
             if (isManualOperationMode()) {
-                // If we're already closed don't do anything, otherwise close the gripper
-                if (m_gripperMode != GripperMode.Closed) {
-                    new InstantCommand(() -> m_pneumaticSubsystem.openGripper());
-                    m_gripperMode = GripperMode.Closed;
-                }
+                m_pneumaticSubsystem.closeGripper();
             }
         } else { // Switch is in Open position
             // Only allow changes in Manual mode
             if (isManualOperationMode()) {
-                // If we're already open don't do anything, otherwise open the gripper
-                if (m_gripperMode != GripperMode.Open) {
-                    new InstantCommand(() -> m_pneumaticSubsystem.openGripper());
-                    m_gripperMode = GripperMode.Open;
-                }
+                m_pneumaticSubsystem.openGripper();
             }
         }
 

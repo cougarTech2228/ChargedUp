@@ -110,6 +110,12 @@ public class RobotContainer {
         new Trigger(m_controller::getBButton)
                 .onTrue(new InstantCommand(() -> cancelAllCommands()));
 
+        new Trigger(m_controller::getLeftBumperPressed)
+                .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.setBoostMode(true)));
+
+        new Trigger(m_controller::getLeftBumperReleased)
+                .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.setBoostMode(false)));
+
         // new Trigger(m_controller::getYButton)
         // .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()));
 
