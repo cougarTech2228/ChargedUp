@@ -45,10 +45,10 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double kPositionErrorTolerance = 0.1;
 
     public static final double DISTANCE_BOT = 16;
-    public static final double DISTANCE_LOW = 32; // TODO - Get value from grid
-    public static final double DISTANCE_MIDDLE = 40; // TODO - Get value from grid
-    public static final double DISTANCE_HIGH = 78; // TODO - Get value from grid
-    public static final double DISTANCE_SHELF = 40; // TODO - change after dist to schelf is known
+    public static final double DISTANCE_LOW = 32; 
+    public static final double DISTANCE_MIDDLE = 40; 
+    public static final double DISTANCE_HIGH = 78; 
+    public static final double DISTANCE_SHELF = 40;
 
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
             kP,

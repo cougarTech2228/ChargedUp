@@ -131,11 +131,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private static final double kXYBoostSpeed = 0.75;
     private static final double kRotationalBoostSpeed = 0.5;
 
-    // private double m_tempEncoderCount = 0;
-    // private int m_encoderIteration = 0;
-    // private double m_encoderRateOfChange = 0;
+    private double m_tempEncoderCount = 0;
+    private int m_encoderIteration = 0;
+    private double m_encoderRateOfChange = 0;
 
-    // private static final double ROC_DT_SECONDS = 0.02;
+    private static final double ROC_DT_SECONDS = 0.02;
 
     public DrivetrainSubsystem() {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -322,20 +322,20 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_backLeftDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, period);
     }
 
-    // private void calculateEncoderRoC() {
-    // if(m_encoderIteration == (ROC_DT_SECONDS * 50)) {
-    // m_encoderRateOfChange = (getEncoderCount() - m_tempEncoderCount) /
-    // ROC_DT_SECONDS;
-    // m_encoderIteration = 0;
-    // m_tempEncoderCount = getEncoderCount();
-    // } else {
-    // m_encoderIteration++;
-    // }
-    // }
+    private void calculateEncoderRoC() {
+        if (m_encoderIteration == (ROC_DT_SECONDS * 50)) {
+            m_encoderRateOfChange = (getEncoderCount() - m_tempEncoderCount) /
+                    ROC_DT_SECONDS;
+            m_encoderIteration = 0;
+            m_tempEncoderCount = getEncoderCount();
+        } else {
+            m_encoderIteration++;
+        }
+    }
 
-    // public double getEncoderRateOfChange() {
-    // return m_encoderRateOfChange;
-    // }
+    public double getEncoderRateOfChange() {
+        return m_encoderRateOfChange;
+    }
 
     public SwerveModulePosition[] getSwerveModulePositions() {
         return new SwerveModulePosition[] {
@@ -393,9 +393,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         System.out.println("stopMotors");
         drive(new ChassisSpeeds(0.0, 0.0, 0.0));
 
-        // m_tempEncoderCount = 0;
-        // m_encoderIteration = 0;
-        // m_encoderRateOfChange = 0;
+        m_tempEncoderCount = 0;
+        m_encoderIteration = 0;
+        m_encoderRateOfChange = 0;
     }
 
     public void setMotorsToCoast() {
@@ -507,7 +507,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         // TODO - this causes premature stoppages in both DockWithAprilTagCommand
         // and StrafeCommand. WTF?
-        // calculateEncoderRoC();
+        calculateEncoderRoC();
 
         m_odometry.update(getGyroscopeRotation(), getSwerveModulePositions());
 

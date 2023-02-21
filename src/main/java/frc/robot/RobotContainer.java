@@ -118,21 +118,23 @@ public class RobotContainer {
                 .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.setBoostMode(false)));
 
         new Trigger(m_controller::getAButton)
-                .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.bot));
+                .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.home));
 
         // new Trigger(m_controller::getYButton)
         // .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
         // Constants.ArmDestination.low));
 
         new Trigger(m_controller::getYButton)
-        .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
-        Constants.ArmDestination.middle));
+                .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+                        Constants.ArmDestination.middle));
 
         // new Trigger(m_controller::getYButton)
-        //         .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.high));
+        // .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+        // Constants.ArmDestination.high));
 
         // new Trigger(m_controller::getYButton)
-        //         .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.shelf));
+        // .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+        // Constants.ArmDestination.shelf));
 
         // new Trigger(m_controller::getYButton)
         // .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()));

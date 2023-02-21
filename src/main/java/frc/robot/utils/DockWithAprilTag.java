@@ -4,7 +4,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.Timer;
 import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -16,13 +15,13 @@ public class DockWithAprilTag implements Runnable {
     private AprilTagManager m_aprilTagManager;
     private DrivetrainSubsystem m_drivetrainSubsystem;
 
-    // private boolean m_hasStartedMoving;
+    private boolean m_hasStartedMoving;
 
     private static double kDt = 0.02;
 
     // Distance to Target Correction
-    private static final double MAX_FORWARD_DOCKING_VELOCITY = 1.2;
-    private static final double MAX_FORWARD_DOCKING_ACCELERATION = 0.3;
+    private static final double MAX_FORWARD_DOCKING_VELOCITY = 1.0;
+    private static final double MAX_FORWARD_DOCKING_ACCELERATION = 0.2;
 
     private final TrapezoidProfile.Constraints m_forwardConstraints = new TrapezoidProfile.Constraints(
             MAX_FORWARD_DOCKING_VELOCITY, MAX_FORWARD_DOCKING_ACCELERATION);
@@ -50,9 +49,8 @@ public class DockWithAprilTag implements Runnable {
 
     // We'll make this a little larger to give the AprilTag detector some time to
     // process
-    private static final double DOCKING_DISTANCE_GOAL_METERS = 0.80;
+    private static final double DOCKING_DISTANCE_GOAL_METERS = 1.0;
     private static final double CAMERA_OFFSET_METERS = 0.105;
-
 
     private static final double MIN_FORWARD_VELOCITY = 0.2;
     private static final double MIN_SIDEWAYS_VELOCITY = 0.2;
@@ -78,7 +76,7 @@ public class DockWithAprilTag implements Runnable {
     }
 
     public void run() {
-        // m_hasStartedMoving = false;
+        m_hasStartedMoving = false;
 
         if (m_aprilTagManager.getTagID() == m_aprilTagId) {
 
@@ -108,19 +106,18 @@ public class DockWithAprilTag implements Runnable {
                     break;
                 }
 
-                // if (m_drivetrainSubsystem.getEncoderRateOfChange() > 0) {
-                // m_hasStartedMoving = true;
-                // }
+                if (m_drivetrainSubsystem.getEncoderRateOfChange() > 0) {
+                    m_hasStartedMoving = true;
+                }
 
                 // If we've started moving but then stop moving due to some unforseen issue
                 // like being blocked by another robot or field element, we need to kill the
                 // thread.
                 // TODO - This happens when the robot is not blocked, same as Strafe. Something
                 // is going on in the DriveTrainSubystem with the RoC calc.
-                // if (m_hasStartedMoving && (m_drivetrainSubsystem.getEncoderRateOfChange() ==
-                // 0)) {
-                // System.out.println("Robot is blocked and has stopped moving...");
-                // break;
+                // if (m_hasStartedMoving && (m_drivetrainSubsystem.getEncoderRateOfChange() == 0)) {
+                //     System.out.println("Robot is blocked and has stopped moving...");
+                //     break;
                 // }
 
                 double distanceToTarget = m_aprilTagManager.getTZ();

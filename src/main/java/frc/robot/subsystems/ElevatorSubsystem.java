@@ -43,9 +43,9 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     private static final double kPositionErrorTolerance = 0.1;
 
     public static final double DISTANCE_BOT = 52.0;
-    public static final double DISTANCE_LOW = 57.0; // TODO - Get value from grid
-    public static final double DISTANCE_MIDDLE = 79.0; // TODO - Get value from grid
-    public static final double DISTANCE_HIGH = 86.0; // TODO - Get value from grid
+    public static final double DISTANCE_LOW = 57.0; 
+    public static final double DISTANCE_MIDDLE = 79.0; 
+    public static final double DISTANCE_HIGH = 86.0; 
     public static final double DISTANCE_SHELF = 82.0; 
 
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
