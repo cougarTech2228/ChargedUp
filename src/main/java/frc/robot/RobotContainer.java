@@ -12,14 +12,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.ArmCommand;
 import frc.robot.commands.AutoOneCommand;
 import frc.robot.commands.AutoThreeCommand;
 import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.ParallelArmCommand;
-import frc.robot.commands.ArmCommand.Destination;
-import frc.robot.commands.ParallelArmCommand.ArmDestination;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtendoSubsystem;
@@ -121,7 +118,16 @@ public class RobotContainer {
                 .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.setBoostMode(false)));
 
         new Trigger(m_controller::getAButton)
-                .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmDestination.bot));
+                .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.bot));
+
+        // new Trigger(m_controller::getAButton)
+        //         .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.low));
+
+        // new Trigger(m_controller::getAButton)
+        //         .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.middle));
+
+        // new Trigger(m_controller::getAButton)
+        //         .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.high));
 
         // new Trigger(m_controller::getYButton)
         // .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()));

@@ -13,8 +13,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
-import frc.robot.commands.ArmCommand;
 import frc.robot.commands.DockWithAprilTagCommand;
+import frc.robot.commands.ParallelArmCommand;
 import frc.robot.commands.StrafeCommand;
 import frc.robot.utils.AprilTagManager;
 import frc.robot.utils.CT_LEDStrip.GlowColor;
@@ -383,7 +383,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                                                                      // settle a bit
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true, m_drivetrainSubystem, m_aprilTagManager),
-                        new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.high),
+                        new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.high),
                         new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
                         new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
@@ -392,7 +392,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new DockWithAprilTagCommand(true, this, m_aprilTagManager, m_drivetrainSubystem),
                 new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a
                                                                              // bit
-                new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.high),
+                new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.high),
                 new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
                 new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
@@ -404,7 +404,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                                                                      // settle a bit
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true, m_drivetrainSubystem, m_aprilTagManager),
-                        new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.high),
+                        new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.high),
                         new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
                         new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
@@ -417,7 +417,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                                                                      // settle a bit
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true, m_drivetrainSubystem, m_aprilTagManager),
-                        new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.mid),
+                        new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.middle),
                         new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
                         new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
@@ -426,7 +426,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new DockWithAprilTagCommand(true, this, m_aprilTagManager, m_drivetrainSubystem),
                 new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a
                                                                              // bit
-                new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.mid),
+                new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.middle),
                 new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
                 new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
@@ -438,7 +438,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                                                                      // settle a bit
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true, m_drivetrainSubystem, m_aprilTagManager),
-                        new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.mid),
+                        new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.middle),
                         new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
                         new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
@@ -451,7 +451,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                                                                      // settle a bit
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true, m_drivetrainSubystem, m_aprilTagManager),
-                        new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.low),
+                        new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.low),
                         new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
                         new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
@@ -460,7 +460,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new DockWithAprilTagCommand(true, this, m_aprilTagManager, m_drivetrainSubystem),
                 new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a
                                                                              // bit
-                new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.low),
+                new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.low),
                 new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
                 new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));
@@ -472,7 +472,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                                                                      // settle a bit
                         new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
                                 true, m_drivetrainSubystem, m_aprilTagManager),
-                        new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.low),
+                        new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.low),
                         new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
                         new InstantCommand(() -> resetAprilTagID())),
                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch()));

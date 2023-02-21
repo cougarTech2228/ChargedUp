@@ -3,7 +3,6 @@ package frc.robot.subsystems;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
-import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
@@ -21,8 +20,8 @@ import com.revrobotics.Rev2mDistanceSensor;
 import com.revrobotics.Rev2mDistanceSensor.Unit;
 
 public class ExtendoSubsystem extends ProfiledPIDSubsystem {
-    WPI_TalonFX m_extendoMotor;
-
+    
+    private WPI_TalonFX m_extendoMotor;
     private ShuffleboardTab m_sbTab;
 
     private CT_DigitalInput m_extendoHomeLimit;
@@ -32,7 +31,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private Rev2mDistanceSensor m_distMxp;
 
     private static final double kSVolts = 0;
-    private static final double kGVolts = -.2;
+    private static final double kGVolts = -0.2;
     private static final double kVVolt = 0.01;
     private static final double kAVolt = 0.1;
 
@@ -46,6 +45,9 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double kPositionErrorTolerance = 0.1;
 
     public static final double DISTANCE_BOT = 15.5;
+    public static final double DISTANCE_LOW = 15.5; // TODO - Get value from grid
+    public static final double DISTANCE_MIDDLE = 15.5; // TODO - Get value from grid
+    public static final double DISTANCE_HIGH = 15.5; // TODO - Get value from grid
 
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
             kP,

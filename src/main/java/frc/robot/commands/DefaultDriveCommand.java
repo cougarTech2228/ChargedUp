@@ -27,17 +27,17 @@ public class DefaultDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        // m_drivetrainSubsystem.drive(
-        //         ChassisSpeeds.fromFieldRelativeSpeeds(m_translationXSupplier.getAsDouble(),
-        //                 m_translationYSupplier.getAsDouble(),
-        //                 m_rotationSupplier.getAsDouble(),
-        //                 m_drivetrainSubsystem.getGyroscopeRotation()));
-
-        // This method allows us to drive on the cart or blocks since it's ROV not FOV
         m_drivetrainSubsystem.drive(
-                new ChassisSpeeds(m_translationXSupplier.getAsDouble(),
+                ChassisSpeeds.fromFieldRelativeSpeeds(m_translationXSupplier.getAsDouble(),
                         m_translationYSupplier.getAsDouble(),
-                        m_rotationSupplier.getAsDouble()));
+                        m_rotationSupplier.getAsDouble(),
+                        m_drivetrainSubsystem.getGyroscopeRotation()));
+
+        //This method allows us to drive on the cart or blocks since it's ROV not FOV
+        // m_drivetrainSubsystem.drive(
+        //         new ChassisSpeeds(m_translationXSupplier.getAsDouble(),
+        //                 m_translationYSupplier.getAsDouble(),
+        //                 m_rotationSupplier.getAsDouble()));
     }
 
     @Override

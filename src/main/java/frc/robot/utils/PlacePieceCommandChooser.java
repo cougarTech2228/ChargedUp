@@ -3,7 +3,7 @@ package frc.robot.utils;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.Constants;
-import frc.robot.commands.ArmCommand;
+import frc.robot.commands.ParallelArmCommand;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtendoSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
@@ -28,20 +28,20 @@ public class PlacePieceCommandChooser {
         if (m_pieceLevel == Constants.PlacePosition.HighCone || m_pieceLevel == Constants.PlacePosition.HighCube) {
             return new SequentialCommandGroup(
                     new InstantCommand(
-                            () -> new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.high)),
+                            () -> new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.high)),
                     new InstantCommand(() -> m_pneumaticSubsystem.openGripper()));
 
         } else if (m_pieceLevel == Constants.PlacePosition.MiddleCone
                 || m_pieceLevel == Constants.PlacePosition.MiddleCube) {
             return new SequentialCommandGroup(
                     new InstantCommand(
-                            () -> new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.mid)),
+                            () -> new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.middle)),
                     new InstantCommand(() -> m_pneumaticSubsystem.openGripper()));
 
         } else if (m_pieceLevel == Constants.PlacePosition.LowCone || m_pieceLevel == Constants.PlacePosition.LowCube) {
             return new SequentialCommandGroup(
                     new InstantCommand(
-                            () -> new ArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmCommand.Destination.low)),
+                            () -> new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.low)),
                     new InstantCommand(() -> m_pneumaticSubsystem.openGripper()));
 
         } else {

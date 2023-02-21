@@ -21,7 +21,7 @@ import frc.robot.utils.CT_DigitalInput;
 public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
     private ShuffleboardTab m_sbTab;
-    WPI_TalonFX m_elevatorMotor;
+    private WPI_TalonFX m_elevatorMotor;
     private CT_DigitalInput m_elevatorDownLimit;
     private CT_DigitalInput m_elevatorUpLimit;
     private ElevatorState m_elevatorState = ElevatorState.stopped;
@@ -43,6 +43,9 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     private static final double kPositionErrorTolerance = 0.1;
 
     public static final double DISTANCE_BOT = 51.0;
+    public static final double DISTANCE_LOW = 51.0; // TODO - Get value from grid
+    public static final double DISTANCE_MIDDLE = 51.0; // TODO - Get value from grid
+    public static final double DISTANCE_HIGH = 51.0; // TODO - Get value from grid
 
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
             kP, kI, kD,

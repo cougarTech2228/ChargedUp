@@ -40,11 +40,11 @@ public final class Constants {
 
     public static final int FRONT_LEFT_MODULE_DRIVE_MOTOR_ID = 47; // Set front left module drive motor ID
     public static final int FRONT_LEFT_MODULE_STEER_MOTOR_ID = 48; // Set front left module steer motor ID
-    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(194);
+    public static final double FRONT_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(198);
 
     public static final int FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID = 56; // Set front right drive motor ID
     public static final int FRONT_RIGHT_MODULE_STEER_MOTOR_ID = 57; // Set front right steer motor ID
-    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(90);
+    public static final double FRONT_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(92);
 
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR_ID = 50; // Set back left drive motor ID
     public static final int BACK_LEFT_MODULE_STEER_MOTOR_ID = 51; // Set back left steer motor ID
@@ -59,6 +59,14 @@ public final class Constants {
     public static final double WAIT_TIME_AFTER_APRIL_TAG_DOCK_S = 0.3;
 
     // arm stuff
+
+    public enum ArmDestination {
+        high,
+        middle,
+        low,
+        bot
+    }
+
     public static final int ELEVATOR_MOTOR_ID = 58;
     public static final int ELEVATOR_LOWER_LIMIT_DIO = 1;
     public static final int ELEVATOR_UPPER_LIMIT_DIO = 0;
