@@ -35,6 +35,10 @@ public class ParallelArmCommand extends ParallelCommandGroup {
             addCommands(
                     new InstantCommand(() -> m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.DISTANCE_HIGH)),
                     new InstantCommand(() -> m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_HIGH)));
+        } else if (m_destination == Constants.ArmDestination.shelf) {
+            addCommands(
+                    new InstantCommand(() -> m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.DISTANCE_SHELF)),
+                    new InstantCommand(() -> m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_SHELF)));
         } else {
             System.out.println("ParallelArmCommand - Invalid ArmDestination value");
         }

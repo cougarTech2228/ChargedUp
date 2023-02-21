@@ -42,10 +42,11 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     private static final double kMotorVoltageLimit = 8.0;
     private static final double kPositionErrorTolerance = 0.1;
 
-    public static final double DISTANCE_BOT = 51.0;
-    public static final double DISTANCE_LOW = 51.0; // TODO - Get value from grid
-    public static final double DISTANCE_MIDDLE = 51.0; // TODO - Get value from grid
-    public static final double DISTANCE_HIGH = 51.0; // TODO - Get value from grid
+    public static final double DISTANCE_BOT = 52.0;
+    public static final double DISTANCE_LOW = 57.0; // TODO - Get value from grid
+    public static final double DISTANCE_MIDDLE = 79.0; // TODO - Get value from grid
+    public static final double DISTANCE_HIGH = 86.0; // TODO - Get value from grid
+    public static final double DISTANCE_SHELF = 82.0; 
 
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
             kP, kI, kD,
@@ -61,13 +62,6 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
         stopped,
         raising,
         lowering
-    };
-
-    public enum ElevatorPosition {
-        floor,
-        middle,
-        top,
-        unknown
     };
 
     public ElevatorSubsystem(DistanceSensorSubsystem distanceSensorSubsystem) {
@@ -158,7 +152,12 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
             System.out.println("stopping elevator");
             m_elevatorState = ElevatorState.stopped;
             m_elevatorMotor.stopMotor();
-            disable();
+
+            // When the arm is inside the bot, stop
+            // the PID from trying to make adjustments
+            if (m_elevatorHeight <= DISTANCE_BOT) {
+                disable();
+            }
         }
     }
 

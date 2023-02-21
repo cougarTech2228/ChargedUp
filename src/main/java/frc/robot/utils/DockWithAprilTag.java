@@ -50,7 +50,9 @@ public class DockWithAprilTag implements Runnable {
 
     // We'll make this a little larger to give the AprilTag detector some time to
     // process
-    private static final double DOCKING_DISTANCE_GOAL_METERS = Units.inchesToMeters(26.0);
+    private static final double DOCKING_DISTANCE_GOAL_METERS = 0.80;
+    private static final double CAMERA_OFFSET_METERS = 0.105;
+
 
     private static final double MIN_FORWARD_VELOCITY = 0.2;
     private static final double MIN_SIDEWAYS_VELOCITY = 0.2;
@@ -81,7 +83,7 @@ public class DockWithAprilTag implements Runnable {
         if (m_aprilTagManager.getTagID() == m_aprilTagId) {
 
             m_forwardController.setGoal(0.0);
-            m_sidewaysController.setGoal(0.0);
+            m_sidewaysController.setGoal(CAMERA_OFFSET_METERS);
             m_turnController.enableContinuousInput(180, -180);
             m_turnController.setTolerance(3, 5);
 

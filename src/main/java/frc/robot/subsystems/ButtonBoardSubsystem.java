@@ -336,7 +336,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         new StrafeCommand(Constants.SUBSTATION_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
                                 true, m_drivetrainSubystem, m_aprilTagManager),
                         this::isLeftDockingStation),
-                new PrintCommand("TODO - Pick game piece off of shelf")));
+                new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.shelf),
+                new PrintCommand("Should we just manually close gripper????")));
 
         // **********************************
         // Arm Button Handling

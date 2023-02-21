@@ -25,7 +25,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -146,10 +145,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
                                                                     * to see the current state of
                                                                     * // the module on the dashboard.
                                                                     */
-                tab.getLayout("Front Left Module",
-                BuiltInLayouts.kList)
-                .withSize(2, 3)
-                .withPosition(0, 0),
+                // tab.getLayout("Front Left Module",
+                // BuiltInLayouts.kList)
+                // .withSize(2, 3)
+                // .withPosition(0, 0),
 
                 // This can either be STANDARD or FAST depending on your gear configuration
                 Mk4iSwerveModuleHelper.GearRatio.L2,
@@ -165,10 +164,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         // We will do the same for the other modules
         m_frontRightModule = Mk4iSwerveModuleHelper.createFalcon500(
-                tab.getLayout("Front Right Module",
-                BuiltInLayouts.kList)
-                .withSize(2, 3)
-                .withPosition(2, 0),
+                // tab.getLayout("Front Right Module",
+                // BuiltInLayouts.kList)
+                // .withSize(2, 3)
+                // .withPosition(2, 0),
 
                 Mk4iSwerveModuleHelper.GearRatio.L2,
                 Constants.FRONT_RIGHT_MODULE_DRIVE_MOTOR_ID,
@@ -177,10 +176,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 Constants.FRONT_RIGHT_MODULE_STEER_OFFSET);
 
         m_backLeftModule = Mk4iSwerveModuleHelper.createFalcon500(
-                tab.getLayout("Back Left Module",
-                BuiltInLayouts.kList)
-                .withSize(2, 3)
-                .withPosition(4, 0),
+                // tab.getLayout("Back Left Module",
+                // BuiltInLayouts.kList)
+                // .withSize(2, 3)
+                // .withPosition(4, 0),
 
                 Mk4iSwerveModuleHelper.GearRatio.L2,
                 Constants.BACK_LEFT_MODULE_DRIVE_MOTOR_ID,
@@ -189,10 +188,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
                 Constants.BACK_LEFT_MODULE_STEER_OFFSET);
 
         m_backRightModule = Mk4iSwerveModuleHelper.createFalcon500(
-                tab.getLayout("Back Right Module",
-                BuiltInLayouts.kList)
-                .withSize(2, 3)
-                .withPosition(6, 0),
+                // tab.getLayout("Back Right Module",
+                // BuiltInLayouts.kList)
+                // .withSize(2, 3)
+                // .withPosition(6, 0),
 
                 Mk4iSwerveModuleHelper.GearRatio.L2,
                 Constants.BACK_RIGHT_MODULE_DRIVE_MOTOR_ID,
@@ -361,7 +360,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public Rotation2d getGyroscopeRotation() {
-        return Rotation2d.fromDegrees(m_pigeon.getFusedHeading());
+        // The pigeon was mounted differently on Pi vs the Proto Bot
+        return Rotation2d.fromDegrees(-m_pigeon.getFusedHeading());
     }
 
     public double getYaw() {

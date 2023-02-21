@@ -120,14 +120,19 @@ public class RobotContainer {
         new Trigger(m_controller::getAButton)
                 .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.bot));
 
-        // new Trigger(m_controller::getAButton)
-        //         .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.low));
+        // new Trigger(m_controller::getYButton)
+        // .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+        // Constants.ArmDestination.low));
 
-        // new Trigger(m_controller::getAButton)
-        //         .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.middle));
+        new Trigger(m_controller::getYButton)
+        .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+        Constants.ArmDestination.middle));
 
-        // new Trigger(m_controller::getAButton)
+        // new Trigger(m_controller::getYButton)
         //         .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.high));
+
+        // new Trigger(m_controller::getYButton)
+        //         .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.shelf));
 
         // new Trigger(m_controller::getYButton)
         // .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()));
