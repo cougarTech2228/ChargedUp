@@ -20,7 +20,7 @@ import com.revrobotics.Rev2mDistanceSensor;
 import com.revrobotics.Rev2mDistanceSensor.Unit;
 
 public class ExtendoSubsystem extends ProfiledPIDSubsystem {
-    
+
     private WPI_TalonFX m_extendoMotor;
     private ShuffleboardTab m_sbTab;
 
@@ -29,25 +29,27 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
 
     private double m_currentArmReachCm;
     private Rev2mDistanceSensor m_distMxp;
+    private ElevatorSubsystem m_elevatorSubsystem;
 
     private static final double kSVolts = 0;
     private static final double kGVolts = -0.2;
     private static final double kVVolt = 0.01;
     private static final double kAVolt = 0.1;
 
-    private static final double kP = 0.3;
-    private static final double kI = 1.0;
+    private static final double kP = 0.6;
+    private static final double kI = 0.0;
     private static final double kD = 0.0;
+    private static final double kDt = 0.2;
 
-    private static final double kMaxVelocityTicksPerSecond = 15;
-    private static final double kMaxAccelerationTicksPerSecSquared = 4;
-    private static final double kMotorVoltageLimit = 8.0;
-    private static final double kPositionErrorTolerance = 0.1;
+    private static final double kMaxVelocityTicksPerSecond = 8; // 15;
+    private static final double kMaxAccelerationTicksPerSecSquared = 1.5; // 4;
+    private static final double kMotorVoltageLimit = 12.0;
+    private static final double kPositionErrorTolerance = 1.0; // in cm
 
-    public static final double DISTANCE_BOT = 16;
-    public static final double DISTANCE_LOW = 32; 
-    public static final double DISTANCE_MIDDLE = 40; 
-    public static final double DISTANCE_HIGH = 78; 
+    public static final double DISTANCE_BOT = 25;
+    public static final double DISTANCE_LOW = 32;
+    public static final double DISTANCE_MIDDLE = 40;
+    public static final double DISTANCE_HIGH = 78;
     public static final double DISTANCE_SHELF = 40;
 
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
@@ -56,7 +58,8 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
             kD,
             new TrapezoidProfile.Constraints(
                     kMaxVelocityTicksPerSecond,
-                    kMaxAccelerationTicksPerSecSquared));
+                    kMaxAccelerationTicksPerSecSquared),
+            kDt);
 
     private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(
             kSVolts, kGVolts,
@@ -68,8 +71,10 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         retracting
     };
 
-    public ExtendoSubsystem(DistanceSensorSubsystem distanceSensorSubsystem) {
+    public ExtendoSubsystem(DistanceSensorSubsystem distanceSensorSubsystem, ElevatorSubsystem elevatorSubsystem) {
         super(pidController, 0);
+
+        m_elevatorSubsystem = elevatorSubsystem;
 
         pidController.setTolerance(kPositionErrorTolerance);
 
@@ -81,24 +86,24 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         m_sbTab = Shuffleboard.getTab("Extendo");
 
         // m_sbTab.addBoolean("PID Enabled", new BooleanSupplier() {
-        //     @Override
-        //     public boolean getAsBoolean() {
-        //         return isEnabled();
-        //     };
+        // @Override
+        // public boolean getAsBoolean() {
+        // return isEnabled();
+        // };
         // });
 
         // m_sbTab.addDouble("PID goal", new DoubleSupplier() {
-        //     @Override
-        //     public double getAsDouble() {
-        //         return m_controller.getGoal().position;
-        //     };
+        // @Override
+        // public double getAsDouble() {
+        // return m_controller.getGoal().position;
+        // };
         // });
 
         // m_sbTab.addDouble("PID output", new DoubleSupplier() {
-        //     @Override
-        //     public double getAsDouble() {
-        //         return m_extendoMotor.getMotorOutputVoltage();
-        //     };
+        // @Override
+        // public double getAsDouble() {
+        // return m_extendoMotor.getMotorOutputVoltage();
+        // };
         // });
 
         m_sbTab.addDouble("Current Distance:", new DoubleSupplier() {
@@ -187,8 +192,10 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
                 val = Math.min(kMotorVoltageLimit, newOutput);
             }
 
-            if (!((m_extendoState == ExtendoState.retracting) && isExtendoHomeLimitReached())) {
-                m_extendoMotor.setVoltage(val);
+            if (m_elevatorSubsystem.isSafeToExtendArm()) {
+                if (!((m_extendoState == ExtendoState.retracting) && isExtendoHomeLimitReached())) {
+                    m_extendoMotor.setVoltage(val);
+                }
             }
         }
     }

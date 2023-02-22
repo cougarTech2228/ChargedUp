@@ -52,6 +52,8 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     public static final double DISTANCE_HIGH = 86.0; 
     public static final double DISTANCE_SHELF = 82.0; 
 
+    private static final double kSafeHeight  = DISTANCE_BOT + 2.0;
+
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
             kP, kI, kD,
             new TrapezoidProfile.Constraints(
@@ -83,12 +85,12 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
         m_sbTab = Shuffleboard.getTab("Elevator");
 
-        // m_sbTab.addBoolean("PID Enabled", new BooleanSupplier() {
-        //     @Override
-        //     public boolean getAsBoolean() {
-        //         return isEnabled();
-        //     };
-        // });
+        m_sbTab.addBoolean("PID Enabled", new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return isEnabled();
+            };
+        });
 
         // m_sbTab.addDouble("PID goal", new DoubleSupplier() {
         //     @Override
@@ -117,6 +119,13 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
         //         return m_feedforwardVal;
         //     };
         // });
+
+        m_sbTab.addBoolean("Low Limit", new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return isElevatorLowerLimitReached();
+            };
+        });
     }
 
     @Override
@@ -135,11 +144,11 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
         }
 
         if (isElevatorUpperLimitReached() && (m_elevatorState == ElevatorState.raising)) {
-            stopElevator();
             System.out.println("Elevator Upper Limit Reached");
-        } else if (isElevatorLowerLimitReached() && (m_elevatorState == ElevatorState.lowering)) {
             stopElevator();
+        } else if (isElevatorLowerLimitReached() && (m_elevatorState == ElevatorState.lowering)) {
             System.out.println("Elevator Lower Limit Reached");
+            stopElevator();
         }
 
         if (pidController.atGoal()) {
@@ -149,6 +158,10 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
     public boolean atGoal() {
         return pidController.atGoal();
+    }
+
+    public boolean isSafeToExtendArm() {
+        return (m_elevatorHeight >= kSafeHeight);
     }
 
     private void stopElevator() {

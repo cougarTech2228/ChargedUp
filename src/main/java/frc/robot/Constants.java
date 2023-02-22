@@ -75,7 +75,7 @@ public final class Constants {
 
     public static final int EXTENDO_MOTOR_ID = 59;
     public static final int EXTENDO_HOME_LIMIT_DIO = 3;
-    public static final double EXTENDO_MOTOR_SPEED = 0.3; // TODO - Need to determine speed for this motor
+    public static final double EXTENDO_MOTOR_SPEED = 0.75; // TODO - Need to determine speed for this motor
 
     public static final int GRIPPER_PCM_PORT = 0;
     public static final int PCM_CAN_ID = 5;
@@ -116,7 +116,6 @@ public final class Constants {
     public static final double SUBSTATION_STRAFE_DISTANCE = 55.88;
     public static final double NUDGE_STRAFE_DISTANCE = 3.0;
     public static final double STRAFE_SPEED = 0.2;
-
 
     // PDH Constants
     public static final int WINCH_MOTOR_PDH_PORT = 14;

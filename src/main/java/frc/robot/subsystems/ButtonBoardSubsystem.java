@@ -62,7 +62,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     private static ShuffleboardSubsystem m_shuffleboardSubsystem;
 
     private static final double INCREMENTAL_ARM_HEIGHT_CHANGE_CM = 5.0;
-    private static final double INCREMENTAL_ARM_REACH_CHANGE_CM = 2.0;
+    private static final double INCREMENTAL_ARM_REACH_CHANGE_CM = 5.0;
 
     public ButtonBoardSubsystem(ElevatorSubsystem elevatorSubsystem, ExtendoSubsystem extendoSubsystem,
             AprilTagManager aprilTagManager, LEDStripSubsystem ledStripSubsystem, PneumaticSubsystem pneumaticSubsystem,
