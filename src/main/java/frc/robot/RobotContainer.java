@@ -5,7 +5,9 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -65,6 +67,8 @@ public class RobotContainer {
     private final static ButtonBoardSubsystem m_buttonBoardSubsystem = new ButtonBoardSubsystem(m_elevatorSubsystem,
             m_extendoSubsystem, m_aprilTagManager, m_ledStripSubsystem, m_pneumaticSubsystem, m_drivetrainSubsystem,
             m_shuffleboardSubsystem);
+
+    private final static PowerDistribution m_pdh = new PowerDistribution(1, ModuleType.kRev);
 
     /**
      * The container for the robot. Contains subsystems, OI devices, and commands.
@@ -205,5 +209,9 @@ public class RobotContainer {
 
     public static AprilTagManager getAprilTagManager() {
         return m_aprilTagManager;
+    }
+
+    public static PowerDistribution getPDH() {
+        return m_pdh;
     }
 }

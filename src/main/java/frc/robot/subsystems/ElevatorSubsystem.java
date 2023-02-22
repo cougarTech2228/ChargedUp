@@ -34,13 +34,17 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     private static final double kGVolts = 0;
     private static final double kVVolt = 0;
     private static final double kAVolt = 0;
-    private static final double kP = 0.5;
-    private static final double kI = 1.5;
-    private static final double kD = 0;
-    private static final double kMaxVelocity = 10;
-    private static final double kMaxAcceleration = 2;
-    private static final double kMotorVoltageLimit = 8.0;
-    private static final double kPositionErrorTolerance = 0.1;
+
+    private static final double kP = 0.6; 
+    private static final double kI = 0.0;
+    private static final double kD = 0.0;
+    private static final double kDt = 0.2;
+
+    private static final double kMaxVelocity = 1.75;
+    private static final double kMaxAcceleration = 0.75;
+
+    private static final double kMotorVoltageLimit = 12;
+    private static final double kPositionErrorTolerance = 1.0; // in cm
 
     public static final double DISTANCE_BOT = 52.0;
     public static final double DISTANCE_LOW = 57.0; 
@@ -52,7 +56,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
             kP, kI, kD,
             new TrapezoidProfile.Constraints(
                     kMaxVelocity,
-                    kMaxAcceleration));
+                    kMaxAcceleration), kDt);
 
     private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(
             kSVolts, kGVolts,
@@ -79,26 +83,26 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
         m_sbTab = Shuffleboard.getTab("Elevator");
 
-        m_sbTab.addBoolean("PID Enabled", new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() {
-                return isEnabled();
-            };
-        });
+        // m_sbTab.addBoolean("PID Enabled", new BooleanSupplier() {
+        //     @Override
+        //     public boolean getAsBoolean() {
+        //         return isEnabled();
+        //     };
+        // });
 
-        m_sbTab.addDouble("PID goal", new DoubleSupplier() {
-            @Override
-            public double getAsDouble() {
-                return m_controller.getGoal().position;
-            };
-        });
+        // m_sbTab.addDouble("PID goal", new DoubleSupplier() {
+        //     @Override
+        //     public double getAsDouble() {
+        //         return m_controller.getGoal().position;
+        //     };
+        // });
 
-        m_sbTab.addDouble("PID output", new DoubleSupplier() {
-            @Override
-            public double getAsDouble() {
-                return m_elevatorMotor.getMotorOutputVoltage();
-            };
-        });
+        // m_sbTab.addDouble("PID output", new DoubleSupplier() {
+        //     @Override
+        //     public double getAsDouble() {
+        //         return m_elevatorMotor.getMotorOutputVoltage();
+        //     };
+        // });
 
         m_sbTab.addDouble("Current Height:", new DoubleSupplier() {
             @Override
@@ -107,12 +111,12 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
             };
         });
 
-        m_sbTab.addDouble("FF:", new DoubleSupplier() {
-            @Override
-            public double getAsDouble() {
-                return m_feedforwardVal;
-            };
-        });
+        // m_sbTab.addDouble("FF:", new DoubleSupplier() {
+        //     @Override
+        //     public double getAsDouble() {
+        //         return m_feedforwardVal;
+        //     };
+        // });
     }
 
     @Override

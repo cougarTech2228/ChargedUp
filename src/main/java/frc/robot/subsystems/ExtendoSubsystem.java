@@ -80,24 +80,26 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
 
         m_sbTab = Shuffleboard.getTab("Extendo");
 
-        m_sbTab.addBoolean("PID Enabled", new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() {
-                return isEnabled();
-            };
-        });
-        m_sbTab.addDouble("PID goal", new DoubleSupplier() {
-            @Override
-            public double getAsDouble() {
-                return m_controller.getGoal().position;
-            };
-        });
-        m_sbTab.addDouble("PID output", new DoubleSupplier() {
-            @Override
-            public double getAsDouble() {
-                return m_extendoMotor.getMotorOutputVoltage();
-            };
-        });
+        // m_sbTab.addBoolean("PID Enabled", new BooleanSupplier() {
+        //     @Override
+        //     public boolean getAsBoolean() {
+        //         return isEnabled();
+        //     };
+        // });
+
+        // m_sbTab.addDouble("PID goal", new DoubleSupplier() {
+        //     @Override
+        //     public double getAsDouble() {
+        //         return m_controller.getGoal().position;
+        //     };
+        // });
+
+        // m_sbTab.addDouble("PID output", new DoubleSupplier() {
+        //     @Override
+        //     public double getAsDouble() {
+        //         return m_extendoMotor.getMotorOutputVoltage();
+        //     };
+        // });
 
         m_sbTab.addDouble("Current Distance:", new DoubleSupplier() {
             @Override
