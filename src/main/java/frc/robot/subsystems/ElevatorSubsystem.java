@@ -50,7 +50,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     public static final double HEIGHT_LOW = 58.0;
     public static final double HEIGHT_MIDDLE = 85.0;
     public static final double HEIGHT_HIGH = 89.0;
-    public static final double HEIGHT_SHELF = 82.0;
+    public static final double HEIGHT_SHELF = 83.0;
 
     // TODO - probably will need different heights for cubes?
 

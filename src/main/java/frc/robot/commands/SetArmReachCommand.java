@@ -29,6 +29,8 @@ public class SetArmReachCommand extends CommandBase {
             m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_HIGH);
         } else if (m_destination == Constants.ArmDestination.shelf) {
             m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_SHELF);
+        } else if (m_destination == Constants.ArmDestination.tight) {
+            m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_TIGHT);
         } else {
             System.out.println("SetArmHeightCommand - Invalid ArmDestination value");
         }
@@ -41,7 +43,7 @@ public class SetArmReachCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (m_extendoSubsystem.atGoal());
+        return (m_extendoSubsystem.atGoal() || (m_extendoSubsystem.isExtendoHomeLimitReached()));
     }
 
     @Override

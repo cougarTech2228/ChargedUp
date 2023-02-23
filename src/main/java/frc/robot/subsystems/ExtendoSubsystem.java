@@ -46,11 +46,12 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double kMotorVoltageLimit = 12.0;
     private static final double kPositionErrorTolerance = 1.0; // in cm
 
+    public static final double DISTANCE_TIGHT = 16.5;
     public static final double DISTANCE_HOME = 26.5;
     public static final double DISTANCE_LOW = 30;
     public static final double DISTANCE_MIDDLE = 40;
     public static final double DISTANCE_HIGH = 78;
-    public static final double DISTANCE_SHELF = 40;
+    public static final double DISTANCE_SHELF = 35;
 
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
             kP,

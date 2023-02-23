@@ -66,6 +66,7 @@ public final class Constants {
         middle,
         low,
         home,
+        tight
     }
 
     public static final int ELEVATOR_MOTOR_ID = 58;
@@ -113,7 +114,7 @@ public final class Constants {
     public static final double MAX_AUTO_ACCELERATION = 3.0;
 
     public static final double GRID_STRAFE_DISTANCE = 55.88;
-    public static final double SUBSTATION_STRAFE_DISTANCE = 55.88;
+    public static final double SUBSTATION_STRAFE_DISTANCE = 23.0;
     public static final double NUDGE_STRAFE_DISTANCE = 3.0;
     public static final double STRAFE_SPEED = 0.15;
     public static final double CAMERA_OFFSET_METERS = 0.14;

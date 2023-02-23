@@ -257,20 +257,21 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // routines. Only read it once every two seconds.
         // if (m_readGripperToggleCounter++ > 100) {
 
-        //     // Handle the Gripper Open/Closed toggle switch
-        //     if (getOpenCloseGripperToggleSwitch().getAsBoolean()) { // Switch is in Closed position
-        //         // Only allow changes in Manual mode
-        //         if (isManualOperationMode()) {
-        //             m_pneumaticSubsystem.closeGripper();
-        //         }
-        //     } else { // Switch is in Open position
-        //         // Only allow changes in Manual mode
-        //         if (isManualOperationMode()) {
-        //             m_pneumaticSubsystem.openGripper();
-        //         }
-        //     }
+        // // Handle the Gripper Open/Closed toggle switch
+        // if (getOpenCloseGripperToggleSwitch().getAsBoolean()) { // Switch is in
+        // Closed position
+        // // Only allow changes in Manual mode
+        // if (isManualOperationMode()) {
+        // m_pneumaticSubsystem.closeGripper();
+        // }
+        // } else { // Switch is in Open position
+        // // Only allow changes in Manual mode
+        // if (isManualOperationMode()) {
+        // m_pneumaticSubsystem.openGripper();
+        // }
+        // }
 
-        //     m_readGripperToggleCounter = 0;
+        // m_readGripperToggleCounter = 0;
         // }
 
         // Handle the joystick strafing input
@@ -342,16 +343,30 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // **********************************
         // Docking Station Button Handling
         // **********************************
-        getSubstationDockButton().onTrue(new SequentialCommandGroup(new PrintCommand("Docking with Substation"),
-                new InstantCommand(() -> setDockingStation()),
-                new DockWithAprilTagCommand(false, this, m_aprilTagManager, m_drivetrainSubystem),
-                new ConditionalCommand(new StrafeCommand(Constants.SUBSTATION_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
-                        true, m_drivetrainSubystem, m_aprilTagManager),
-                        new StrafeCommand(Constants.SUBSTATION_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
-                                true, m_drivetrainSubystem, m_aprilTagManager),
-                        this::isLeftDockingStation),
-                new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.shelf),
-                new PrintCommand("Should we just manually close gripper????")));
+        getSubstationDockButton().onTrue(
+                new SequentialCommandGroup(
+                        new PrintCommand("Docking with Substation"),
+                        new InstantCommand(() -> setDockingStation()),
+                        new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
+                        new ParallelCommandGroup(new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.shelf),
+                                new SetArmReachCommand(m_extendoSubsystem, ArmDestination.tight)),
+                        new ConditionalCommand(
+                                new SequentialCommandGroup(
+                                        new DockWithAprilTagCommand(false, this, m_aprilTagManager,
+                                                m_drivetrainSubystem),
+                                        new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S),
+                                        new ConditionalCommand(
+                                                new StrafeCommand(Constants.SUBSTATION_STRAFE_DISTANCE,
+                                                        -Constants.STRAFE_SPEED,
+                                                        true, m_drivetrainSubystem, m_aprilTagManager),
+                                                new StrafeCommand(Constants.SUBSTATION_STRAFE_DISTANCE,
+                                                        Constants.STRAFE_SPEED,
+                                                        true, m_drivetrainSubystem, m_aprilTagManager),
+                                                this::isLeftDockingStation),
+                                        new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+                                                ArmDestination.shelf)/*,
+                                        new InstantCommand(() -> m_pneumaticSubsystem.closeGripper())*/),
+                                new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch())));
 
         // **********************************
         // Arm Button Handling
@@ -401,7 +416,9 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                         new DockWithAprilTagCommand(true, this, m_aprilTagManager,
                                                 m_drivetrainSubystem),
                                         new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S),
-                                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE - Constants.LEFT_STRAFE_WTF_FACTOR, Constants.STRAFE_SPEED,
+                                        new StrafeCommand(
+                                                Constants.GRID_STRAFE_DISTANCE - Constants.LEFT_STRAFE_WTF_FACTOR,
+                                                Constants.STRAFE_SPEED,
                                                 true, m_drivetrainSubystem, m_aprilTagManager),
                                         new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
                                                 ArmDestination.high),
@@ -508,7 +525,9 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                         new DockWithAprilTagCommand(true, this, m_aprilTagManager,
                                                 m_drivetrainSubystem),
                                         new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S),
-                                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE - Constants.LEFT_STRAFE_WTF_FACTOR, Constants.STRAFE_SPEED,
+                                        new StrafeCommand(
+                                                Constants.GRID_STRAFE_DISTANCE - Constants.LEFT_STRAFE_WTF_FACTOR,
+                                                Constants.STRAFE_SPEED,
                                                 true, m_drivetrainSubystem, m_aprilTagManager),
                                         new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
                                                 Constants.ArmDestination.low),
