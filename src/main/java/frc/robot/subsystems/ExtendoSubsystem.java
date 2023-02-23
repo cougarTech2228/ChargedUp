@@ -32,23 +32,23 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private ElevatorSubsystem m_elevatorSubsystem;
 
     private static final double kSVolts = 0;
-    private static final double kGVolts = -0.2;
-    private static final double kVVolt = 0.01;
-    private static final double kAVolt = 0.1;
+    private static final double kGVolts = 0;//-0.2;
+    private static final double kVVolt = 0;//0.01;
+    private static final double kAVolt = 0;//0.1;
 
     private static final double kP = 0.6;
     private static final double kI = 0.0;
     private static final double kD = 0.0;
     private static final double kDt = 0.2;
 
-    private static final double kMaxVelocityTicksPerSecond = 8; // 15;
-    private static final double kMaxAccelerationTicksPerSecSquared = 1.5; // 4;
+    private static final double kMaxVelocityTicksPerSecond = 8;
+    private static final double kMaxAccelerationTicksPerSecSquared = 1.5;
     private static final double kMotorVoltageLimit = 12.0;
     private static final double kPositionErrorTolerance = 1.0; // in cm
 
-    public static final double DISTANCE_BOT = 25;
-    public static final double DISTANCE_LOW = 32;
-    public static final double DISTANCE_MIDDLE = 40;
+    public static final double DISTANCE_HOME = 26.5;
+    public static final double DISTANCE_LOW = 30;
+    public static final double DISTANCE_MIDDLE = 43;
     public static final double DISTANCE_HIGH = 78;
     public static final double DISTANCE_SHELF = 40;
 
@@ -85,12 +85,12 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
 
         m_sbTab = Shuffleboard.getTab("Extendo");
 
-        // m_sbTab.addBoolean("PID Enabled", new BooleanSupplier() {
-        // @Override
-        // public boolean getAsBoolean() {
-        // return isEnabled();
-        // };
-        // });
+        m_sbTab.addBoolean("PID Enabled", new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return isEnabled();
+            };
+        });
 
         // m_sbTab.addDouble("PID goal", new DoubleSupplier() {
         // @Override
@@ -136,6 +136,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         // arm to retract passed the limit switch.
         if (isExtendoHomeLimitReached() && (m_extendoState == ExtendoState.retracting)) {
             stopExtending();
+            disable();
             System.out.println("Extendo home limit reached");
         }
     }
@@ -167,7 +168,6 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
             m_extendoMotor.stopMotor();
             m_extendoState = ExtendoState.stopped;
             System.out.println("stopping extendo arm");
-            disable();
         }
     }
 

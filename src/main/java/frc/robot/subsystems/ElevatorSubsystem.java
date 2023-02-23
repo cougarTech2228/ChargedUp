@@ -35,7 +35,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     private static final double kVVolt = 0;
     private static final double kAVolt = 0;
 
-    private static final double kP = 0.6; 
+    private static final double kP = 0.6;
     private static final double kI = 0.0;
     private static final double kD = 0.0;
     private static final double kDt = 0.2;
@@ -46,19 +46,22 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     private static final double kMotorVoltageLimit = 12;
     private static final double kPositionErrorTolerance = 1.0; // in cm
 
-    public static final double DISTANCE_BOT = 52.0;
-    public static final double DISTANCE_LOW = 57.0; 
-    public static final double DISTANCE_MIDDLE = 79.0; 
-    public static final double DISTANCE_HIGH = 86.0; 
-    public static final double DISTANCE_SHELF = 82.0; 
+    public static final double HEIGHT_HOME = 51.0;
+    public static final double HEIGHT_LOW = 58.0;
+    public static final double HEIGHT_MIDDLE = 85.0;
+    public static final double HEIGHT_HIGH = 89.0;
+    public static final double HEIGHT_SHELF = 82.0;
 
-    private static final double kSafeHeight  = DISTANCE_BOT + 2.0;
+    // TODO - probably will need different heights for cubes?
+
+    private static final double kSafeToLeaveHomeHeight = HEIGHT_HOME + 5.0;
 
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
             kP, kI, kD,
             new TrapezoidProfile.Constraints(
                     kMaxVelocity,
-                    kMaxAcceleration), kDt);
+                    kMaxAcceleration),
+            kDt);
 
     private final ElevatorFeedforward m_feedforward = new ElevatorFeedforward(
             kSVolts, kGVolts,
@@ -93,17 +96,17 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
         });
 
         // m_sbTab.addDouble("PID goal", new DoubleSupplier() {
-        //     @Override
-        //     public double getAsDouble() {
-        //         return m_controller.getGoal().position;
-        //     };
+        // @Override
+        // public double getAsDouble() {
+        // return m_controller.getGoal().position;
+        // };
         // });
 
         // m_sbTab.addDouble("PID output", new DoubleSupplier() {
-        //     @Override
-        //     public double getAsDouble() {
-        //         return m_elevatorMotor.getMotorOutputVoltage();
-        //     };
+        // @Override
+        // public double getAsDouble() {
+        // return m_elevatorMotor.getMotorOutputVoltage();
+        // };
         // });
 
         m_sbTab.addDouble("Current Height:", new DoubleSupplier() {
@@ -114,10 +117,10 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
         });
 
         // m_sbTab.addDouble("FF:", new DoubleSupplier() {
-        //     @Override
-        //     public double getAsDouble() {
-        //         return m_feedforwardVal;
-        //     };
+        // @Override
+        // public double getAsDouble() {
+        // return m_feedforwardVal;
+        // };
         // });
 
         m_sbTab.addBoolean("Low Limit", new BooleanSupplier() {
@@ -145,9 +148,11 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
         if (isElevatorUpperLimitReached() && (m_elevatorState == ElevatorState.raising)) {
             System.out.println("Elevator Upper Limit Reached");
+            disable();
             stopElevator();
         } else if (isElevatorLowerLimitReached() && (m_elevatorState == ElevatorState.lowering)) {
             System.out.println("Elevator Lower Limit Reached");
+            disable();
             stopElevator();
         }
 
@@ -161,7 +166,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     }
 
     public boolean isSafeToExtendArm() {
-        return (m_elevatorHeight >= kSafeHeight);
+        return (m_elevatorHeight >= kSafeToLeaveHomeHeight);
     }
 
     private void stopElevator() {
@@ -169,12 +174,6 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
             System.out.println("stopping elevator");
             m_elevatorState = ElevatorState.stopped;
             m_elevatorMotor.stopMotor();
-
-            // When the arm is inside the bot, stop
-            // the PID from trying to make adjustments
-            if (m_elevatorHeight <= DISTANCE_BOT) {
-                disable();
-            }
         }
     }
 

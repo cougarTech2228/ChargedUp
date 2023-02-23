@@ -50,7 +50,7 @@ public class DockWithAprilTag implements Runnable {
     // We'll make this a little larger to give the AprilTag detector some time to
     // process
     private static final double DOCKING_DISTANCE_GOAL_METERS = 1.0;
-    private static final double CAMERA_OFFSET_METERS = 0.105;
+    private static final double CAMERA_OFFSET_METERS = 1.1;
 
     private static final double MIN_FORWARD_VELOCITY = 0.2;
     private static final double MIN_SIDEWAYS_VELOCITY = 0.2;

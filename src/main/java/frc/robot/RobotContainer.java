@@ -60,7 +60,8 @@ public class RobotContainer {
 
     private final static ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem(m_distanceSensorSubsystem);
 
-    private final static ExtendoSubsystem m_extendoSubsystem = new ExtendoSubsystem(m_distanceSensorSubsystem, m_elevatorSubsystem);
+    private final static ExtendoSubsystem m_extendoSubsystem = new ExtendoSubsystem(m_distanceSensorSubsystem,
+            m_elevatorSubsystem);
 
     private final static PneumaticSubsystem m_pneumaticSubsystem = new PneumaticSubsystem();
 
@@ -112,17 +113,20 @@ public class RobotContainer {
         new Trigger(m_controller::getXButton)
                 .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.zeroGyroscope()));
 
+        new Trigger(m_controller::getBackButton)
+                .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()));
+
         new Trigger(m_controller::getBButton)
                 .onTrue(new InstantCommand(() -> cancelAllCommands()));
 
-        // new Trigger(m_controller::getLeftBumperPressed)
-        //         .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.setBoostMode(true)));
+        new Trigger(m_controller::getLeftBumperPressed)
+                .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.setBoostMode(true)));
 
-        // new Trigger(m_controller::getLeftBumperReleased)
-        //         .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.setBoostMode(false)));
+        new Trigger(m_controller::getLeftBumperReleased)
+                .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.setBoostMode(false)));
 
-        // new Trigger(m_controller::getAButton)
-        //         .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.home));
+        new Trigger(m_controller::getAButton)
+                .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.home));
 
         // new Trigger(m_controller::getYButton)
         // .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
@@ -140,8 +144,9 @@ public class RobotContainer {
         // .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
         // Constants.ArmDestination.shelf));
 
-        // new Trigger(m_controller::getYButton)
-        // .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()));
+        new Trigger(m_controller::getYButton)
+                .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+                        Constants.ArmDestination.low));
 
         // Configure all the buttons and switches on the Custom Button Board
         m_buttonBoardSubsystem.configureButtonBindings();

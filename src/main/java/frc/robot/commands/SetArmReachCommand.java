@@ -20,7 +20,7 @@ public class SetArmReachCommand extends CommandBase {
         System.out.println("Initializing SetArmReachCommand");
 
         if (m_destination == Constants.ArmDestination.home) {
-            m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_BOT);
+            m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_HOME);
         } else if (m_destination == Constants.ArmDestination.low) {
             m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_LOW);
         } else if (m_destination == Constants.ArmDestination.middle) {

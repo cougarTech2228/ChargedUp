@@ -30,13 +30,17 @@ public class PneumaticSubsystem extends SubsystemBase {
     }
 
     public void openGripper() {
-        //System.out.println("Open Gripper");
-        m_gripper.set(true);
+        if (!gripperIsOpen()) {
+            System.out.println("Open Gripper");
+            m_gripper.set(true);
+        }
     }
 
     public void closeGripper() {
-        //System.out.println("Close Gripper");
-        m_gripper.set(false);
+        if (gripperIsOpen()) {
+            System.out.println("Close Gripper");
+            m_gripper.set(false);
+        }
     }
 
     public boolean gripperIsOpen() {

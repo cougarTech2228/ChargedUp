@@ -65,7 +65,7 @@ public final class Constants {
         high,
         middle,
         low,
-        home
+        home,
     }
 
     public static final int ELEVATOR_MOTOR_ID = 58;

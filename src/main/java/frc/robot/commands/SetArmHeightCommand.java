@@ -20,15 +20,15 @@ public class SetArmHeightCommand extends CommandBase {
         System.out.println("Initializing SetArmHeightCommand");
 
         if (m_destination == Constants.ArmDestination.home) {
-            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.DISTANCE_BOT);
+            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_HOME);
         } else if (m_destination == Constants.ArmDestination.low) {
-            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.DISTANCE_LOW);
+            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_LOW);
         } else if (m_destination == Constants.ArmDestination.middle) {
-            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.DISTANCE_MIDDLE);
+            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_MIDDLE);
         } else if (m_destination == Constants.ArmDestination.high) {
-            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.DISTANCE_HIGH);
+            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_HIGH);
         } else if (m_destination == Constants.ArmDestination.shelf) {
-            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.DISTANCE_SHELF);
+            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_SHELF);
         } else {
             System.out.println("SetArmHeightCommand - Invalid ArmDestination value");
         }
