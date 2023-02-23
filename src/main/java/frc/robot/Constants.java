@@ -115,7 +115,9 @@ public final class Constants {
     public static final double GRID_STRAFE_DISTANCE = 55.88;
     public static final double SUBSTATION_STRAFE_DISTANCE = 55.88;
     public static final double NUDGE_STRAFE_DISTANCE = 3.0;
-    public static final double STRAFE_SPEED = 0.2;
+    public static final double STRAFE_SPEED = 0.15;
+    public static final double CAMERA_OFFSET_METERS = 0.14;
+    public static final double LEFT_STRAFE_WTF_FACTOR = 0.45;
 
     // PDH Constants
     public static final int WINCH_MOTOR_PDH_PORT = 14;

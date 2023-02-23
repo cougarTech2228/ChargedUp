@@ -36,7 +36,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double kVVolt = 0;//0.01;
     private static final double kAVolt = 0;//0.1;
 
-    private static final double kP = 0.6;
+    private static final double kP = 0.5;
     private static final double kI = 0.0;
     private static final double kD = 0.0;
     private static final double kDt = 0.2;
@@ -48,7 +48,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
 
     public static final double DISTANCE_HOME = 26.5;
     public static final double DISTANCE_LOW = 30;
-    public static final double DISTANCE_MIDDLE = 43;
+    public static final double DISTANCE_MIDDLE = 40;
     public static final double DISTANCE_HIGH = 78;
     public static final double DISTANCE_SHELF = 40;
 
@@ -150,7 +150,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
             m_extendoState = ExtendoState.stopped;
         }
 
-        System.out.println("setting position: " + distanceCM);
+        System.out.println("setting distance: " + distanceCM);
         pidController.setGoal(distanceCM);
         enable();
     }

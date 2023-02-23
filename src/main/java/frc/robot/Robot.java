@@ -70,6 +70,8 @@ public class Robot extends TimedRobot {
         RobotContainer.getDrivetrainSubsystem().setMotorsToCoast();
 
         RobotContainer.getLEDStripSubsystem().resetStrip();
+
+        RobotContainer.getPneumaticSubsystem().closeGripper();
     }
 
     @Override

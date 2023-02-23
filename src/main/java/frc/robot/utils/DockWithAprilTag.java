@@ -26,21 +26,23 @@ public class DockWithAprilTag implements Runnable {
     private final TrapezoidProfile.Constraints m_forwardConstraints = new TrapezoidProfile.Constraints(
             MAX_FORWARD_DOCKING_VELOCITY, MAX_FORWARD_DOCKING_ACCELERATION);
 
-    private final double FORWARD_P = 0.6;
+    private final double FORWARD_P = 0.45;
+    private final double FORWARD_I = 0.0;
     private final double FORWARD_D = 0.0;
-    private final ProfiledPIDController m_forwardController = new ProfiledPIDController(FORWARD_P, 0.0, FORWARD_D,
+    private final ProfiledPIDController m_forwardController = new ProfiledPIDController(FORWARD_P, FORWARD_I, FORWARD_D,
             m_forwardConstraints, kDt);
 
     // Sideways Correction
-    private static final double MAX_SIDEWAYS_DOCKING_VELOCITY = 1.0;
-    private static final double MAX_SIDEWAYS_DOCKING_ACCELERATION = 0.3;
+    private static final double MAX_SIDEWAYS_DOCKING_VELOCITY = 0.6;
+    private static final double MAX_SIDEWAYS_DOCKING_ACCELERATION = 0.2;
 
     private final TrapezoidProfile.Constraints m_sidewaysConstraints = new TrapezoidProfile.Constraints(
             MAX_SIDEWAYS_DOCKING_VELOCITY, MAX_SIDEWAYS_DOCKING_ACCELERATION);
 
-    private final double SIDEWAYS_P = 0.6;
+    private final double SIDEWAYS_P = 0.5;
+    private final double SIDEWAYS_I = 0.0;
     private final double SIDEWAYS_D = 0.0;
-    private final ProfiledPIDController m_sidewaysController = new ProfiledPIDController(SIDEWAYS_P, 0.0, SIDEWAYS_D,
+    private final ProfiledPIDController m_sidewaysController = new ProfiledPIDController(SIDEWAYS_P, SIDEWAYS_I, SIDEWAYS_D,
             m_sidewaysConstraints, kDt);
 
     private final double TURN_P = 0.05;
@@ -49,8 +51,7 @@ public class DockWithAprilTag implements Runnable {
 
     // We'll make this a little larger to give the AprilTag detector some time to
     // process
-    private static final double DOCKING_DISTANCE_GOAL_METERS = 1.0;
-    private static final double CAMERA_OFFSET_METERS = 1.1;
+    private static final double DOCKING_DISTANCE_GOAL_METERS = 1.1;
 
     private static final double MIN_FORWARD_VELOCITY = 0.2;
     private static final double MIN_SIDEWAYS_VELOCITY = 0.2;
@@ -81,7 +82,7 @@ public class DockWithAprilTag implements Runnable {
         if (m_aprilTagManager.getTagID() == m_aprilTagId) {
 
             m_forwardController.setGoal(0.0);
-            m_sidewaysController.setGoal(CAMERA_OFFSET_METERS);
+            m_sidewaysController.setGoal(Constants.CAMERA_OFFSET_METERS);
             m_turnController.enableContinuousInput(180, -180);
             m_turnController.setTolerance(3, 5);
 

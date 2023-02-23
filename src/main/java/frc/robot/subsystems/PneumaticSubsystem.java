@@ -50,4 +50,12 @@ public class PneumaticSubsystem extends SubsystemBase {
     public double getPressure() {
         return m_pneumaticHub.getPressure(0);
     }
+
+    public void toggleGripper() {
+        if (gripperIsOpen()) {
+            closeGripper();
+        } else {
+            openGripper();
+        }
+    }
 }

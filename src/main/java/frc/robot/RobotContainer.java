@@ -145,8 +145,7 @@ public class RobotContainer {
         // Constants.ArmDestination.shelf));
 
         new Trigger(m_controller::getYButton)
-                .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
-                        Constants.ArmDestination.low));
+                .onTrue(new InstantCommand(() -> m_pneumaticSubsystem.toggleGripper()));
 
         // Configure all the buttons and switches on the Custom Button Board
         m_buttonBoardSubsystem.configureButtonBindings();
@@ -210,6 +209,10 @@ public class RobotContainer {
 
     public static ButtonBoardSubsystem getButtonBoardSubsystem() {
         return m_buttonBoardSubsystem;
+    }
+
+    public static PneumaticSubsystem getPneumaticSubsystem() {
+        return m_pneumaticSubsystem;
     }
 
     public static AprilTagManager getAprilTagManager() {
