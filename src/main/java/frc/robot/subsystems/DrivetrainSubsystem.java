@@ -356,6 +356,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void reverseGyroscope() {
+        System.out.println("Reversing Gyro");
         m_pigeon.setFusedHeading(11520.0);
     }
 

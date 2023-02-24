@@ -31,7 +31,9 @@ public class SetArmReachCommand extends CommandBase {
             m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_SHELF);
         } else if (m_destination == Constants.ArmDestination.tight) {
             m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_TIGHT);
-        } else {
+        } else if (m_destination == Constants.ArmDestination.preloaded_cone) {
+            m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_PRELOADED_CONE);
+        }else {
             System.out.println("SetArmHeightCommand - Invalid ArmDestination value");
         }
     }

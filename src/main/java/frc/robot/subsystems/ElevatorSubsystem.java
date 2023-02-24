@@ -46,8 +46,9 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     private static final double kMotorVoltageLimit = 12;
     private static final double kPositionErrorTolerance = 2.0; // in cm
 
-    public static final double HEIGHT_HOME = 51.0;
+    public static final double HEIGHT_HOME = 52.0;
     public static final double HEIGHT_LOW = 58.0;
+    public static final double HEIGHT_PRELOADED_CONE = 65.0;
     public static final double HEIGHT_MIDDLE = 85.0;
     public static final double HEIGHT_HIGH = 89.0;
     public static final double HEIGHT_SHELF = 85.0;
@@ -200,8 +201,8 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
         return !m_elevatorDownLimit.get();
     }
 
-    public boolean isLowering() {
-        return (m_elevatorState == ElevatorState.lowering);
+    public boolean isStopped() {
+        return (m_elevatorState == ElevatorState.stopped);
     }
 
     @Override

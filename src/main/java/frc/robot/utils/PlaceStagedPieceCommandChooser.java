@@ -8,14 +8,14 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtendoSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 
-public class PlacePieceCommandChooser {
+public class PlaceStagedPieceCommandChooser {
 
     Constants.PlacePosition m_pieceLevel;
     private static ElevatorSubsystem m_elevatorSubsystem;
     private static ExtendoSubsystem m_extendoSubsystem;
     private static PneumaticSubsystem m_pneumaticSubsystem;
 
-    public PlacePieceCommandChooser(ElevatorSubsystem elevatorSubsystem, ExtendoSubsystem extendoSubsystem,
+    public PlaceStagedPieceCommandChooser(ElevatorSubsystem elevatorSubsystem, ExtendoSubsystem extendoSubsystem,
             PneumaticSubsystem pneumaticSubsystem, Constants.PlacePosition pieceLevel) {
         m_elevatorSubsystem = elevatorSubsystem;
         m_extendoSubsystem = extendoSubsystem;
@@ -28,20 +28,30 @@ public class PlacePieceCommandChooser {
         if (m_pieceLevel == Constants.PlacePosition.HighCone || m_pieceLevel == Constants.PlacePosition.HighCube) {
             return new SequentialCommandGroup(
                     new InstantCommand(
-                            () -> new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.high)),
+                            () -> new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+                                    Constants.ArmDestination.high)),
                     new InstantCommand(() -> m_pneumaticSubsystem.openGripper()));
 
         } else if (m_pieceLevel == Constants.PlacePosition.MiddleCone
                 || m_pieceLevel == Constants.PlacePosition.MiddleCube) {
             return new SequentialCommandGroup(
                     new InstantCommand(
-                            () -> new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.middle)),
+                            () -> new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+                                    Constants.ArmDestination.middle)),
                     new InstantCommand(() -> m_pneumaticSubsystem.openGripper()));
 
-        } else if (m_pieceLevel == Constants.PlacePosition.LowCone || m_pieceLevel == Constants.PlacePosition.LowCube) {
+        } else if (m_pieceLevel == Constants.PlacePosition.LowCone) {
             return new SequentialCommandGroup(
                     new InstantCommand(
-                            () -> new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.low)),
+                            () -> new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+                                    Constants.ArmDestination.low)),
+                    new InstantCommand(() -> m_pneumaticSubsystem.openGripper()));
+
+        } else if (m_pieceLevel == Constants.PlacePosition.LowCube) {
+            return new SequentialCommandGroup(
+                    new InstantCommand(
+                            () -> new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+                                    Constants.ArmDestination.low)),
                     new InstantCommand(() -> m_pneumaticSubsystem.openGripper()));
 
         } else {

@@ -104,6 +104,7 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         RobotContainer.getDrivetrainSubsystem().setMotorsToCoast();
         RobotContainer.getDrivetrainSubsystem().primeDrivetrain();
+        RobotContainer.cancelAllCommands();
         
         // This makes sure that the autonomous stops running when
         // teleop starts running. If you want the autonomous to

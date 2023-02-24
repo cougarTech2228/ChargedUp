@@ -49,9 +49,10 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     public static final double DISTANCE_TIGHT = 16.5;
     public static final double DISTANCE_HOME = 28.5;
     public static final double DISTANCE_LOW = 35;
+    public static final double DISTANCE_PRELOADED_CONE = 35;
     public static final double DISTANCE_MIDDLE = 40;
     public static final double DISTANCE_HIGH = 78;
-    public static final double DISTANCE_SHELF = 35;
+    public static final double DISTANCE_SHELF = 30;
 
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
             kP,

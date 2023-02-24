@@ -66,7 +66,8 @@ public final class Constants {
         middle,
         low,
         home,
-        tight
+        tight,
+        preloaded_cone
     }
 
     public static final int ELEVATOR_MOTOR_ID = 58;

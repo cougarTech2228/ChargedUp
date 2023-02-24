@@ -13,7 +13,7 @@ import frc.robot.subsystems.ExtendoSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.ShuffleboardSubsystem;
 import frc.robot.utils.OutPathFileNameChooser;
-import frc.robot.utils.PlacePieceCommandChooser;
+import frc.robot.utils.PlacePreloadedPieceCommandChooser;
 
 public class AutoTwoCommand extends SequentialCommandGroup {
 
@@ -41,7 +41,7 @@ public class AutoTwoCommand extends SequentialCommandGroup {
         String m_outPathFileName = m_outPathFileNameChooser.getOutPathFileName();
 
         // Get the appropriate command group to place the Preloaded Game Piece
-        PlacePieceCommandChooser m_placePreloadedPieceCommandChooser = new PlacePieceCommandChooser(
+        PlacePreloadedPieceCommandChooser m_placePreloadedPieceCommandChooser = new PlacePreloadedPieceCommandChooser(
                 m_elevatorSubsystem, m_extendoSubsystem, m_pneumaticSubsystem, m_shuffleboardSubsystem
                         .getPreloadedPieceLevel());
         SequentialCommandGroup m_placePreloadedPieceSequentialCommandGroup = m_placePreloadedPieceCommandChooser
@@ -51,12 +51,12 @@ public class AutoTwoCommand extends SequentialCommandGroup {
                 new InstantCommand(m_drivetrainSubsystem::zeroGyroscope),
                 new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
                 m_placePreloadedPieceSequentialCommandGroup,
-                new FollowTrajectoryCommand(m_drivetrainSubsystem, m_outPathFileName,
+                /*new FollowTrajectoryCommand(m_drivetrainSubsystem, m_outPathFileName,
                         m_eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                 new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto2_back",
                         m_eventMap,
-                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),*/
                 new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()),
                 new InstantCommand(() -> printEndCommand()));
     }

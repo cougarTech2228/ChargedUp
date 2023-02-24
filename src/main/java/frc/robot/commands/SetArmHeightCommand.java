@@ -31,6 +31,8 @@ public class SetArmHeightCommand extends CommandBase {
             m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_SHELF);
         } else if (m_destination == Constants.ArmDestination.tight) {
             m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_HOME);
+        } else if (m_destination == Constants.ArmDestination.preloaded_cone) {
+            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_PRELOADED_CONE);
         } else {
             System.out.println("SetArmHeightCommand - Invalid ArmDestination value");
         }
@@ -44,7 +46,7 @@ public class SetArmHeightCommand extends CommandBase {
     @Override
     public boolean isFinished() {
         return (m_elevatorSubsystem.atGoal() ||
-                (m_elevatorSubsystem.isElevatorLowerLimitReached() && m_elevatorSubsystem.isLowering()));
+                (m_elevatorSubsystem.isElevatorLowerLimitReached() && m_elevatorSubsystem.isStopped()));
     }
 
     @Override

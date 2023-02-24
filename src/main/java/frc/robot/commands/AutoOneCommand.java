@@ -18,7 +18,8 @@ import frc.robot.subsystems.PneumaticSubsystem;
 import frc.robot.subsystems.ShuffleboardSubsystem;
 import frc.robot.utils.AprilTagManager;
 import frc.robot.utils.OutPathFileNameChooser;
-import frc.robot.utils.PlacePieceCommandChooser;
+import frc.robot.utils.PlacePreloadedPieceCommandChooser;
+import frc.robot.utils.PlaceStagedPieceCommandChooser;
 
 public class AutoOneCommand extends SequentialCommandGroup {
 
@@ -57,14 +58,14 @@ public class AutoOneCommand extends SequentialCommandGroup {
         String m_outPathFileName = m_outPathFileNameChooser.getOutPathFileName();
 
         // Get the appropriate command group to place the Preloaded Game Piece
-        PlacePieceCommandChooser m_placePreloadedPieceCommandChooser = new PlacePieceCommandChooser(
+        PlacePreloadedPieceCommandChooser m_placePreloadedPieceCommandChooser = new PlacePreloadedPieceCommandChooser(
                 m_elevatorSubsystem, m_extendoSubsystem, m_pneumaticSubsystem, m_shuffleboardSubsystem
                         .getPreloadedPieceLevel());
         SequentialCommandGroup m_placePreloadedPieceSequentialCommandGroup = m_placePreloadedPieceCommandChooser
                 .getPlacePieceCommand();
 
         // Get the appropriate command group to place the Staged Game Piece
-        PlacePieceCommandChooser m_placeStagedPieceCommandChooser = new PlacePieceCommandChooser(
+        PlaceStagedPieceCommandChooser m_placeStagedPieceCommandChooser = new PlaceStagedPieceCommandChooser(
                 m_elevatorSubsystem, m_extendoSubsystem, m_pneumaticSubsystem, m_shuffleboardSubsystem
                         .getStagedPieceLevel());
         SequentialCommandGroup m_placeStagedPieceSequentialCommandGroup = m_placeStagedPieceCommandChooser
@@ -74,7 +75,7 @@ public class AutoOneCommand extends SequentialCommandGroup {
                 new InstantCommand(m_drivetrainSubsystem::zeroGyroscope),
                 new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
                 m_placePreloadedPieceSequentialCommandGroup,
-                new FollowTrajectoryCommand(m_drivetrainSubsystem, m_outPathFileName,
+                /*new FollowTrajectoryCommand(m_drivetrainSubsystem, m_outPathFileName,
                         m_eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                 new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto1_back",
@@ -94,7 +95,7 @@ public class AutoOneCommand extends SequentialCommandGroup {
                                 Map.entry(CommandSelector.STRAFE_NONE,
                                         new PrintCommand("We're already lined up, no strafing necessary"))),
                         this::selectStagedStrafe),
-                m_placeStagedPieceSequentialCommandGroup,
+                m_placeStagedPieceSequentialCommandGroup,*/
                 new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()),
                 new InstantCommand(() -> printEndCommand()));
     }
@@ -103,9 +104,9 @@ public class AutoOneCommand extends SequentialCommandGroup {
     // Shuffleboard inputs
     private CommandSelector selectStagedStrafe() {
 
-        Constants.PlacePosition placePosition = m_shuffleboardSubsystem.getPreloadedPieceLevel();
+        Constants.PlacePosition placePosition = m_shuffleboardSubsystem.getStagedPieceLevel();
         Constants.ConeOffsetPosition conePosition = m_shuffleboardSubsystem
-                .getPreloadedConeOffsetPosition();
+                .getStagedConeOffsetPosition();
 
         if ((placePosition == Constants.PlacePosition.HighCone) ||
                 (placePosition == Constants.PlacePosition.MiddleCone) ||
