@@ -200,6 +200,10 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
         return !m_elevatorDownLimit.get();
     }
 
+    public boolean isLowering() {
+        return (m_elevatorState == ElevatorState.lowering);
+    }
+
     @Override
     public void useOutput(double output, TrapezoidProfile.State setpoint) {
         // Calculate the feedforward from the sepoint

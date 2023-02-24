@@ -43,7 +43,7 @@ public class SetArmReachCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (m_extendoSubsystem.atGoal() || (m_extendoSubsystem.isExtendoHomeLimitReached()));
+        return (m_extendoSubsystem.atGoal());
     }
 
     @Override

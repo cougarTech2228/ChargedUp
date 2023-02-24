@@ -132,9 +132,9 @@ public class RobotContainer {
         // .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
         // Constants.ArmDestination.low));
 
-        // new Trigger(m_controller::getYButton)
-        //         .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
-        //                 Constants.ArmDestination.middle));
+        new Trigger(m_controller::getYButton)
+                .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+                        Constants.ArmDestination.middle));
 
         // new Trigger(m_controller::getYButton)
         // .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
@@ -143,9 +143,6 @@ public class RobotContainer {
         // new Trigger(m_controller::getYButton)
         // .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
         // Constants.ArmDestination.shelf));
-
-        new Trigger(m_controller::getYButton)
-                .onTrue(new InstantCommand(() -> m_pneumaticSubsystem.toggleGripper()));
 
         // Configure all the buttons and switches on the Custom Button Board
         m_buttonBoardSubsystem.configureButtonBindings();
@@ -173,7 +170,7 @@ public class RobotContainer {
         }
     }
 
-    private static void cancelAllCommands() {
+    public static void cancelAllCommands() {
         CommandScheduler.getInstance().cancelAll();
     }
 

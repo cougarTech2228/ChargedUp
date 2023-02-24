@@ -43,7 +43,8 @@ public class SetArmHeightCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (m_elevatorSubsystem.atGoal());
+        return (m_elevatorSubsystem.atGoal() ||
+                (m_elevatorSubsystem.isElevatorLowerLimitReached() && m_elevatorSubsystem.isLowering()));
     }
 
     @Override
