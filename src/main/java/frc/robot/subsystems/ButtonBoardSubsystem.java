@@ -15,6 +15,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmDestination;
+import frc.robot.commands.BackOffCommand;
 import frc.robot.commands.DockWithAprilTagCommand;
 import frc.robot.commands.ParallelArmCommand;
 import frc.robot.commands.SetArmHeightCommand;
@@ -410,7 +411,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         //                                         m_drivetrainSubystem),
         //                                 new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S),
         //                                 new StrafeCommand(
-        //                                         Constants.GRID_STRAFE_DISTANCE - Constants.LEFT_STRAFE_WTF_FACTOR,
+        //                                         Constants.GRID_STRAFE_DISTANCE,
         //                                         Constants.STRAFE_SPEED,
         //                                         true, m_drivetrainSubystem, m_aprilTagManager),
         //                                 new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
@@ -451,7 +452,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         //                                 new DockWithAprilTagCommand(true, this, m_aprilTagManager,
         //                                         m_drivetrainSubystem),
         //                                 new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S),
-        //                                 new StrafeCommand(Constants.GRID_STRAFE_DISTANCE + Constants.RIGHT_STRAFE_WTF_FACTOR, -Constants.STRAFE_SPEED,
+        //                                 new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
         //                                         true, m_drivetrainSubystem, m_aprilTagManager),
         //                                 new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
         //                                         ArmDestination.high),
@@ -474,7 +475,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                                 m_drivetrainSubystem),
                                         new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S),
                                         new StrafeCommand(
-                                                Constants.GRID_STRAFE_DISTANCE - Constants.LEFT_STRAFE_WTF_FACTOR,
+                                                Constants.GRID_STRAFE_DISTANCE,
                                                 Constants.STRAFE_SPEED,
                                                 true, m_drivetrainSubystem, m_aprilTagManager),
                                         new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
@@ -515,7 +516,9 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                         new DockWithAprilTagCommand(true, this, m_aprilTagManager,
                                                 m_drivetrainSubystem),
                                         new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S),
-                                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE + Constants.RIGHT_STRAFE_WTF_FACTOR, -Constants.STRAFE_SPEED,
+                                        new StrafeCommand(
+                                                Constants.GRID_STRAFE_DISTANCE,
+                                                -Constants.STRAFE_SPEED,
                                                 true, m_drivetrainSubystem, m_aprilTagManager),
                                         new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
                                                 ArmDestination.middle),
@@ -539,7 +542,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                                 m_drivetrainSubystem),
                                         new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S),
                                         new StrafeCommand(
-                                                Constants.GRID_STRAFE_DISTANCE - Constants.LEFT_STRAFE_WTF_FACTOR,
+                                                Constants.GRID_STRAFE_DISTANCE,
                                                 Constants.STRAFE_SPEED,
                                                 true, m_drivetrainSubystem, m_aprilTagManager),
                                         new SetArmReachCommand(m_extendoSubsystem, ArmDestination.tight),
@@ -563,7 +566,11 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                         new DockWithAprilTagCommand(true, this, m_aprilTagManager,
                                                 m_drivetrainSubystem),
                                         new SetArmReachCommand(m_extendoSubsystem, ArmDestination.tight),
+                                        new BackOffCommand(Constants.GRID_BACK_OFF_DISTANCE_CM,
+                                                Constants.GRID_BACK_OFF_SPEED, m_drivetrainSubystem),
                                         new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.low),
+                                        new BackOffCommand(Constants.GRID_BACK_OFF_DISTANCE_CM,
+                                                -Constants.GRID_BACK_OFF_SPEED, m_drivetrainSubystem),
                                         new SetArmReachCommand(m_extendoSubsystem, ArmDestination.low),
                                         new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
                                         new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
@@ -583,7 +590,9 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                         new DockWithAprilTagCommand(true, this, m_aprilTagManager,
                                                 m_drivetrainSubystem),
                                         new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S),
-                                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE + Constants.RIGHT_STRAFE_WTF_FACTOR, -Constants.STRAFE_SPEED,
+                                        new StrafeCommand(
+                                                Constants.GRID_STRAFE_DISTANCE,
+                                                -Constants.STRAFE_SPEED,
                                                 true, m_drivetrainSubystem, m_aprilTagManager),
                                         new SetArmReachCommand(m_extendoSubsystem, ArmDestination.tight),
                                         new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.low),

@@ -114,14 +114,12 @@ public final class Constants {
     public static final double MAX_AUTO_ACCELERATION = 3.0;
 
     public static final double GRID_STRAFE_DISTANCE = 55.88;
-    public static final double SUBSTATION_STRAFE_DISTANCE = 23.0;
+    public static final double SUBSTATION_STRAFE_DISTANCE = 28.0;
     public static final double NUDGE_STRAFE_DISTANCE = 3.0;
     public static final double STRAFE_SPEED = 0.15;
     public static final double CAMERA_OFFSET_METERS = 0.14;
-
-    // TODO - May need to change these once on a real field????
-    public static final double LEFT_STRAFE_WTF_FACTOR = 0.40;
-    public static final double RIGHT_STRAFE_WTF_FACTOR = 0.12;
+    public static final double GRID_BACK_OFF_DISTANCE_CM = 5.0;
+    public static final double GRID_BACK_OFF_SPEED = 0.1;
 
     // PDH Constants
     public static final int WINCH_MOTOR_PDH_PORT = 14;
