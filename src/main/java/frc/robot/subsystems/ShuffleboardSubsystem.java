@@ -22,6 +22,7 @@ public class ShuffleboardSubsystem extends SubsystemBase {
     private static GenericEntry m_detectedTagIdEntry;
     private static GenericEntry m_targetTagIdEntry;
     private static GenericEntry m_idsMatchEntry;
+    private static GenericEntry m_gripperStatusEntry;
 
     public ShuffleboardSubsystem(ShuffleboardTab autoConfigTab, ShuffleboardTab teleopConfigTab) {
 
@@ -31,6 +32,7 @@ public class ShuffleboardSubsystem extends SubsystemBase {
         m_detectedTagIdEntry = m_teleopConfigTab.add("Detected ID", Constants.BAD_APRIL_TAG_ID).getEntry();
         m_targetTagIdEntry = m_teleopConfigTab.add("Target ID", Constants.BAD_APRIL_TAG_ID).getEntry();
         m_idsMatchEntry = m_teleopConfigTab.add("IDs Match?", false).getEntry();
+        m_gripperStatusEntry = m_teleopConfigTab.add("Gripper Open?", false).getEntry();
     }
 
     public void configureShuffleboard() {
@@ -108,6 +110,10 @@ public class ShuffleboardSubsystem extends SubsystemBase {
         return m_targetTagIdEntry;
     }
 
+    public GenericEntry getGripperStatusEntry() {
+        return m_gripperStatusEntry;
+    }
+
     @Override
     public void periodic() {
         double targetAprilTagID = RobotContainer.getButtonBoardSubsystem().getAprilTagID();
@@ -116,5 +122,7 @@ public class ShuffleboardSubsystem extends SubsystemBase {
         m_detectedTagIdEntry.setDouble(RobotContainer.getAprilTagManager().getTagID());
 
         m_idsMatchEntry.setBoolean(RobotContainer.getButtonBoardSubsystem().isAprilTagIDMatch());
+
+        m_gripperStatusEntry.setBoolean(RobotContainer.getPneumaticSubsystem().gripperIsOpen());
     }
 }

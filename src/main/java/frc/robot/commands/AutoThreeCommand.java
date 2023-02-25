@@ -66,34 +66,40 @@ public class AutoThreeCommand extends SequentialCommandGroup {
 
         // Get the appropriate command group to place the Staged Game Piece
         PlaceStagedPieceCommandChooser m_placeStagedPieceCommandChooser = new PlaceStagedPieceCommandChooser(
-                m_elevatorSubsystem, m_extendoSubsystem,  m_pneumaticSubsystem, m_shuffleboardSubsystem
+                m_elevatorSubsystem, m_extendoSubsystem, m_pneumaticSubsystem, m_shuffleboardSubsystem
                         .getStagedPieceLevel());
         SequentialCommandGroup m_placeStagedPieceSequentialCommandGroup = m_placeStagedPieceCommandChooser
                 .getPlacePieceCommand();
 
-        addCommands(new InstantCommand(() -> printStartCommand()),
+        addCommands(
+                new InstantCommand(() -> printStartCommand()),
                 new InstantCommand(m_drivetrainSubsystem::zeroGyroscope),
                 new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
                 m_placePreloadedPieceSequentialCommandGroup,
-                /*new FollowTrajectoryCommand(m_drivetrainSubsystem, m_outPathFileName, m_eventMap,
-                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto3_back", m_eventMap,
-                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new DockWithAprilTagCommand(false, m_shuffleboardSubsystem, m_aprilTagManager, m_drivetrainSubsystem),
-                new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the Network Table updates settle a
-                                                                             // bit
-                new SelectCommand(
-                        Map.ofEntries(
-                                Map.entry(CommandSelector.STRAFE_LEFT,
-                                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
-                                                true, m_drivetrainSubsystem, m_aprilTagManager)),
-                                Map.entry(CommandSelector.STRAFE_RIGHT,
-                                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
-                                                true, m_drivetrainSubsystem, m_aprilTagManager)),
-                                Map.entry(CommandSelector.STRAFE_NONE,
-                                        new PrintCommand("We're already lined up, no strafing necessary"))),
-                        this::selectStagedStrafe),
-                m_placeStagedPieceSequentialCommandGroup,*/
+                /*
+                 * new FollowTrajectoryCommand(m_drivetrainSubsystem, m_outPathFileName,
+                 * m_eventMap,
+                 * Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                 * new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto3_back", m_eventMap,
+                 * Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                 * new DockWithAprilTagCommand(false, m_shuffleboardSubsystem,
+                 * m_aprilTagManager, m_drivetrainSubsystem),
+                 * new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S), // Let the
+                 * Network Table updates settle a
+                 * // bit
+                 * new SelectCommand(
+                 * Map.ofEntries(
+                 * Map.entry(CommandSelector.STRAFE_LEFT,
+                 * new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
+                 * true, m_drivetrainSubsystem, m_aprilTagManager)),
+                 * Map.entry(CommandSelector.STRAFE_RIGHT,
+                 * new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
+                 * true, m_drivetrainSubsystem, m_aprilTagManager)),
+                 * Map.entry(CommandSelector.STRAFE_NONE,
+                 * new PrintCommand("We're already lined up, no strafing necessary"))),
+                 * this::selectStagedStrafe),
+                 * m_placeStagedPieceSequentialCommandGroup,
+                 */
                 new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()),
                 new InstantCommand(() -> printEndCommand()));
     }

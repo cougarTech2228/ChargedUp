@@ -13,13 +13,16 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ArmDestination;
 import frc.robot.commands.AutoOneCommand;
 import frc.robot.commands.AutoThreeCommand;
 import frc.robot.commands.AutoTwoCommand;
-import frc.robot.commands.BackOffCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.ParallelArmCommand;
+import frc.robot.commands.SetArmHeightCommand;
+import frc.robot.commands.SetArmReachCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtendoSubsystem;
@@ -129,9 +132,16 @@ public class RobotContainer {
         new Trigger(m_controller::getAButton)
                 .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.home));
 
+        // This is for transiting from the Substation to the Grid
         new Trigger(m_controller::getYButton)
-                .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
-                        Constants.ArmDestination.low));
+                .onTrue(
+                        new SequentialCommandGroup(
+                                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.tight),
+                                new SetArmReachCommand(m_extendoSubsystem, ArmDestination.low)));
+
+        // new Trigger(m_controller::getYButton)
+        // .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+        // Constants.ArmDestination.low));
 
         // new Trigger(m_controller::getYButton)
         // .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,

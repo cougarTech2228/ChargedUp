@@ -352,13 +352,14 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                                 new StrafeCommand(Constants.SUBSTATION_STRAFE_DISTANCE,
                                                         Constants.STRAFE_SPEED,
                                                         true, m_drivetrainSubsystem, m_aprilTagManager),
-                                                this::isLeftDockingStation),
-                                        new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
-                                                ArmDestination.shelf)/*
-                                                                      * ,
-                                                                      * new InstantCommand(() ->
-                                                                      * m_pneumaticSubsystem.closeGripper())
-                                                                      */),
+                                                this::isLeftDockingStation)/*
+                                                                            * ,
+                                                                            * new ParallelArmCommand(m_extendoSubsystem,
+                                                                            * m_elevatorSubsystem,
+                                                                            * ArmDestination.shelf),
+                                                                            * new InstantCommand(() ->
+                                                                            * m_pneumaticSubsystem.closeGripper())
+                                                                            */),
                                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch())));
 
         // **********************************
@@ -399,69 +400,75 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // **********************************
 
         // Place high game pieces
-        // getHighLeftConeButton().onTrue(
-        // new SequentialCommandGroup(
-        // new PrintCommand("High Left Cone"),
-        // new ParallelCommandGroup(new SetArmHeightCommand(m_elevatorSubsystem,
-        // ArmDestination.high),
-        // new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home)),
-        // new ConditionalCommand(
-        // new SequentialCommandGroup(
-        // new DockWithAprilTagCommand(true, this, m_aprilTagManager,
-        // m_drivetrainSubystem),
-        // new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S),
-        // new StrafeCommand(
-        // Constants.GRID_STRAFE_DISTANCE,
-        // Constants.STRAFE_SPEED,
-        // true, m_drivetrainSubystem, m_aprilTagManager),
-        // new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
-        // ArmDestination.high),
-        // new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
-        // new SetArmReachCommand(m_extendoSubsystem, ArmDestination.tight),
-        // new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-        // new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
-        // new InstantCommand(() -> resetAprilTagID())),
-        // new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch())));
+        getHighLeftConeButton().onTrue(
+                new SequentialCommandGroup(
+                        new PrintCommand("High Left Cone"),
+                        new ParallelCommandGroup(new SetArmHeightCommand(m_elevatorSubsystem,
+                                ArmDestination.high),
+                                new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home)),
+                        new ConditionalCommand(
+                                new SequentialCommandGroup(
+                                        new DockWithAprilTagCommand(true, this, m_aprilTagManager,
+                                                m_drivetrainSubsystem),
+                                        new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S),
+                                        new StrafeCommand(
+                                                Constants.GRID_STRAFE_DISTANCE,
+                                                Constants.STRAFE_SPEED,
+                                                true, m_drivetrainSubsystem, m_aprilTagManager),
+                                        new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+                                                ArmDestination.high),
+                                        /*
+                                         * new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
+                                         * new SetArmReachCommand(m_extendoSubsystem, ArmDestination.tight),
+                                         * new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                                         * new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                                         */
+                                        new InstantCommand(() -> resetAprilTagID())),
+                                new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch())));
 
-        // getHighCubeButton().onTrue(new SequentialCommandGroup(
-        // new PrintCommand("High Cube"),
-        // new ParallelCommandGroup(new SetArmHeightCommand(m_elevatorSubsystem,
-        // ArmDestination.high),
-        // new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home)),
-        // new ConditionalCommand(
-        // new SequentialCommandGroup(
-        // new DockWithAprilTagCommand(true, this, m_aprilTagManager,
-        // m_drivetrainSubystem),
-        // new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
-        // ArmDestination.high),
-        // new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
-        // new SetArmReachCommand(m_extendoSubsystem, ArmDestination.tight),
-        // new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-        // new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
-        // new InstantCommand(() -> resetAprilTagID())),
-        // new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch())));
+        getHighCubeButton().onTrue(new SequentialCommandGroup(
+                new PrintCommand("High Cube"),
+                new ParallelCommandGroup(new SetArmHeightCommand(m_elevatorSubsystem,
+                        ArmDestination.high),
+                        new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home)),
+                new ConditionalCommand(
+                        new SequentialCommandGroup(
+                                new DockWithAprilTagCommand(true, this, m_aprilTagManager,
+                                        m_drivetrainSubsystem),
+                                new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+                                        ArmDestination.high),
+                                /*
+                                 * new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
+                                 * new SetArmReachCommand(m_extendoSubsystem, ArmDestination.tight),
+                                 * new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                                 * new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                                 */
+                                new InstantCommand(() -> resetAprilTagID())),
+                        new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch())));
 
-        // getHighRightConeButton().onTrue(
-        // new SequentialCommandGroup(
-        // new PrintCommand("High Right Cone"),
-        // new ParallelCommandGroup(new SetArmHeightCommand(m_elevatorSubsystem,
-        // ArmDestination.high),
-        // new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home)),
-        // new ConditionalCommand(
-        // new SequentialCommandGroup(
-        // new DockWithAprilTagCommand(true, this, m_aprilTagManager,
-        // m_drivetrainSubystem),
-        // new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S),
-        // new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
-        // true, m_drivetrainSubystem, m_aprilTagManager),
-        // new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
-        // ArmDestination.high),
-        // new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
-        // new SetArmReachCommand(m_extendoSubsystem, ArmDestination.tight),
-        // new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-        // new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
-        // new InstantCommand(() -> resetAprilTagID())),
-        // new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch())));
+        getHighRightConeButton().onTrue(
+                new SequentialCommandGroup(
+                        new PrintCommand("High Right Cone"),
+                        new ParallelCommandGroup(new SetArmHeightCommand(m_elevatorSubsystem,
+                                ArmDestination.high),
+                                new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home)),
+                        new ConditionalCommand(
+                                new SequentialCommandGroup(
+                                        new DockWithAprilTagCommand(true, this, m_aprilTagManager,
+                                                m_drivetrainSubsystem),
+                                        new WaitCommand(Constants.WAIT_TIME_AFTER_APRIL_TAG_DOCK_S),
+                                        new StrafeCommand(Constants.GRID_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
+                                                true, m_drivetrainSubsystem, m_aprilTagManager),
+                                        new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+                                                ArmDestination.high),
+                                        /*
+                                         * new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
+                                         * new SetArmReachCommand(m_extendoSubsystem, ArmDestination.tight),
+                                         * new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                                         * new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                                         */
+                                        new InstantCommand(() -> resetAprilTagID())),
+                                new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch())));
 
         // Place middle game pieces
         getMiddleLeftConeButton().onTrue(
@@ -480,10 +487,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                                 true, m_drivetrainSubsystem, m_aprilTagManager),
                                         new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
                                                 ArmDestination.middle),
-                                        new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
-                                        new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
-                                        new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-                                        new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                                        /*
+                                         * new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
+                                         * new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
+                                         * new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                                         * new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                                         */
                                         new InstantCommand(() -> resetAprilTagID())),
                                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch())));
 
@@ -498,10 +507,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                                 m_drivetrainSubsystem),
                                         new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
                                                 ArmDestination.middle),
-                                        new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
-                                        new SetArmReachCommand(m_extendoSubsystem, ArmDestination.tight),
-                                        new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-                                        new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                                        /*
+                                         * new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
+                                         * new SetArmReachCommand(m_extendoSubsystem, ArmDestination.tight),
+                                         * new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                                         * new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                                         */
                                         new InstantCommand(() -> resetAprilTagID())),
                                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch())));
 
@@ -522,10 +533,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                                 true, m_drivetrainSubsystem, m_aprilTagManager),
                                         new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
                                                 ArmDestination.middle),
-                                        new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
-                                        new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
-                                        new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-                                        new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                                        /*
+                                         * new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
+                                         * new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
+                                         * new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                                         * new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                                         */
                                         new InstantCommand(() -> resetAprilTagID())),
                                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch())));
 
@@ -548,10 +561,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                         new SetArmReachCommand(m_extendoSubsystem, ArmDestination.tight),
                                         new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.low),
                                         new SetArmReachCommand(m_extendoSubsystem, ArmDestination.low),
-                                        new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
-                                        new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
-                                        new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-                                        new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                                        /*
+                                         * new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
+                                         * new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
+                                         * new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                                         * new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                                         */
                                         new InstantCommand(() -> resetAprilTagID())),
                                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch())));
 
@@ -572,10 +587,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                         new BackOffCommand(Constants.GRID_BACK_OFF_DISTANCE_CM,
                                                 -Constants.GRID_BACK_OFF_SPEED, m_drivetrainSubsystem),
                                         new SetArmReachCommand(m_extendoSubsystem, ArmDestination.low),
-                                        new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
-                                        new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
-                                        new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-                                        new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                                        /*
+                                         * new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
+                                         * new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
+                                         * new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                                         * new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                                         */
                                         new InstantCommand(() -> resetAprilTagID())),
                                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch())));
 
@@ -597,10 +614,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                                         new SetArmReachCommand(m_extendoSubsystem, ArmDestination.tight),
                                         new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.low),
                                         new SetArmReachCommand(m_extendoSubsystem, ArmDestination.low),
-                                        new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
-                                        new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
-                                        new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-                                        new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                                        /*
+                                         * new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
+                                         * new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
+                                         * new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                                         * new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                                         */
                                         new InstantCommand(() -> resetAprilTagID())),
                                 new PrintCommand("April Tag Not Detected"), () -> isAprilTagIDMatch())));
 

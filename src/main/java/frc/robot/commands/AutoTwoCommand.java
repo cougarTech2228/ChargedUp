@@ -25,7 +25,8 @@ public class AutoTwoCommand extends SequentialCommandGroup {
     private static PneumaticSubsystem m_pneumaticSubsystem;
 
     public AutoTwoCommand(ElevatorSubsystem elevatorSubsystem, ExtendoSubsystem extendoSubsystem,
-            DrivetrainSubsystem drivetrainSubystem, ShuffleboardSubsystem shuffleboardSubsystem, PneumaticSubsystem pneumaticSubsystem) {
+            DrivetrainSubsystem drivetrainSubystem, ShuffleboardSubsystem shuffleboardSubsystem,
+            PneumaticSubsystem pneumaticSubsystem) {
 
         m_elevatorSubsystem = elevatorSubsystem;
         m_extendoSubsystem = extendoSubsystem;
@@ -47,16 +48,19 @@ public class AutoTwoCommand extends SequentialCommandGroup {
         SequentialCommandGroup m_placePreloadedPieceSequentialCommandGroup = m_placePreloadedPieceCommandChooser
                 .getPlacePieceCommand();
 
-        addCommands(new InstantCommand(() -> printStartCommand()),
+        addCommands(
+                new InstantCommand(() -> printStartCommand()),
                 new InstantCommand(m_drivetrainSubsystem::zeroGyroscope),
                 new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
                 m_placePreloadedPieceSequentialCommandGroup,
-                /*new FollowTrajectoryCommand(m_drivetrainSubsystem, m_outPathFileName,
-                        m_eventMap,
-                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto2_back",
-                        m_eventMap,
-                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),*/
+                /*
+                 * new FollowTrajectoryCommand(m_drivetrainSubsystem, m_outPathFileName,
+                 * m_eventMap,
+                 * Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                 * new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto2_back",
+                 * m_eventMap,
+                 * Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                 */
                 new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()),
                 new InstantCommand(() -> printEndCommand()));
     }
