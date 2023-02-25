@@ -46,7 +46,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     private static final double kMotorVoltageLimit = 12;
     private static final double kPositionErrorTolerance = 2.0; // in cm
 
-    public static final double HEIGHT_HOME = 52.0;
+    public static final double HEIGHT_HOME = 51.0;
     public static final double HEIGHT_LOW = 58.0;
     public static final double HEIGHT_PRELOADED_CONE = 65.0;
     public static final double HEIGHT_MIDDLE = 85.0;

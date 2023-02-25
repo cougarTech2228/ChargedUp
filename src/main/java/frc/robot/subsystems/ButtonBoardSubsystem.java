@@ -32,8 +32,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     }
 
     private enum ButtonBoardOperationMode {
-        Manual,
-        Auto
+        Fine,
+        Coarse
     }
 
     private final int kJoystickChannel1 = 1;
@@ -63,8 +63,11 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     private static DrivetrainSubsystem m_drivetrainSubsystem;
     private static ShuffleboardSubsystem m_shuffleboardSubsystem;
 
-    private static final double INCREMENTAL_ARM_HEIGHT_CHANGE_CM = 2.0;
-    private static final double INCREMENTAL_ARM_REACH_CHANGE_CM = 5.0;
+    private static final double FINE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM = 2.0;
+    private static final double FINE_INCREMENTAL_ARM_REACH_CHANGE_CM = 5.0;
+
+    private static final double COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM = 10.0;
+    private static final double COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM = 10.0;
 
     public ButtonBoardSubsystem(ElevatorSubsystem elevatorSubsystem, ExtendoSubsystem extendoSubsystem,
             AprilTagManager aprilTagManager, LEDStripSubsystem ledStripSubsystem, PneumaticSubsystem pneumaticSubsystem,
@@ -81,7 +84,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         m_shuffleboardSubsystem = shuffleboardSubsystem;
 
         setSubstationShelfPosition();
-        setAutoManualOperationMode();
+        setOperationMode();
     }
 
     private JoystickButton getHighLeftConeButton() {
@@ -148,7 +151,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         return new JoystickButton(m_joystick2, 1);
     }
 
-    private JoystickButton getAutoManualToggleSwitch() {
+    private JoystickButton getOperationToggleSwitch() {
         return new JoystickButton(m_joystick2, 3);
     }
 
@@ -221,8 +224,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         return m_aprilTagID;
     }
 
-    private boolean isManualOperationMode() {
-        return (m_operationMode == ButtonBoardOperationMode.Manual);
+    private boolean isFineOperationMode() {
+        return (m_operationMode == ButtonBoardOperationMode.Fine);
     }
 
     private boolean isLeftDockingStation() {
@@ -237,11 +240,11 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         }
     }
 
-    private void setAutoManualOperationMode() {
-        if (getAutoManualToggleSwitch().getAsBoolean()) {
-            m_operationMode = ButtonBoardOperationMode.Manual;
+    private void setOperationMode() {
+        if (getOperationToggleSwitch().getAsBoolean()) {
+            m_operationMode = ButtonBoardOperationMode.Fine;
         } else {
-            m_operationMode = ButtonBoardOperationMode.Auto;
+            m_operationMode = ButtonBoardOperationMode.Coarse;
         }
     }
 
@@ -249,7 +252,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     public void periodic() {
 
         setSubstationShelfPosition();
-        setAutoManualOperationMode();
+        setOperationMode();
 
         // Handle the joystick strafing input
         m_strafeJoystick = m_joystick2.getRawAxis(0);
@@ -260,7 +263,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // stop a situation where multiple stafe commands are issued if the
         // user were to hold the joystick in the extreme right or left
         // position.
-        if (m_strafeReset && isManualOperationMode()) {
+        if (m_strafeReset) {
 
             if (m_strafeJoystick == 1.0) { // Right
                 new StrafeCommand(Constants.NUDGE_STRAFE_DISTANCE, -Constants.STRAFE_SPEED, false,
@@ -290,15 +293,25 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // stop a situation where multiple arm reach commands are issued if
         // the user were to hold the joystick in the extreme up or down
         // position.
-        if (m_armReachReset && isManualOperationMode()) {
+        if (m_armReachReset) {
 
             if (m_armReachJoystick == 1.0) { // Arm Extend
-                m_extendoSubsystem.goToDistanceCM(
-                        m_extendoSubsystem.getCurrentArmReachCm() + INCREMENTAL_ARM_REACH_CHANGE_CM);
+                if (isFineOperationMode()) {
+                    m_extendoSubsystem.goToDistanceCM(
+                            m_extendoSubsystem.getCurrentArmReachCm() + FINE_INCREMENTAL_ARM_REACH_CHANGE_CM);
+                } else {
+                    m_extendoSubsystem.goToDistanceCM(
+                            m_extendoSubsystem.getCurrentArmReachCm() + COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM);
+                }
                 m_armReachReset = false;
-            } else if (m_armReachJoystick == -1.0) {
-                m_extendoSubsystem.goToDistanceCM(
-                        m_extendoSubsystem.getCurrentArmReachCm() - INCREMENTAL_ARM_REACH_CHANGE_CM);
+            } else if (m_armReachJoystick == -1.0) { // Arm Retract
+                if (isFineOperationMode()) {
+                    m_extendoSubsystem.goToDistanceCM(
+                            m_extendoSubsystem.getCurrentArmReachCm() - FINE_INCREMENTAL_ARM_REACH_CHANGE_CM);
+                } else {
+                    m_extendoSubsystem.goToDistanceCM(
+                            m_extendoSubsystem.getCurrentArmReachCm() - COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM);
+                }
                 m_armReachReset = false;
             }
         }
@@ -328,7 +341,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         new PrintCommand("You must be in manual mode to toggle the gripper"),
 
                         // variable
-                        this::isManualOperationMode));
+                        this::isFineOperationMode));
 
         // **********************************
         // Docking Station Button Handling
@@ -369,31 +382,41 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new ConditionalCommand(
                         // True command
                         Commands.runOnce(() -> {
-                            if (isManualOperationMode()) {
+                            if (isFineOperationMode()) {
                                 m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
-                                        + INCREMENTAL_ARM_HEIGHT_CHANGE_CM);
+                                        + FINE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM);
                             }
                         }),
                         // False command
-                        new PrintCommand("You must be in manual mode to move the arm up"),
+                        Commands.runOnce(() -> {
+                            if (isFineOperationMode()) {
+                                m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
+                                        + COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM);
+                            }
+                        }),
 
                         // variable
-                        this::isManualOperationMode));
+                        this::isFineOperationMode));
 
         getArmDownButton().onTrue(
                 new ConditionalCommand(
                         // True command
                         Commands.runOnce(() -> {
-                            if (isManualOperationMode()) {
+                            if (isFineOperationMode()) {
                                 m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
-                                        - INCREMENTAL_ARM_HEIGHT_CHANGE_CM);
+                                        - FINE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM);
                             }
                         }),
                         // False command
-                        new PrintCommand("You must be in manual mode to move the arm up"),
+                        Commands.runOnce(() -> {
+                            if (isFineOperationMode()) {
+                                m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
+                                        - COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM);
+                            }
+                        }),
 
                         // variable
-                        this::isManualOperationMode));
+                        this::isFineOperationMode));
 
         // **********************************
         // Placing Position Button Handling

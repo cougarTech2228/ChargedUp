@@ -130,13 +130,17 @@ public class RobotContainer {
                 .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.setBoostMode(false)));
 
         new Trigger(m_controller::getAButton)
-                .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, Constants.ArmDestination.home));
+                .onTrue(
+                        new SequentialCommandGroup(
+                                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.low),
+                                new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
+                                        Constants.ArmDestination.home)));
 
         // This is for transiting from the Substation to the Grid
         new Trigger(m_controller::getYButton)
                 .onTrue(
                         new SequentialCommandGroup(
-                                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.tight),
+                                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.middle),
                                 new SetArmReachCommand(m_extendoSubsystem, ArmDestination.low)));
 
         // new Trigger(m_controller::getYButton)

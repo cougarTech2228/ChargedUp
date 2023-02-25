@@ -47,7 +47,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double kPositionErrorTolerance = 1.0; // in cm
 
     public static final double DISTANCE_TIGHT = 16.5;
-    public static final double DISTANCE_HOME = 28.5;
+    public static final double DISTANCE_HOME = 26.5;
     public static final double DISTANCE_LOW = 35;
     public static final double DISTANCE_PRELOADED_CONE = 35;
     public static final double DISTANCE_MIDDLE = 40;
