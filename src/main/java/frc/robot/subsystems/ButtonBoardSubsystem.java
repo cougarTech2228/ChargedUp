@@ -334,14 +334,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // Gripper Button Handling
         // **********************************
         getToggleGripperButton().onTrue(
-                new ConditionalCommand(
-                        // True command
-                        new InstantCommand(() -> m_pneumaticSubsystem.toggleGripper()),
-                        // False command
-                        new PrintCommand("You must be in manual mode to toggle the gripper"),
-
-                        // variable
-                        this::isFineOperationMode));
+                new InstantCommand(() -> m_pneumaticSubsystem.toggleGripper())
+                );
 
         // **********************************
         // Docking Station Button Handling
@@ -382,17 +376,13 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new ConditionalCommand(
                         // True command
                         Commands.runOnce(() -> {
-                            if (isFineOperationMode()) {
                                 m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
                                         + FINE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM);
-                            }
                         }),
                         // False command
                         Commands.runOnce(() -> {
-                            if (isFineOperationMode()) {
                                 m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
                                         + COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM);
-                            }
                         }),
 
                         // variable
@@ -401,18 +391,13 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         getArmDownButton().onTrue(
                 new ConditionalCommand(
                         // True command
-                        Commands.runOnce(() -> {
-                            if (isFineOperationMode()) {
-                                m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
+                        Commands.runOnce(() -> { m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
                                         - FINE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM);
-                            }
                         }),
                         // False command
                         Commands.runOnce(() -> {
-                            if (isFineOperationMode()) {
                                 m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
                                         - COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM);
-                            }
                         }),
 
                         // variable
