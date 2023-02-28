@@ -33,7 +33,7 @@ public class OutPathFileNameChooser {
                 } else if (m_autoPosition == Constants.AutoPosition.Position3) {
                     m_outPathFileName = "auto3L_out";
                 } else {
-                    System.out.println("Uh Oh, somthing went wrong :( (Auto Location not found)");
+                    System.out.println("Uh Oh, something went wrong :( (Auto Location not found)");
                 }
 
             } else { // Cone Right
@@ -44,7 +44,7 @@ public class OutPathFileNameChooser {
                 } else if (m_autoPosition == Constants.AutoPosition.Position3) {
                     m_outPathFileName = "auto3R_out";
                 } else {
-                    System.out.println("Uh Oh, somthing went wrong :( (Auto Location not found)");
+                    System.out.println("Uh Oh, something went wrong :( (Auto Location not found)");
                 }
             }
         } else { // Cube
@@ -55,7 +55,7 @@ public class OutPathFileNameChooser {
             } else if (m_autoPosition == Constants.AutoPosition.Position3) {
                 m_outPathFileName = "auto3M_out";
             } else {
-                System.out.println("Uh Oh, somthing went wrong :( (Auto Location not found)");
+                System.out.println("Uh Oh, something went wrong :( (Auto Location not found)");
             }
         }
 

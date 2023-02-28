@@ -15,13 +15,12 @@ public class ShuffleboardSubsystem extends SubsystemBase {
 
     private static SendableChooser<Constants.AutoPosition> m_positionChooser = new SendableChooser<>();
     private static SendableChooser<Constants.PlacePosition> m_preloadedPieceLevelChooser = new SendableChooser<>();
-    private static SendableChooser<Constants.PlacePosition> m_stagedPieceLevelChooser = new SendableChooser<>();
+    // private static SendableChooser<Constants.PlacePosition>
+    // m_stagedPieceLevelChooser = new SendableChooser<>();
     private static SendableChooser<Constants.ConeOffsetPosition> m_preloadedPieceConeOffsetChooser = new SendableChooser<>();
-    private static SendableChooser<Constants.ConeOffsetPosition> m_stagedPieceConeOffsetChooser = new SendableChooser<>();
+    // private static SendableChooser<Constants.ConeOffsetPosition>
+    // m_stagedPieceConeOffsetChooser = new SendableChooser<>();
 
-    private static GenericEntry m_detectedTagIdEntry;
-    private static GenericEntry m_targetTagIdEntry;
-    private static GenericEntry m_idsMatchEntry;
     private static GenericEntry m_gripperStatusEntry;
 
     public ShuffleboardSubsystem(ShuffleboardTab autoConfigTab, ShuffleboardTab teleopConfigTab) {
@@ -29,9 +28,6 @@ public class ShuffleboardSubsystem extends SubsystemBase {
         m_autoConfigTab = autoConfigTab;
         m_teleopConfigTab = teleopConfigTab;
 
-        m_detectedTagIdEntry = m_teleopConfigTab.add("Detected ID", Constants.BAD_APRIL_TAG_ID).getEntry();
-        m_targetTagIdEntry = m_teleopConfigTab.add("Target ID", Constants.BAD_APRIL_TAG_ID).getEntry();
-        m_idsMatchEntry = m_teleopConfigTab.add("IDs Match?", false).getEntry();
         m_gripperStatusEntry = m_teleopConfigTab.add("Gripper Open?", false).getEntry();
     }
 
@@ -63,23 +59,31 @@ public class ShuffleboardSubsystem extends SubsystemBase {
                 .withSize(2, 1)
                 .withPosition(5, 1);
 
-        m_stagedPieceLevelChooser.setDefaultOption("High Cone", Constants.PlacePosition.HighCone);
-        m_stagedPieceLevelChooser.addOption("Middle Cone", Constants.PlacePosition.MiddleCone);
-        m_stagedPieceLevelChooser.addOption("Low Cone", Constants.PlacePosition.LowCone);
-        m_stagedPieceLevelChooser.addOption("High Cube", Constants.PlacePosition.HighCube);
-        m_stagedPieceLevelChooser.addOption("Middle Cube", Constants.PlacePosition.MiddleCube);
-        m_stagedPieceLevelChooser.addOption("Low Cube", Constants.PlacePosition.LowCube);
-        m_autoConfigTab.add("Staged Piece Level", m_stagedPieceLevelChooser)
-                .withWidget(BuiltInWidgets.kSplitButtonChooser)
-                .withSize(5, 1)
-                .withPosition(0, 2);
+        // m_stagedPieceLevelChooser.setDefaultOption("High Cone",
+        // Constants.PlacePosition.HighCone);
+        // m_stagedPieceLevelChooser.addOption("Middle Cone",
+        // Constants.PlacePosition.MiddleCone);
+        // m_stagedPieceLevelChooser.addOption("Low Cone",
+        // Constants.PlacePosition.LowCone);
+        // m_stagedPieceLevelChooser.addOption("High Cube",
+        // Constants.PlacePosition.HighCube);
+        // m_stagedPieceLevelChooser.addOption("Middle Cube",
+        // Constants.PlacePosition.MiddleCube);
+        // m_stagedPieceLevelChooser.addOption("Low Cube",
+        // Constants.PlacePosition.LowCube);
+        // m_autoConfigTab.add("Staged Piece Level", m_stagedPieceLevelChooser)
+        // .withWidget(BuiltInWidgets.kSplitButtonChooser)
+        // .withSize(5, 1)
+        // .withPosition(0, 2);
 
-        m_stagedPieceConeOffsetChooser.setDefaultOption("Left", Constants.ConeOffsetPosition.Left);
-        m_stagedPieceConeOffsetChooser.addOption("Right", Constants.ConeOffsetPosition.Right);
-        m_autoConfigTab.add("Staged Cone Offset", m_stagedPieceConeOffsetChooser)
-                .withWidget(BuiltInWidgets.kSplitButtonChooser)
-                .withSize(2, 1)
-                .withPosition(5, 2);
+        // m_stagedPieceConeOffsetChooser.setDefaultOption("Left",
+        // Constants.ConeOffsetPosition.Left);
+        // m_stagedPieceConeOffsetChooser.addOption("Right",
+        // Constants.ConeOffsetPosition.Right);
+        // m_autoConfigTab.add("Staged Cone Offset", m_stagedPieceConeOffsetChooser)
+        // .withWidget(BuiltInWidgets.kSplitButtonChooser)
+        // .withSize(2, 1)
+        // .withPosition(5, 2);
     }
 
     public Constants.AutoPosition getAutoPosition() {
@@ -94,21 +98,13 @@ public class ShuffleboardSubsystem extends SubsystemBase {
         return m_preloadedPieceConeOffsetChooser.getSelected();
     }
 
-    public Constants.PlacePosition getStagedPieceLevel() {
-        return m_stagedPieceLevelChooser.getSelected();
-    }
+    // public Constants.PlacePosition getStagedPieceLevel() {
+    // return m_stagedPieceLevelChooser.getSelected();
+    // }
 
-    public Constants.ConeOffsetPosition getStagedConeOffsetPosition() {
-        return m_stagedPieceConeOffsetChooser.getSelected();
-    }
-
-    public GenericEntry getDetectedIDEntry() {
-        return m_detectedTagIdEntry;
-    }
-
-    public GenericEntry getTargetIDEntry() {
-        return m_targetTagIdEntry;
-    }
+    // public Constants.ConeOffsetPosition getStagedConeOffsetPosition() {
+    // return m_stagedPieceConeOffsetChooser.getSelected();
+    // }
 
     public GenericEntry getGripperStatusEntry() {
         return m_gripperStatusEntry;
@@ -116,13 +112,6 @@ public class ShuffleboardSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        double targetAprilTagID = RobotContainer.getButtonBoardSubsystem().getAprilTagID();
-
-        m_targetTagIdEntry.setDouble(targetAprilTagID);
-        m_detectedTagIdEntry.setDouble(RobotContainer.getAprilTagManager().getTagID());
-
-        m_idsMatchEntry.setBoolean(RobotContainer.getButtonBoardSubsystem().isAprilTagIDMatch());
-
         m_gripperStatusEntry.setBoolean(RobotContainer.getPneumaticSubsystem().gripperIsOpen());
     }
 }

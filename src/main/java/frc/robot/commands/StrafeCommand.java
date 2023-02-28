@@ -1,23 +1,17 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.Constants;
 import frc.robot.subsystems.DrivetrainSubsystem;
-import frc.robot.utils.AprilTagManager;
 
 public class StrafeCommand extends CommandBase {
     private double m_distanceCM;
     private double m_speed;
     private DrivetrainSubsystem m_drivetrainSubsystem;
-    private AprilTagManager m_aprilTagManager;
 
     double m_currentEncoderCount;
     double m_startEncoderCount;
     double m_distanceInEncoderCounts;
-
-    boolean m_accountForAprilTag;
 
     boolean m_hasStartedMoving;
 
@@ -44,21 +38,20 @@ public class StrafeCommand extends CommandBase {
      *                 negative speed goes left, positive speed goes right.
      * @throws Exception
      */
-    public StrafeCommand(double distanceCM, double speed, boolean accountForAprilTag,
-            DrivetrainSubsystem drivetrainSubsystem, AprilTagManager aprilTagManager) {
+    public StrafeCommand(double distanceCM, double speed,
+            DrivetrainSubsystem drivetrainSubsystem) {
 
         m_distanceCM = distanceCM;
         m_speed = speed;
-        m_accountForAprilTag = accountForAprilTag;
         m_drivetrainSubsystem = drivetrainSubsystem;
-        m_aprilTagManager = aprilTagManager;
+
+        addRequirements(m_drivetrainSubsystem);
     }
 
     @Override
     public void initialize() {
 
-        System.out.println("Strafe Command starting");
-        System.out.println("Distance Passed In: " + m_distanceCM);
+        System.out.println("Starting StrafeCommand");
 
         if (m_speed < -1.0 || m_speed > 1.0) {
             System.out.println("ERROR: Speed value passed into StrafeCommand out of [-1, 1]");
@@ -69,41 +62,7 @@ public class StrafeCommand extends CommandBase {
         // in order to try to get more accuracy in the encoder tick count
         m_drivetrainSubsystem.setDriveMotorStatusFramePeriod(FAST_STATUS_FRAME_PERIOD);
 
-        double correctedDistanceCM = m_distanceCM;
-        double offsetInCm = 0.0;
-        // If we're strafing away from an April Tag and it's not a manual strafe from
-        // the Button Board's joystick, use the last recorded Tx value from the April
-        // Tag detection to make a better estimate on how far we need to strafe in
-        // order to line up with the Cone Nodes.
-        if (m_accountForAprilTag) {
-            offsetInCm = (m_aprilTagManager.getTX() - Constants.CAMERA_OFFSET_METERS) * 100.0;
-
-            if (m_speed < 0.0) {
-
-                // Auto is not FOV, need to invert control direction/speed
-                if (DriverStation.isAutonomous()) {
-                    System.out.println("Strafing Left");
-                    correctedDistanceCM += offsetInCm;
-                } else {
-                    System.out.println("Strafing Right");
-                    correctedDistanceCM -= offsetInCm;
-                }
-            } else {
-
-                // Auto is not FOV, need to invert control direction/speed
-                if (DriverStation.isAutonomous()) {
-                    System.out.println("Strafing Right");
-                    correctedDistanceCM -= offsetInCm;
-                } else {
-                    System.out.println("Strafing Left");
-                    correctedDistanceCM += offsetInCm;
-                }
-            }
-        }
-
-        System.out.println("offsetInCm: " + offsetInCm + " correctedDistanceCM: " + correctedDistanceCM);
-
-        m_distanceInEncoderCounts = ((correctedDistanceCM / WHEEL_CIRCUMFERENCE_CM) * TICKS_PER_ROTATION);
+        m_distanceInEncoderCounts = ((m_distanceCM / WHEEL_CIRCUMFERENCE_CM) * TICKS_PER_ROTATION);
 
         m_currentEncoderCount = m_drivetrainSubsystem.getEncoderCount();
         m_startEncoderCount = m_currentEncoderCount;
@@ -113,9 +72,6 @@ public class StrafeCommand extends CommandBase {
 
     @Override
     public void execute() {
-        // if (m_drivetrainSubsystem.getEncoderRateOfChange() > 0.0) {
-        // m_hasStartedMoving = true;
-        // }
 
         m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(0.0,
                 m_speed * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
@@ -127,17 +83,8 @@ public class StrafeCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        // TODO - Sometimes the robot stops without being obstructed, WTF?
-        // Check to see if the robot has stopped moving prematurely
-        // if (m_hasStartedMoving &&
-        // (m_drivetrainSubsystem.getEncoderRateOfChange() == 0.0)) {
-        // System.out.println("Robot is obstructed, ending strafe command");
-        // return true;
-        // } else {
-        // Checks for both encoder count directions
         return ((m_currentEncoderCount <= (m_startEncoderCount - m_distanceInEncoderCounts)) ||
                 (m_currentEncoderCount >= (m_startEncoderCount + m_distanceInEncoderCounts)));
-        // }
     }
 
     @Override

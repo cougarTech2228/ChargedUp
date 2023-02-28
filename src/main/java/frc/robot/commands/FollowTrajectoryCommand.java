@@ -38,6 +38,8 @@ public class FollowTrajectoryCommand extends SequentialCommandGroup {
                 path.getMarkers(),
                 eventMap);
 
+        addRequirements(drivetrain);
+
         addCommands(
                 new InstantCommand(() -> drivetrain.setPathPlannerDriving(true)),
                 new InstantCommand(() -> {

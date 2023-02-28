@@ -33,8 +33,6 @@ public class AutoTwoCommand extends SequentialCommandGroup {
         m_drivetrainSubsystem = drivetrainSubystem;
         m_shuffleboardSubsystem = shuffleboardSubsystem;
 
-        // TODO - do we want to do something cool at each stage like with LEDs?
-        // We could create multiple eventMaps
         HashMap<String, Command> m_eventMap = new HashMap<>();
 
         // Select the "out path" file based on Shuffleboard configuration
@@ -43,7 +41,8 @@ public class AutoTwoCommand extends SequentialCommandGroup {
 
         // Get the appropriate command group to place the Preloaded Game Piece
         PlacePreloadedPieceCommandChooser m_placePreloadedPieceCommandChooser = new PlacePreloadedPieceCommandChooser(
-                m_elevatorSubsystem, m_extendoSubsystem, m_pneumaticSubsystem, m_shuffleboardSubsystem
+                m_elevatorSubsystem, m_extendoSubsystem, m_pneumaticSubsystem, m_drivetrainSubsystem,
+                m_shuffleboardSubsystem
                         .getPreloadedPieceLevel());
         SequentialCommandGroup m_placePreloadedPieceSequentialCommandGroup = m_placePreloadedPieceCommandChooser
                 .getPlacePieceCommand();
@@ -53,14 +52,12 @@ public class AutoTwoCommand extends SequentialCommandGroup {
                 new InstantCommand(m_drivetrainSubsystem::zeroGyroscope),
                 new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
                 m_placePreloadedPieceSequentialCommandGroup,
-                /*
-                 * new FollowTrajectoryCommand(m_drivetrainSubsystem, m_outPathFileName,
-                 * m_eventMap,
-                 * Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                 * new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto2_back",
-                 * m_eventMap,
-                 * Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                 */
+                new FollowTrajectoryCommand(m_drivetrainSubsystem, m_outPathFileName,
+                        m_eventMap,
+                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
+                new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto2_back",
+                        m_eventMap,
+                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
                 new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()),
                 new InstantCommand(() -> printEndCommand()));
     }

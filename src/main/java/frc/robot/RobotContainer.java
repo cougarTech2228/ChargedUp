@@ -22,14 +22,12 @@ import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.ParallelArmCommand;
 import frc.robot.commands.SetArmHeightCommand;
-import frc.robot.commands.SetArmReachCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtendoSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.subsystems.ShuffleboardSubsystem;
 import frc.robot.subsystems.ButtonBoardSubsystem;
-import frc.robot.utils.AprilTagManager;
 import frc.robot.subsystems.DistanceSensorSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 
@@ -56,8 +54,6 @@ public class RobotContainer {
 
     private final static XboxController m_controller = new XboxController(0);
 
-    private final static AprilTagManager m_aprilTagManager = new AprilTagManager();
-
     private final static LEDStripSubsystem m_ledStripSubsystem = new LEDStripSubsystem();
 
     private final static DistanceSensorSubsystem m_distanceSensorSubsystem = new DistanceSensorSubsystem();
@@ -70,8 +66,7 @@ public class RobotContainer {
     private final static PneumaticSubsystem m_pneumaticSubsystem = new PneumaticSubsystem();
 
     private final static ButtonBoardSubsystem m_buttonBoardSubsystem = new ButtonBoardSubsystem(m_elevatorSubsystem,
-            m_extendoSubsystem, m_aprilTagManager, m_ledStripSubsystem, m_pneumaticSubsystem, m_drivetrainSubsystem,
-            m_shuffleboardSubsystem);
+            m_extendoSubsystem, m_pneumaticSubsystem, m_drivetrainSubsystem);
 
     private final static PowerDistribution m_pdh = new PowerDistribution(1, ModuleType.kRev);
 
@@ -136,33 +131,6 @@ public class RobotContainer {
                                 new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
                                         Constants.ArmDestination.home)));
 
-        // This is for transiting from the Substation to the Grid
-        new Trigger(m_controller::getYButton)
-                .onTrue(
-                        new SequentialCommandGroup(
-                                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.middle),
-                                new SetArmReachCommand(m_extendoSubsystem, ArmDestination.low)));
-
-        // new Trigger(m_controller::getYButton)
-        // .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
-        // Constants.ArmDestination.low));
-
-        // new Trigger(m_controller::getYButton)
-        // .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
-        // Constants.ArmDestination.middle));
-
-        // new Trigger(m_controller::getYButton)
-        // .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
-        // Constants.ArmDestination.high));
-
-        // new Trigger(m_controller::getYButton)
-        // .onTrue(new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
-        // Constants.ArmDestination.shelf));
-
-        // new Trigger(m_controller::getYButton)
-        // .onTrue(new BackOffCommand(Constants.GRID_BACK_OFF_DISTANCE_CM,
-        // Constants.GRID_BACK_OFF_SPEED, m_drivetrainSubsystem));
-
         // Configure all the buttons and switches on the Custom Button Board
         m_buttonBoardSubsystem.configureButtonBindings();
     }
@@ -176,13 +144,13 @@ public class RobotContainer {
     public static Command getAutonomousCommand() {
         if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position1) {
             return new AutoOneCommand(m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
-                    m_shuffleboardSubsystem, m_aprilTagManager, m_pneumaticSubsystem);
+                    m_shuffleboardSubsystem, m_pneumaticSubsystem);
         } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position2) {
             return new AutoTwoCommand(m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
                     m_shuffleboardSubsystem, m_pneumaticSubsystem);
         } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position3) {
             return new AutoThreeCommand(m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
-                    m_shuffleboardSubsystem, m_aprilTagManager, m_pneumaticSubsystem);
+                    m_shuffleboardSubsystem, m_pneumaticSubsystem);
         } else {
             System.out.println("Invalid position received from Shufflboard");
             return null;
@@ -229,10 +197,6 @@ public class RobotContainer {
 
     public static PneumaticSubsystem getPneumaticSubsystem() {
         return m_pneumaticSubsystem;
-    }
-
-    public static AprilTagManager getAprilTagManager() {
-        return m_aprilTagManager;
     }
 
     public static PowerDistribution getPDH() {

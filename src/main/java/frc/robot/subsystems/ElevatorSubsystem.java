@@ -53,8 +53,6 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     public static final double HEIGHT_HIGH = 89.0;
     public static final double HEIGHT_SHELF = 85.0;
 
-    // TODO - probably will need different heights for cubes?
-
     private static final double kSafeToLeaveHomeHeight = HEIGHT_HOME + 5.0;
 
     private static final ProfiledPIDController pidController = new ProfiledPIDController(

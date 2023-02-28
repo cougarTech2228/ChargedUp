@@ -4,7 +4,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
-public class BackOffCommand extends CommandBase {
+public class DriveFwdRevCommand extends CommandBase {
     private double m_distanceCM;
     private double m_speed;
     private DrivetrainSubsystem m_drivetrainSubsystem;
@@ -12,8 +12,6 @@ public class BackOffCommand extends CommandBase {
     double m_currentEncoderCount;
     double m_startEncoderCount;
     double m_distanceInEncoderCounts;
-
-    boolean m_hasStartedMoving;
 
     // Based on a 4" swerve wheel
     private final static double WHEEL_CIRCUMFERENCE_CM = 31.9278;
@@ -38,21 +36,23 @@ public class BackOffCommand extends CommandBase {
      *                 negative speed goes left, positive speed goes right.
      * @throws Exception
      */
-    public BackOffCommand(double distanceCM, double speed,
+    public DriveFwdRevCommand(double distanceCM, double speed,
             DrivetrainSubsystem drivetrainSubsystem) {
 
         m_distanceCM = distanceCM;
         m_speed = speed;
         m_drivetrainSubsystem = drivetrainSubsystem;
+
+        addRequirements(m_drivetrainSubsystem);
     }
 
     @Override
     public void initialize() {
 
-        System.out.println("Backoff Command starting");
+        System.out.println("DriveFwdRevCommand Command starting");
 
         if (m_speed < -1.0 || m_speed > 1.0) {
-            System.out.println("ERROR: Speed value passed into StrafeCommand out of [-1, 1]");
+            System.out.println("ERROR: Speed value passed into DriveFwdRevCommand out of [-1, 1]");
             m_speed = 0.0;
         }
 
@@ -64,16 +64,10 @@ public class BackOffCommand extends CommandBase {
 
         m_currentEncoderCount = m_drivetrainSubsystem.getEncoderCount();
         m_startEncoderCount = m_currentEncoderCount;
-
-        m_hasStartedMoving = false;
     }
 
     @Override
     public void execute() {
-        // if (m_drivetrainSubsystem.getEncoderRateOfChange() > 0.0) {
-        // m_hasStartedMoving = true;
-        // }
-
         m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(m_speed * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
                 0.0,
                 0.0,
@@ -84,17 +78,9 @@ public class BackOffCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        // TODO - Sometimes the robot stops without being obstructed, WTF?
-        // Check to see if the robot has stopped moving prematurely
-        // if (m_hasStartedMoving &&
-        // (m_drivetrainSubsystem.getEncoderRateOfChange() == 0.0)) {
-        // System.out.println("Robot is obstructed, ending strafe command");
-        // return true;
-        // } else {
         // Checks for both encoder count directions
         return ((m_currentEncoderCount <= (m_startEncoderCount - m_distanceInEncoderCounts)) ||
                 (m_currentEncoderCount >= (m_startEncoderCount + m_distanceInEncoderCounts)));
-        // }
     }
 
     @Override
@@ -105,6 +91,6 @@ public class BackOffCommand extends CommandBase {
         // Return the status frame period back to its original value
         m_drivetrainSubsystem.setDriveMotorStatusFramePeriod(ORIGINAL_FRAME_STATUS_PERIOD);
 
-        System.out.println("Backoff finished");
+        System.out.println("DriveFwdRevCommand finished");
     }
 }

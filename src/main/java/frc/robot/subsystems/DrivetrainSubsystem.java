@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems;
 
-import java.util.Map;
-
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
@@ -24,8 +22,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.networktables.GenericEntry;
-import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
@@ -112,30 +108,16 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private static final double CLOSED_LOOP_RAMP = 0.5; // seconds
     private static final double VOLTAGE_COMPENSATION_SATURATION = 11.0; // volts
 
-    private static final double INITIAL_INPUT_ADJUSTMENT = 0.25;
-
-    private GenericEntry m_forwardAdjustmentTableEntry;
-    private GenericEntry m_sidewaysAdjustmentTableEntry;
-    private GenericEntry m_rotationalAdjustmentTableEntry;
-
     private SwerveDriveOdometry m_odometry;
 
     private boolean m_isPathPlannerDriving;
 
     private boolean m_isBoostModeSet; // Cranks the drive speed to the max
 
-    // TODO once 'normal speeds' are determined, hard-code them and get rid of
-    // Shuffleboard Tab
     private static final double kXYNormalSpeed = 0.33;
     private static final double kRotationalNormalSpeed = 0.25;
     private static final double kXYBoostSpeed = 0.75;
     private static final double kRotationalBoostSpeed = 0.5;
-
-    private double m_tempEncoderCount = 0;
-    private int m_encoderIteration = 0;
-    private double m_encoderRateOfChange = 0;
-
-    private static final double ROC_DT_SECONDS = 0.02;
 
     public DrivetrainSubsystem() {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -221,28 +203,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation(), getSwerveModulePositions(),
                 new Pose2d());
-
-        // Add widgets to adjust controller input values and robot-v-field orientation
-        m_forwardAdjustmentTableEntry = tab.add("Forward Adj", INITIAL_INPUT_ADJUSTMENT)
-                .withWidget(BuiltInWidgets.kNumberSlider)
-                .withProperties(Map.of("min", INITIAL_INPUT_ADJUSTMENT, "max", 1))
-                .withSize(2, 1)
-                .withPosition(0, 3)
-                .getEntry();
-
-        m_sidewaysAdjustmentTableEntry = tab.add("Sideways Adj", INITIAL_INPUT_ADJUSTMENT)
-                .withWidget(BuiltInWidgets.kNumberSlider)
-                .withProperties(Map.of("min", INITIAL_INPUT_ADJUSTMENT, "max", 1))
-                .withSize(2, 1)
-                .withPosition(2, 3)
-                .getEntry();
-
-        m_rotationalAdjustmentTableEntry = tab.add("Rotational Adj", INITIAL_INPUT_ADJUSTMENT)
-                .withWidget(BuiltInWidgets.kNumberSlider)
-                .withProperties(Map.of("min", INITIAL_INPUT_ADJUSTMENT, "max", 1))
-                .withSize(2, 1)
-                .withPosition(4, 3)
-                .getEntry();
     }
 
     private void configureDriveMotor(TalonFX motor) {
@@ -322,21 +282,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_backLeftDriveMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, period);
     }
 
-    private void calculateEncoderRoC() {
-        if (m_encoderIteration == (ROC_DT_SECONDS * 50)) {
-            m_encoderRateOfChange = (getEncoderCount() - m_tempEncoderCount) /
-                    ROC_DT_SECONDS;
-            m_encoderIteration = 0;
-            m_tempEncoderCount = getEncoderCount();
-        } else {
-            m_encoderIteration++;
-        }
-    }
-
-    public double getEncoderRateOfChange() {
-        return m_encoderRateOfChange;
-    }
-
     public SwerveModulePosition[] getSwerveModulePositions() {
         return new SwerveModulePosition[] {
                 getPosition(m_frontLeftDriveMotor, m_frontLeftSteerMotor),
@@ -393,10 +338,6 @@ public class DrivetrainSubsystem extends SubsystemBase {
     public void stopMotors() {
         System.out.println("stopMotors");
         drive(new ChassisSpeeds(0.0, 0.0, 0.0));
-
-        m_tempEncoderCount = 0;
-        m_encoderIteration = 0;
-        m_encoderRateOfChange = 0;
     }
 
     public void setMotorsToCoast() {
@@ -432,8 +373,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         if (m_isBoostModeSet) {
             return kXYBoostSpeed;
         } else {
-            return m_forwardAdjustmentTableEntry.getDouble(INITIAL_INPUT_ADJUSTMENT);
-            // return kXYNormalSpeed; // TODO once this is determined, just hard-code it
+            return kXYNormalSpeed;
         }
     }
 
@@ -442,8 +382,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         if (m_isBoostModeSet) {
             return kXYBoostSpeed;
         } else {
-            return m_sidewaysAdjustmentTableEntry.getDouble(INITIAL_INPUT_ADJUSTMENT);
-            // return kXYNormalSpeed; // TODO once this is determined, just hard-code it
+            return kXYNormalSpeed;
         }
     }
 
@@ -452,9 +391,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
         if (m_isBoostModeSet) {
             return kRotationalBoostSpeed;
         } else {
-            return m_rotationalAdjustmentTableEntry.getDouble(INITIAL_INPUT_ADJUSTMENT);
-            // return kRotationalNormalSpeed; // TODO once this is determined, just
-            // hard-code it
+            return kRotationalNormalSpeed;
         }
     }
 
@@ -506,24 +443,12 @@ public class DrivetrainSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
 
-        // TODO - this causes premature stoppages in both DockWithAprilTagCommand
-        // and StrafeCommand. WTF?
-        calculateEncoderRoC();
-
         m_odometry.update(getGyroscopeRotation(), getSwerveModulePositions());
 
         if (!m_isPathPlannerDriving) {
             SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
             setModuleStates(states);
         }
-
-        // System.out.print(getYaw());
-        // System.out.print(" ");
-        // System.out.print(getPitch());
-        // System.out.print(" ");
-        // System.out.println(getRoll());
-
-        // System.out.println(DriverStation.getMatchTime());
 
         // if (DriverStation.getMatchTime() < 30.0 && getRoll() < -2.0 || getRoll() >
         // 2.0){

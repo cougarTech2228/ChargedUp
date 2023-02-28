@@ -13,6 +13,8 @@ public class SetArmHeightCommand extends CommandBase {
             Constants.ArmDestination destination) {
         m_elevatorSubsystem = elevatorSubsystem;
         m_destination = destination;
+
+        addRequirements(m_elevatorSubsystem);
     }
 
     @Override

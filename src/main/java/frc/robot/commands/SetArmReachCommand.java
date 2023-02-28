@@ -13,6 +13,8 @@ public class SetArmReachCommand extends CommandBase {
             Constants.ArmDestination destination) {
         m_extendoSubsystem = extendoSubsystem;
         m_destination = destination;
+
+        addRequirements(m_extendoSubsystem);
     }
 
     @Override

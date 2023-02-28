@@ -55,9 +55,6 @@ public final class Constants {
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(211); 
     public static final int DRIVETRAIN_PIGEON_ID = 61; // Set Pigeon ID
 
-    public static final double BAD_APRIL_TAG_ID = 2228;
-    public static final double WAIT_TIME_AFTER_APRIL_TAG_DOCK_S = 0.3;
-
     // arm stuff
 
     public enum ArmDestination {
@@ -114,8 +111,6 @@ public final class Constants {
     public static final double MAX_AUTO_VELOCITY = 4.0;
     public static final double MAX_AUTO_ACCELERATION = 3.0;
 
-    public static final double GRID_STRAFE_DISTANCE = 55.88;
-    public static final double SUBSTATION_STRAFE_DISTANCE = 28.0;
     public static final double NUDGE_STRAFE_DISTANCE = 3.0;
     public static final double STRAFE_SPEED = 0.15;
     public static final double CAMERA_OFFSET_METERS = 0.14;
