@@ -17,8 +17,6 @@ public class ParallelArmCommand extends ParallelCommandGroup {
         m_extendoSubsystem = extendoSubsystem;
         m_destination = destination;
 
-        addRequirements(m_elevatorSubsystem, m_extendoSubsystem);
-
         addCommands(
             new SetArmHeightCommand(m_elevatorSubsystem, m_destination),
             new SetArmReachCommand(m_extendoSubsystem, m_destination));

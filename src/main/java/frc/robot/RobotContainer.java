@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.XboxController;
@@ -22,6 +23,7 @@ import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
 import frc.robot.commands.ParallelArmCommand;
 import frc.robot.commands.SetArmHeightCommand;
+import frc.robot.commands.SetArmReachCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtendoSubsystem;
@@ -75,7 +77,7 @@ public class RobotContainer {
      */
     public RobotContainer() {
 
-        // DriverStation.silenceJoystickConnectionWarning(true);
+        DriverStation.silenceJoystickConnectionWarning(true);
 
         // This has to be called first to setup the Shuffleboard controls which
         // are used in the configureButtonBindings method.
@@ -109,14 +111,14 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
 
-        new Trigger(m_controller::getXButton)
-                .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.zeroGyroscope()));
+        // new Trigger(m_controller::getXButton)
+        // .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.zeroGyroscope()));
 
         new Trigger(m_controller::getBackButton)
                 .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()));
 
-        new Trigger(m_controller::getBButton)
-                .onTrue(new InstantCommand(() -> cancelAllCommands()));
+        // new Trigger(m_controller::getBButton)
+        // .onTrue(new InstantCommand(() -> cancelAllCommands()));
 
         new Trigger(m_controller::getLeftBumperPressed)
                 .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.setBoostMode(true)));
@@ -127,9 +129,19 @@ public class RobotContainer {
         new Trigger(m_controller::getAButton)
                 .onTrue(
                         new SequentialCommandGroup(
-                                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.low),
-                                new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem,
-                                        Constants.ArmDestination.home)));
+                                new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
+                                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home)));
+
+        // PID TUNING DEBUG ---------------------
+        // new Trigger(m_controller::getYButton)
+        //         .onTrue(new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.high));
+
+        // new Trigger(m_controller::getBButton)
+        //         .onTrue(new SetArmReachCommand(m_extendoSubsystem, ArmDestination.high));
+
+        // new Trigger(m_controller::getXButton)
+        //         .onTrue(new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home));
+        // PID TUNING DEBUG ---------------------
 
         // Configure all the buttons and switches on the Custom Button Board
         m_buttonBoardSubsystem.configureButtonBindings();

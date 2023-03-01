@@ -32,9 +32,9 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private ElevatorSubsystem m_elevatorSubsystem;
 
     private static final double kSVolts = 0;
-    private static final double kGVolts = 0;//-0.2;
-    private static final double kVVolt = 0;//0.01;
-    private static final double kAVolt = 0;//0.1;
+    private static final double kGVolts = 0;// -0.2;
+    private static final double kVVolt = 0;// 0.01;
+    private static final double kAVolt = 0;// 0.1;
 
     private static final double kP = 0.5;
     private static final double kI = 0.0;
@@ -46,6 +46,8 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double kMotorVoltageLimit = 12.0;
     private static final double kPositionErrorTolerance = 1.0; // in cm
 
+    private static final double MIN_DISTANCE = 16.5;
+
     public static final double DISTANCE_TIGHT = 16.5;
     public static final double DISTANCE_HOME = 26.5;
     public static final double DISTANCE_LOW = 35;
@@ -53,6 +55,8 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     public static final double DISTANCE_MIDDLE = 40;
     public static final double DISTANCE_HIGH = 78;
     public static final double DISTANCE_SHELF = 30;
+
+    private static final double MAX_DISTANCE = 78;
 
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
             kP,
@@ -122,6 +126,15 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
 
         if (m_distMxp.isEnabled() && m_distMxp.isRangeValid()) {
             m_currentArmReachCm = m_distMxp.getRange(Unit.kMillimeters) / 10.0;
+
+            // Boundary check the distance sensor's range values
+            if (m_currentArmReachCm > MAX_DISTANCE) {
+                System.out.println("Extendo distance sensor exceeded max range limit");
+                m_currentArmReachCm = MAX_DISTANCE;
+            } else if (m_currentArmReachCm < MIN_DISTANCE) {
+                System.out.println("Extendo distance sensor exceeded min range limit");
+                m_currentArmReachCm = MIN_DISTANCE;
+            }
         }
 
         if (DriverStation.isDisabled()) {
@@ -181,7 +194,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     public void useOutput(double output, TrapezoidProfile.State setpoint) {
 
         if (m_extendoState != ExtendoState.stopped) {
-            // Calculate the feedforward from the sepoint
+            // Calculate the feedforward from the setpoint
             double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
             double newOutput = output + feedforward;
             // Add the feedforward to the PID output to get the motor output

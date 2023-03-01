@@ -30,28 +30,45 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     private Rev2mDistanceSensor m_distMxp;
     private double m_elevatorHeight;
 
+    // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/tuning-vertical-arm.html
+    // Steps for tuning the feedforward values Kg and Kv (leave others at 0)
+    // 1. Start by setting Kg and Kv to zero.
+    // 2. Increase Kg until the arm can hold its position with as little
+    // movement as possible. If the arm moves in the opposite direction,
+    // decrease until it remains stationary. You will have to zero in on
+    // Kg precisely (at least four decimal places).
+    // 3. Increase the velocity feedforward gain Kv until the arm tracks
+    // the setpoint during smooth, slow motion. If the arm overshoots,
+    // reduce the gain. Note that the arm may "lag" the commanded motion,
+    // this is normal, and is fine so long as it moves the correct amount
+    // in total.
+
     private static final double kSVolts = 0;
-    private static final double kGVolts = 0;
+    private static final double kGVolts = 0.500;
     private static final double kVVolt = 0;
     private static final double kAVolt = 0;
 
-    private static final double kP = 0.6;
-    private static final double kI = 0.0;
+    private static final double kP = 0.35;
+    private static final double kI = 0.01;
     private static final double kD = 0.0;
     private static final double kDt = 0.2;
 
-    private static final double kMaxVelocity = 1.75;
+    private static final double kMaxVelocity = 3.0;
     private static final double kMaxAcceleration = 0.75;
 
     private static final double kMotorVoltageLimit = 12;
-    private static final double kPositionErrorTolerance = 2.0; // in cm
+    private static final double kPositionErrorTolerance = 0.5; // in cm
 
-    public static final double HEIGHT_HOME = 51.0;
+    private static final double HEIGHT_MIN = 49.50;
+
+    public static final double HEIGHT_HOME = 50.0;
     public static final double HEIGHT_LOW = 58.0;
     public static final double HEIGHT_PRELOADED_CONE = 65.0;
     public static final double HEIGHT_MIDDLE = 85.0;
-    public static final double HEIGHT_HIGH = 89.0;
+    public static final double HEIGHT_HIGH = 87.0;
     public static final double HEIGHT_SHELF = 85.0;
+
+    private static final double HEIGHT_MAX = 88.0;
 
     private static final double kSafeToLeaveHomeHeight = HEIGHT_HOME + 5.0;
 
@@ -94,19 +111,19 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
             };
         });
 
-        // m_sbTab.addDouble("PID goal", new DoubleSupplier() {
-        // @Override
-        // public double getAsDouble() {
-        // return m_controller.getGoal().position;
-        // };
-        // });
+        m_sbTab.addDouble("PID goal", new DoubleSupplier() {
+            @Override
+            public double getAsDouble() {
+                return m_controller.getGoal().position;
+            };
+        });
 
-        // m_sbTab.addDouble("PID output", new DoubleSupplier() {
-        // @Override
-        // public double getAsDouble() {
-        // return m_elevatorMotor.getMotorOutputVoltage();
-        // };
-        // });
+        m_sbTab.addDouble("PID output", new DoubleSupplier() {
+            @Override
+            public double getAsDouble() {
+                return m_elevatorMotor.getMotorOutputVoltage();
+            };
+        });
 
         m_sbTab.addDouble("Current Height:", new DoubleSupplier() {
             @Override
@@ -115,12 +132,12 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
             };
         });
 
-        // m_sbTab.addDouble("FF:", new DoubleSupplier() {
-        // @Override
-        // public double getAsDouble() {
-        // return m_feedforwardVal;
-        // };
-        // });
+        m_sbTab.addDouble("FF:", new DoubleSupplier() {
+            @Override
+            public double getAsDouble() {
+                return m_feedforwardVal;
+            };
+        });
 
         m_sbTab.addBoolean("Low Limit", new BooleanSupplier() {
             @Override
@@ -136,6 +153,15 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
         if (m_distMxp.isEnabled() && m_distMxp.isRangeValid()) {
             m_elevatorHeight = m_distMxp.getRange(Unit.kMillimeters) / 10.0;
+
+            // Boundary check the distance sensor's range values
+            if (m_elevatorHeight > HEIGHT_MAX) {
+                System.out.println("Elevator distance sensor exceeded max range limit");
+                m_elevatorHeight = HEIGHT_MAX;
+            } else if (m_elevatorHeight < HEIGHT_MIN) {
+                System.out.println("Elevator distance sensor exceeded min range limit");
+                m_elevatorHeight = HEIGHT_MIN;
+            }
         }
 
         if (DriverStation.isDisabled()) {

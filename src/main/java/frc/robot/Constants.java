@@ -70,7 +70,7 @@ public final class Constants {
     public static final int ELEVATOR_MOTOR_ID = 58;
     public static final int ELEVATOR_LOWER_LIMIT_DIO = 1;
     public static final int ELEVATOR_UPPER_LIMIT_DIO = 0;
-    public static final double ELEVATOR_MOTOR_SPEED = 0.5; // TODO - Need to determine speed for this motor
+    public static final double ELEVATOR_MOTOR_SPEED = 0.75; // TODO - Need to determine speed for this motor
 
     public static final int EXTENDO_MOTOR_ID = 59;
     public static final int EXTENDO_HOME_LIMIT_DIO = 3;
