@@ -1,14 +1,11 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.Constants;
 import frc.robot.Constants.ArmDestination;
 import frc.robot.commands.DriveFwdRevCommand;
 import frc.robot.commands.ParallelArmCommand;
@@ -49,13 +46,17 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     private static final double FINE_INCREMENTAL_ARM_REACH_CHANGE_CM = 6.0;
     private static final double COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM = 10.0;
 
+    public static final double FINE_STRAFE_DISTANCE_CM = 3.0;
+    public static final double COARSE_STRAFE_DISTANCE_CM = 6.0;
+    private static final double STRAFE_SPEED = 0.1;
+
     private static final double FINE_DRIVE_DISTANCE_CM = 5.0;
     private static final double COARSE_DRIVE_DISTANCE_CM = 10.0;
     private static final double DRIVE_SPEED = 0.1;
 
     private static final double FINE_TURN_DEGREES = 2.0;
     private static final double COARSE_TURN_DEGREES = 6.0;
-    private static final double ANGULAR_VELOCITY = 0.1;
+    private static final double ANGULAR_VELOCITY = 0.4;
 
     public ButtonBoardSubsystem(ElevatorSubsystem elevatorSubsystem, ExtendoSubsystem extendoSubsystem,
             PneumaticSubsystem pneumaticSubsystem,
@@ -164,17 +165,24 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // user were to hold the joystick in the extreme right or left
         // position.
         if (m_strafeReset) {
-
             if (m_strafeJoystick == 1.0) { // Right
-                new StrafeCommand(Constants.NUDGE_STRAFE_DISTANCE, -Constants.STRAFE_SPEED,
-                        m_drivetrainSubsystem).schedule();
-                m_strafeReset = false;
+                if (isFineOperationMode()) {
+                    new StrafeCommand(FINE_STRAFE_DISTANCE_CM, -STRAFE_SPEED,
+                            m_drivetrainSubsystem).schedule();
+                } else {
+                    new StrafeCommand(FINE_STRAFE_DISTANCE_CM, -STRAFE_SPEED,
+                            m_drivetrainSubsystem).schedule();
+                }
             } else if (m_strafeJoystick == -1.0) { // Left
-                new ScheduleCommand(new StrafeCommand(Constants.NUDGE_STRAFE_DISTANCE, Constants.STRAFE_SPEED,
-                        m_drivetrainSubsystem))
-                        .schedule();
-                m_strafeReset = false;
+                if (isFineOperationMode()) {
+                    new StrafeCommand(FINE_STRAFE_DISTANCE_CM, STRAFE_SPEED,
+                            m_drivetrainSubsystem).schedule();
+                } else {
+                    new StrafeCommand(FINE_STRAFE_DISTANCE_CM, STRAFE_SPEED,
+                            m_drivetrainSubsystem).schedule();
+                }
             }
+            m_strafeReset = false;
         }
 
         // The joystick value reports 1.0 and -1.0, but it never gets exactly
@@ -190,26 +198,24 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // We only want to allow the user to adjust the forward and reverse
         // position one step at a time and not continuously drive.
         if (m_fwdRevReset) {
-
             if (m_fwdRevJoystick == 1.0) { // Reverse
                 if (isFineOperationMode()) {
                     new DriveFwdRevCommand(FINE_DRIVE_DISTANCE_CM,
-                            DRIVE_SPEED, m_drivetrainSubsystem);
+                            -DRIVE_SPEED, m_drivetrainSubsystem).schedule();
                 } else {
                     new DriveFwdRevCommand(COARSE_DRIVE_DISTANCE_CM,
-                            DRIVE_SPEED, m_drivetrainSubsystem);
+                            -DRIVE_SPEED, m_drivetrainSubsystem).schedule();
                 }
-                m_fwdRevReset = false;
             } else if (m_fwdRevJoystick == -1.0) { // Forward
                 if (isFineOperationMode()) {
                     new DriveFwdRevCommand(FINE_DRIVE_DISTANCE_CM,
-                            -DRIVE_SPEED, m_drivetrainSubsystem);
+                            DRIVE_SPEED, m_drivetrainSubsystem).schedule();
                 } else {
                     new DriveFwdRevCommand(COARSE_DRIVE_DISTANCE_CM,
-                            -DRIVE_SPEED, m_drivetrainSubsystem);
+                            DRIVE_SPEED, m_drivetrainSubsystem).schedule();
                 }
-                m_fwdRevReset = false;
             }
+            m_fwdRevReset = false;
         }
 
         // The joystick value reports 1.0 and -1.0, but it never gets exactly
@@ -236,12 +242,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         getArmUpButton().onTrue(
                 new ConditionalCommand(
                         // True command
-                        Commands.runOnce(() -> {
+                        new InstantCommand(() -> {
                             m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
                                     + FINE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM);
                         }),
                         // False command
-                        Commands.runOnce(() -> {
+                        new InstantCommand(() -> {
                             m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
                                     + COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM);
                         }),
@@ -252,12 +258,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         getArmDownButton().onTrue(
                 new ConditionalCommand(
                         // True command
-                        Commands.runOnce(() -> {
+                        new InstantCommand(() -> {
                             m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
                                     - FINE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM);
                         }),
                         // False command
-                        Commands.runOnce(() -> {
+                        new InstantCommand(() -> {
                             m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
                                     - COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM);
                         }),
@@ -268,12 +274,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         getArmExtendButton().onTrue(
                 new ConditionalCommand(
                         // True command
-                        Commands.runOnce(() -> {
+                        new InstantCommand(() -> {
                             m_extendoSubsystem.goToDistanceCM(
                                     m_extendoSubsystem.getCurrentArmReachCm() + FINE_INCREMENTAL_ARM_REACH_CHANGE_CM);
                         }),
                         // False command
-                        Commands.runOnce(() -> {
+                        new InstantCommand(() -> {
                             m_extendoSubsystem.goToDistanceCM(
                                     m_extendoSubsystem.getCurrentArmReachCm() + COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM);
                         }),
@@ -284,12 +290,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         getArmRetractButton().onTrue(
                 new ConditionalCommand(
                         // True command
-                        Commands.runOnce(() -> {
+                        new InstantCommand(() -> {
                             m_extendoSubsystem.goToDistanceCM(
                                     m_extendoSubsystem.getCurrentArmReachCm() - FINE_INCREMENTAL_ARM_REACH_CHANGE_CM);
                         }),
                         // False command
-                        Commands.runOnce(() -> {
+                        new InstantCommand(() -> {
                             m_extendoSubsystem.goToDistanceCM(
                                     m_extendoSubsystem.getCurrentArmReachCm() - COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM);
                         }),
@@ -318,18 +324,14 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmDestination.high));
 
         // **********************************
-        // Robot Button Handling
+        //  Bot Rotation Handling
         // **********************************
         getRotateLeftButton().onTrue(
                 new ConditionalCommand(
                         // True command
-                        Commands.runOnce(() -> {
-                            new RotateBotCommand(FINE_TURN_DEGREES, ANGULAR_VELOCITY, m_drivetrainSubsystem);
-                        }),
+                        new RotateBotCommand(FINE_TURN_DEGREES, ANGULAR_VELOCITY, m_drivetrainSubsystem),
                         // False command
-                        Commands.runOnce(() -> {
-                            new RotateBotCommand(COARSE_TURN_DEGREES, ANGULAR_VELOCITY, m_drivetrainSubsystem);
-                        }),
+                        new RotateBotCommand(COARSE_TURN_DEGREES, ANGULAR_VELOCITY, m_drivetrainSubsystem),
 
                         // variable
                         this::isFineOperationMode));
@@ -337,13 +339,9 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         getRotateRightButton().onTrue(
                 new ConditionalCommand(
                         // True command
-                        Commands.runOnce(() -> {
-                            new RotateBotCommand(-FINE_TURN_DEGREES, ANGULAR_VELOCITY, m_drivetrainSubsystem);
-                        }),
+                        new RotateBotCommand(FINE_TURN_DEGREES, -ANGULAR_VELOCITY, m_drivetrainSubsystem),
                         // False command
-                        Commands.runOnce(() -> {
-                            new RotateBotCommand(-COARSE_TURN_DEGREES, ANGULAR_VELOCITY, m_drivetrainSubsystem);
-                        }),
+                        new RotateBotCommand(COARSE_TURN_DEGREES, -ANGULAR_VELOCITY, m_drivetrainSubsystem),
 
                         // variable
                         this::isFineOperationMode));

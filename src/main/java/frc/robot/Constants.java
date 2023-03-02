@@ -111,8 +111,6 @@ public final class Constants {
     public static final double MAX_AUTO_VELOCITY = 4.0;
     public static final double MAX_AUTO_ACCELERATION = 3.0;
 
-    public static final double NUDGE_STRAFE_DISTANCE = 3.0;
-    public static final double STRAFE_SPEED = 0.15;
     public static final double CAMERA_OFFSET_METERS = 0.14;
     public static final double GRID_BACK_OFF_DISTANCE_CM = 5.0;
     public static final double GRID_BACK_OFF_SPEED = 0.1;

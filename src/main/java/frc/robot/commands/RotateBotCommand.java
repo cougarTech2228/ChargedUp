@@ -6,7 +6,7 @@ import frc.robot.subsystems.DrivetrainSubsystem;
 
 public class RotateBotCommand extends CommandBase {
     private double m_degreesToTurn;
-    private double m_angularVelocity;
+    private double m_angularVelocity; // negative value turns clockwise
     private DrivetrainSubsystem m_drivetrainSubsystem;
 
     double m_currentYawValue;
@@ -45,16 +45,20 @@ public class RotateBotCommand extends CommandBase {
                                 * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
                         m_drivetrainSubsystem.getGyroscopeRotation()));
 
+        // This method allows us to drive on the cart or blocks since it's ROV not FOV
+        // m_drivetrainSubsystem.drive(
+        //         new ChassisSpeeds(0.0,
+        //                 0.0,
+        //                 m_angularVelocity * m_drivetrainSubsystem.getRotationalAdjustment()
+        //                         * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND));
+
         m_currentYawValue = m_drivetrainSubsystem.getYaw();
     }
 
     @Override
     public boolean isFinished() {
-        return true;
-
-        // TODO - don't know if this is right
-        // return ((m_currentYawValue <= (m_startYawValue - m_degreesToTurn)) ||
-        // (m_currentYawValue >= (m_startYawValue + m_degreesToTurn)));
+        return ((m_currentYawValue <= (m_startYawValue - m_degreesToTurn)) ||
+                (m_currentYawValue >= (m_startYawValue + m_degreesToTurn)));
     }
 
     @Override
