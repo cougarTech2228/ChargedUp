@@ -89,7 +89,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         m_extendoMotor.setNeutralMode(NeutralMode.Brake);
         m_distMxp = distanceSensorSubsystem.getExtendoArmSensor();
 
-        m_sbTab = Shuffleboard.getTab("Extendo");
+        m_sbTab = Shuffleboard.getTab("Extendo (Debug)");
 
         m_sbTab.addBoolean("PID Enabled", new BooleanSupplier() {
             @Override

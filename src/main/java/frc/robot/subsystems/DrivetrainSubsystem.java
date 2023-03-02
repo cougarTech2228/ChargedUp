@@ -120,7 +120,7 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private static final double kRotationalBoostSpeed = 0.5;
 
     public DrivetrainSubsystem() {
-        ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+        // ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
 
         m_frontLeftModule = Mk4iSwerveModuleHelper.createFalcon500(/*
                                                                     * // This parameter is optional, but will allow you

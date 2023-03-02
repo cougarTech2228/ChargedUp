@@ -82,25 +82,6 @@ public final class Constants {
     public static final int ELEVATOR_DISTANCE_SENSOR_ADDRESS = 0x22;
     public static final int EXTENDO_ARM_DISTANCE_SENSOR_ADDRESS = 0x26;
 
-    public enum PlacePosition {
-        HighCone,
-        MiddleCone,
-        LowCone,
-        HighCube,
-        MiddleCube,
-        LowCube
-    }
-
-    public enum PieceType {
-        Cone,
-        Cube
-    }
-
-    public enum ConeOffsetPosition {
-        Left,
-        Right
-    }
-
     // Read left to right from corresponding driver station
     public enum AutoPosition {
         Position1,

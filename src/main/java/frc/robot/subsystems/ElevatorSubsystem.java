@@ -102,7 +102,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
         m_distMxp = distanceSensorSubsystem.getElevatorSensor();
 
-        m_sbTab = Shuffleboard.getTab("Elevator");
+        m_sbTab = Shuffleboard.getTab("Elevator (Debug)");
 
         m_sbTab.addBoolean("PID Enabled", new BooleanSupplier() {
             @Override

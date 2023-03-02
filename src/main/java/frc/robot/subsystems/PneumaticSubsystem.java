@@ -19,7 +19,7 @@ public class PneumaticSubsystem extends SubsystemBase {
     public PneumaticSubsystem() {
         m_pneumaticHub = new PneumaticHub(Constants.PCM_CAN_ID);
         m_gripper = m_pneumaticHub.makeSolenoid(Constants.GRIPPER_PCM_PORT);
-        m_sbTab = Shuffleboard.getTab("Pneumatics");
+        m_sbTab = Shuffleboard.getTab("Pneumatics (Debug)");
 
         m_sbTab.addDouble("Pressure", new DoubleSupplier() {
             @Override

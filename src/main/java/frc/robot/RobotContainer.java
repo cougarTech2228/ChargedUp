@@ -46,10 +46,8 @@ public class RobotContainer {
 
     // The Shuffleboard stuff needs to be called early because some of the data
     // updates by other subsystems in their periodics make calls to Shuffleboard.
-    private final static ShuffleboardTab m_autoConfigTab = Shuffleboard.getTab("Auto Config");
-    private final static ShuffleboardTab m_teleopConfigTab = Shuffleboard.getTab("Teleop Config");
-    private final static ShuffleboardSubsystem m_shuffleboardSubsystem = new ShuffleboardSubsystem(m_autoConfigTab,
-            m_teleopConfigTab);
+    private final static ShuffleboardTab m_chargedUpTab = Shuffleboard.getTab("ChargedUp!");
+    private final static ShuffleboardSubsystem m_shuffleboardSubsystem = new ShuffleboardSubsystem(m_chargedUpTab);
 
     private final static DrivetrainSubsystem m_drivetrainSubsystem = new DrivetrainSubsystem();
 
@@ -142,7 +140,7 @@ public class RobotContainer {
         // .onTrue(new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home));
 
         // new Trigger(m_controller::getXButton)
-        //         .onTrue(new InstantCommand(() -> m_pneumaticSubsystem.toggleGripper()));
+        // .onTrue(new InstantCommand(() -> m_pneumaticSubsystem.toggleGripper()));
 
         // PID TUNING DEBUG ---------------------
 
@@ -159,13 +157,13 @@ public class RobotContainer {
     public static Command getAutonomousCommand() {
         if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position1) {
             return new AutoOneCommand(m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
-                    m_shuffleboardSubsystem, m_pneumaticSubsystem);
+                    m_pneumaticSubsystem);
         } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position2) {
             return new AutoTwoCommand(m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
-                    m_shuffleboardSubsystem, m_pneumaticSubsystem);
+                    m_pneumaticSubsystem);
         } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position3) {
             return new AutoThreeCommand(m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
-                    m_shuffleboardSubsystem, m_pneumaticSubsystem);
+                    m_pneumaticSubsystem);
         } else {
             System.out.println("Invalid position received from Shufflboard");
             return null;
@@ -212,6 +210,14 @@ public class RobotContainer {
 
     public static PneumaticSubsystem getPneumaticSubsystem() {
         return m_pneumaticSubsystem;
+    }
+
+    public static ElevatorSubsystem getElevatorSubsystem() {
+        return m_elevatorSubsystem;
+    }
+
+    public static ExtendoSubsystem getExtendoSubsystem() {
+        return m_extendoSubsystem;
     }
 
     public static PowerDistribution getPDH() {
