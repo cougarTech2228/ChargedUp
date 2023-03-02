@@ -95,6 +95,10 @@ public class StrafeCommand extends CommandBase {
         // Return the status frame period back to its original value
         m_drivetrainSubsystem.setDriveMotorStatusFramePeriod(ORIGINAL_FRAME_STATUS_PERIOD);
 
-        System.out.println("StrafeCommand finished");
+        if (interrupted) {
+            System.out.println("StrafeCommand interrupted");
+        } else {
+            System.out.println("StrafeCommand finished normally");
+        }
     }
 }

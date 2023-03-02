@@ -52,7 +52,11 @@ public class SetArmReachCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        System.out.println("SetArmReachCommand completed");
+        if (interrupted) {
+            System.out.println("SetArmReachCommand interrupted");
+        } else {
+            System.out.println("SetArmReachCommand finished normally");
+        }
     }
 
 }

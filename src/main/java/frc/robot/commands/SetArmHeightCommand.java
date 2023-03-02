@@ -53,6 +53,10 @@ public class SetArmHeightCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        System.out.println("SetArmHeightCommand completed");
+        if (interrupted) {
+            System.out.println("SetArmHeightCommand interrupted");
+        } else {
+            System.out.println("SetArmHeightCommand finished normally");
+        }
     }
 }

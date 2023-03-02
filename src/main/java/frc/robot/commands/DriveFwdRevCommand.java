@@ -91,6 +91,10 @@ public class DriveFwdRevCommand extends CommandBase {
         // Return the status frame period back to its original value
         m_drivetrainSubsystem.setDriveMotorStatusFramePeriod(ORIGINAL_FRAME_STATUS_PERIOD);
 
-        System.out.println("DriveFwdRevCommand finished");
+        if (interrupted) {
+            System.out.println("DriveFwdRevCommand interrupted");
+        } else {
+            System.out.println("DriveFwdRevCommand finished normally");
+        }
     }
 }

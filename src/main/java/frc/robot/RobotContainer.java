@@ -21,7 +21,6 @@ import frc.robot.commands.AutoOneCommand;
 import frc.robot.commands.AutoThreeCommand;
 import frc.robot.commands.AutoTwoCommand;
 import frc.robot.commands.DefaultDriveCommand;
-import frc.robot.commands.ParallelArmCommand;
 import frc.robot.commands.SetArmHeightCommand;
 import frc.robot.commands.SetArmReachCommand;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -134,13 +133,17 @@ public class RobotContainer {
 
         // PID TUNING DEBUG ---------------------
         // new Trigger(m_controller::getYButton)
-        //         .onTrue(new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.high));
+        // .onTrue(new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.high));
 
         // new Trigger(m_controller::getBButton)
-        //         .onTrue(new SetArmReachCommand(m_extendoSubsystem, ArmDestination.high));
+        // .onTrue(new SetArmReachCommand(m_extendoSubsystem, ArmDestination.high));
 
         // new Trigger(m_controller::getXButton)
-        //         .onTrue(new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home));
+        // .onTrue(new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home));
+
+        // new Trigger(m_controller::getXButton)
+        //         .onTrue(new InstantCommand(() -> m_pneumaticSubsystem.toggleGripper()));
+
         // PID TUNING DEBUG ---------------------
 
         // Configure all the buttons and switches on the Custom Button Board

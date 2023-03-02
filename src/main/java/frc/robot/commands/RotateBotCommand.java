@@ -62,6 +62,10 @@ public class RotateBotCommand extends CommandBase {
         m_drivetrainSubsystem.stopMotors();
         m_drivetrainSubsystem.setMotorsToBrake();
 
-        System.out.println("RotateBotCommand finished");
+        if (interrupted) {
+            System.out.println("RotateBotCommand interrupted");
+        } else {
+            System.out.println("RotateBotCommand finished normally");
+        }
     }
 }
