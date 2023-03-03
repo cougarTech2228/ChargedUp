@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.HttpCamera;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -52,6 +54,12 @@ public class ShuffleboardSubsystem extends SubsystemBase {
                 return RobotContainer.getExtendoSubsystem().getCurrentArmReachCm();
             };
         }).withSize(1, 1).withPosition(2, 1);
+
+        HttpCamera httpCamera = new HttpCamera("DriverVision", "http://wpilibpi.local:1181/stream.mjpg");
+        CameraServer.addCamera(httpCamera);
+        m_chargedUpTab.add(httpCamera).withWidget(BuiltInWidgets.kCameraStream)
+                .withSize(3, 3)
+                .withPosition(3, 0);
     }
 
     public Constants.AutoPosition getAutoPosition() {
