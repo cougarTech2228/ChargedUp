@@ -13,18 +13,31 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 public class PneumaticSubsystem extends SubsystemBase {
 
     private Solenoid m_gripper;
+    private Solenoid m_brake;
+
     PneumaticHub m_pneumaticHub;
     private ShuffleboardTab m_sbTab;
 
     public PneumaticSubsystem() {
         m_pneumaticHub = new PneumaticHub(Constants.PCM_CAN_ID);
+
         m_gripper = m_pneumaticHub.makeSolenoid(Constants.GRIPPER_PCM_PORT);
+        m_brake = m_pneumaticHub.makeSolenoid(Constants.BRAKE_PCM_PORT);
+
         m_sbTab = Shuffleboard.getTab("Pneumatics (Debug)");
 
-        m_sbTab.addDouble("Pressure", new DoubleSupplier() {
+        m_sbTab.addDouble("High Side", new DoubleSupplier() {
             @Override
             public double getAsDouble() {
-                return getPressure();
+                return getHighSidePressure();
+            };
+        });
+
+        
+        m_sbTab.addDouble("Low Side", new DoubleSupplier() {
+            @Override
+            public double getAsDouble() {
+                return getLowSidePressure();
             };
         });
     }
@@ -47,8 +60,30 @@ public class PneumaticSubsystem extends SubsystemBase {
         return !m_gripper.get();
     }
 
-    public double getPressure() {
-        return m_pneumaticHub.getPressure(0);
+    public void openBrake() {
+        if (!brakeIsOpen()) {
+            System.out.println("Open Brake");
+            m_brake.set(true);
+        }
+    }
+
+    public void closeBrake() {
+        if (brakeIsOpen()) {
+            System.out.println("Close Brake");
+            m_brake.set(false);
+        }
+    }
+
+    public boolean brakeIsOpen() {
+        return m_brake.get();
+    }
+
+    public double getHighSidePressure() {
+        return m_pneumaticHub.getPressure(Constants.HIGH_SIDE_ANALOG_PORT);
+    }
+
+    public double getLowSidePressure() {
+        return m_pneumaticHub.getPressure(Constants.LOW_SIDE_ANALOG_PORT);
     }
 
     public void toggleGripper() {

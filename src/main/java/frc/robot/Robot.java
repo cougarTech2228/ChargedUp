@@ -71,7 +71,7 @@ public class Robot extends TimedRobot {
 
         RobotContainer.getLEDStripSubsystem().resetStrip();
 
-        RobotContainer.getPneumaticSubsystem().closeGripper();
+        RobotContainer.getPneumaticSubsystem().openGripper();
     }
 
     @Override
