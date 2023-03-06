@@ -126,6 +126,7 @@ public class RobotContainer {
         new Trigger(m_controller::getAButton)
                 .onTrue(
                         new SequentialCommandGroup(
+                                new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
                                 new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
                                 new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home)));
 
@@ -139,8 +140,8 @@ public class RobotContainer {
         // new Trigger(m_controller::getXButton)
         // .onTrue(new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home));
 
-        // new Trigger(m_controller::getXButton)
-        // .onTrue(new InstantCommand(() -> m_pneumaticSubsystem.toggleGripper()));
+        new Trigger(m_controller::getYButton)
+                .onTrue(new InstantCommand(() -> m_pneumaticSubsystem.toggleBrake()));
 
         // PID TUNING DEBUG ---------------------
 

@@ -93,4 +93,12 @@ public class PneumaticSubsystem extends SubsystemBase {
             openGripper();
         }
     }
+
+    public void toggleBrake() {
+        if (brakeIsOpen()) {
+            closeBrake();
+        } else {
+            openBrake();
+        }
+    }
 }

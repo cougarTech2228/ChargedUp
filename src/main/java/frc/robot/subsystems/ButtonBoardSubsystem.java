@@ -312,7 +312,10 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.preloaded_cone)));
 
         getArmHomeButton().onTrue(
-                new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmDestination.home));
+                new SequentialCommandGroup(
+                        new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                        new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
+                        new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home)));
 
         getArmLowButton().onTrue(
                 new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmDestination.low));
@@ -324,7 +327,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmDestination.high));
 
         // **********************************
-        //  Bot Rotation Handling
+        // Bot Rotation Handling
         // **********************************
         getRotateLeftButton().onTrue(
                 new ConditionalCommand(

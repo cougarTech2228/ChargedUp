@@ -31,6 +31,9 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private Rev2mDistanceSensor m_distMxp;
     private ElevatorSubsystem m_elevatorSubsystem;
 
+    private boolean m_upperLimitExceededReported = false;
+    private boolean m_lowerLimitExceededReported = false;
+
     private static final double kSVolts = 0;
     private static final double kGVolts = 0;// -0.2;
     private static final double kVVolt = 0;// 0.01;
@@ -49,7 +52,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double MIN_DISTANCE = 16.5;
 
     public static final double DISTANCE_TIGHT = 16.5;
-    public static final double DISTANCE_HOME = 26.5;
+    public static final double DISTANCE_HOME = 18.0;
     public static final double DISTANCE_LOW = 35;
     public static final double DISTANCE_PRELOADED_CONE = 35;
     public static final double DISTANCE_MIDDLE = 40;
