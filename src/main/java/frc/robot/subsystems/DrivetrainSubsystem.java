@@ -22,6 +22,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -201,6 +204,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
         m_odometry = new SwerveDriveOdometry(m_kinematics, getGyroscopeRotation(), getSwerveModulePositions(),
                 new Pose2d());
+        
+        
     }
 
     private void configureDriveMotor(TalonFX motor) {
@@ -339,16 +344,27 @@ public class DrivetrainSubsystem extends SubsystemBase {
     }
 
     public void setMotorsToCoast() {
-        System.out.println("setMotorsToCoast");
-        m_frontLeftDriveMotor.setNeutralMode(NeutralMode.Coast);
-        m_frontRightDriveMotor.setNeutralMode(NeutralMode.Coast);
-        m_backLeftDriveMotor.setNeutralMode(NeutralMode.Coast);
-        m_backRightDriveMotor.setNeutralMode(NeutralMode.Coast);
+        // System.out.println("setMotorsToCoast");
+        // m_frontLeftDriveMotor.setNeutralMode(NeutralMode.Coast);
+        // m_frontRightDriveMotor.setNeutralMode(NeutralMode.Coast);
+        // m_backLeftDriveMotor.setNeutralMode(NeutralMode.Coast);
+        // m_backRightDriveMotor.setNeutralMode(NeutralMode.Coast);
 
-        m_frontLeftSteerMotor.setNeutralMode(NeutralMode.Coast);
-        m_frontRightSteerMotor.setNeutralMode(NeutralMode.Coast);
-        m_backLeftSteerMotor.setNeutralMode(NeutralMode.Coast);
-        m_backRightSteerMotor.setNeutralMode(NeutralMode.Coast);
+        // m_frontLeftSteerMotor.setNeutralMode(NeutralMode.Coast);
+        // m_frontRightSteerMotor.setNeutralMode(NeutralMode.Coast);
+        // m_backLeftSteerMotor.setNeutralMode(NeutralMode.Coast);
+        // m_backRightSteerMotor.setNeutralMode(NeutralMode.Coast);
+
+        ((TalonFX)m_frontRightModule.getDriveMotor()).setNeutralMode(NeutralMode.Coast);
+        ((TalonFX)m_frontRightModule.getSteerMotor()).setNeutralMode(NeutralMode.Coast);
+        ((TalonFX)m_frontLeftModule.getDriveMotor()).setNeutralMode(NeutralMode.Coast);
+        ((TalonFX)m_frontLeftModule.getSteerMotor()).setNeutralMode(NeutralMode.Coast);
+
+        ((TalonFX)m_backRightModule.getDriveMotor()).setNeutralMode(NeutralMode.Coast);
+        ((TalonFX)m_backRightModule.getSteerMotor()).setNeutralMode(NeutralMode.Coast);
+        ((TalonFX)m_backLeftModule.getDriveMotor()).setNeutralMode(NeutralMode.Coast);
+        ((TalonFX)m_backLeftModule.getSteerMotor()).setNeutralMode(NeutralMode.Coast);
+
     }
 
     public void setMotorsToBrake() {
@@ -446,6 +462,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
         if (!m_isPathPlannerDriving) {
             SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
             setModuleStates(states);
+        }
+
+        if(DriverStation.isDisabled()){
+            setMotorsToCoast();
         }
 
         // if (DriverStation.getMatchTime() < 30.0 && getRoll() < -2.0 || getRoll() >

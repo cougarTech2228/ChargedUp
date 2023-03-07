@@ -92,8 +92,8 @@ public final class Constants {
         Position3
     }
 
-    public static final double MAX_AUTO_VELOCITY = 4.0;
-    public static final double MAX_AUTO_ACCELERATION = 3.0;
+    public static final double MAX_AUTO_VELOCITY = 3.0;
+    public static final double MAX_AUTO_ACCELERATION = 2.0;
 
     public static final double CAMERA_OFFSET_METERS = 0.14;
     public static final double GRID_BACK_OFF_DISTANCE_CM = 5.0;

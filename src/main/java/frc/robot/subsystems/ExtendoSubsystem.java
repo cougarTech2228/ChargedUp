@@ -35,7 +35,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private boolean m_lowerLimitExceededReported = false;
 
     private static final double kSVolts = 0;
-    private static final double kGVolts = 0;// -0.2;
+    private static final double kGVolts = -.9;// -0.2;
     private static final double kVVolt = 0;// 0.01;
     private static final double kAVolt = 0;// 0.1;
 
@@ -47,19 +47,20 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double kMaxVelocityTicksPerSecond = 8;
     private static final double kMaxAccelerationTicksPerSecSquared = 1.5;
     private static final double kMotorVoltageLimit = 12.0;
-    private static final double kPositionErrorTolerance = 1.0; // in cm
+    private static final double kPositionErrorTolerance = 2.0; // in cm
 
-    private static final double MIN_DISTANCE = 16.5;
+    private static final double MIN_DISTANCE = 9;
 
     public static final double DISTANCE_TIGHT = 16.5;
     public static final double DISTANCE_HOME = 18.0;
     public static final double DISTANCE_LOW = 35;
     public static final double DISTANCE_PRELOADED_CONE = 35;
     public static final double DISTANCE_MIDDLE = 40;
-    public static final double DISTANCE_HIGH = 78;
+    public static final double DISTANCE_HIGH = 81;
     public static final double DISTANCE_SHELF = 30;
 
-    private static final double MAX_DISTANCE = 78;
+    private static final double MAX_DISTANCE = 98;
+    private double m_feedforwardVal = 0;
 
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
             kP,
@@ -101,24 +102,31 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
             };
         });
 
-        // m_sbTab.addDouble("PID goal", new DoubleSupplier() {
-        // @Override
-        // public double getAsDouble() {
-        // return m_controller.getGoal().position;
-        // };
-        // });
+        m_sbTab.addDouble("PID goal", new DoubleSupplier() {
+        @Override
+        public double getAsDouble() {
+        return m_controller.getGoal().position;
+        };
+        });
 
-        // m_sbTab.addDouble("PID output", new DoubleSupplier() {
-        // @Override
-        // public double getAsDouble() {
-        // return m_extendoMotor.getMotorOutputVoltage();
-        // };
-        // });
+        m_sbTab.addDouble("PID output", new DoubleSupplier() {
+        @Override
+        public double getAsDouble() {
+        return m_extendoMotor.getMotorOutputVoltage();
+        };
+        });
 
         m_sbTab.addDouble("Current Distance:", new DoubleSupplier() {
             @Override
             public double getAsDouble() {
                 return getMeasurement();
+            };
+        });
+
+        m_sbTab.addDouble("FF:", new DoubleSupplier() {
+            @Override
+            public double getAsDouble() {
+                return m_feedforwardVal;
             };
         });
     }
@@ -146,9 +154,9 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
             return;
         }
 
-        if (pidController.atGoal()) {
-            stopExtending();
-        }
+        // if (pidController.atGoal()) {
+        //     stopExtending();
+        // }
 
         // Need to handle the special case where we may be commanding the
         // arm to retract passed the limit switch.
@@ -199,6 +207,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         if (m_extendoState != ExtendoState.stopped) {
             // Calculate the feedforward from the setpoint
             double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
+            m_feedforwardVal = feedforward;
             double newOutput = output + feedforward;
             // Add the feedforward to the PID output to get the motor output
 

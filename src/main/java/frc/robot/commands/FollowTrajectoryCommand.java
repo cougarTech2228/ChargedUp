@@ -20,7 +20,7 @@ public class FollowTrajectoryCommand extends SequentialCommandGroup {
     public FollowTrajectoryCommand(DrivetrainSubsystem drivetrain, String pathName, HashMap<String, Command> eventMap,
             double maxVelocity, double maxAcceleration, boolean isFirstPath) {
 
-        PathPlannerTrajectory path = PathPlanner.loadPath(pathName, new PathConstraints(1.5, 1));
+        PathPlannerTrajectory path = PathPlanner.loadPath(pathName, new PathConstraints(maxVelocity, maxAcceleration));
         Command swerveCommand = new PPSwerveControllerCommand(
                 path,
                 drivetrain::getPose, // Pose supplier
