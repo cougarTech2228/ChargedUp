@@ -40,7 +40,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double kAVolt = 0;// 0.1;
 
     private static final double kP = 0.5;
-    private static final double kI = 0.0;
+    private static final double kI = 0.2;
     private static final double kD = 0.0;
     private static final double kDt = 0.2;
 
@@ -52,7 +52,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double MIN_DISTANCE = 9;
 
     public static final double DISTANCE_TIGHT = 16.5;
-    public static final double DISTANCE_HOME = 18.0;
+    public static final double DISTANCE_HOME = 16.5;
     public static final double DISTANCE_LOW = 35;
     public static final double DISTANCE_PRELOADED_CONE = 35;
     public static final double DISTANCE_MIDDLE = 40;
@@ -129,6 +129,13 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
                 return m_feedforwardVal;
             };
         });
+
+        m_sbTab.addDouble("Motor Voltage:", new DoubleSupplier() {
+            @Override
+            public double getAsDouble() {
+                return m_extendoMotor.getMotorOutputVoltage();
+            };
+        });
     }
 
     @Override
@@ -162,19 +169,19 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         // arm to retract passed the limit switch.
         if (isExtendoHomeLimitReached() && (m_extendoState == ExtendoState.retracting)) {
             stopExtending();
-            disable();
+            //disable();
             System.out.println("Extendo home limit reached");
         }
     }
 
     public void goToDistanceCM(double distanceCM) {
-        if (distanceCM > m_currentArmReachCm) {
-            m_extendoState = ExtendoState.extending;
-        } else if (distanceCM < m_currentArmReachCm) {
-            m_extendoState = ExtendoState.retracting;
-        } else {
-            m_extendoState = ExtendoState.stopped;
-        }
+        // if (distanceCM > m_currentArmReachCm) {
+        //     m_extendoState = ExtendoState.extending;
+        // } else if (distanceCM < m_currentArmReachCm) {
+        //     m_extendoState = ExtendoState.retracting;
+        // } else {
+        //     m_extendoState = ExtendoState.stopped;
+        // }
 
         System.out.println("setting distance: " + distanceCM);
         pidController.setGoal(distanceCM);
@@ -190,11 +197,12 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     }
 
     private void stopExtending() {
-        if (m_extendoState != ExtendoState.stopped) {
+        // if (m_extendoState != ExtendoState.stopped) {
             m_extendoMotor.stopMotor();
+            m_extendoMotor.setNeutralMode(NeutralMode.Brake);
             m_extendoState = ExtendoState.stopped;
             System.out.println("stopping extendo arm");
-        }
+        // }
     }
 
     public boolean isExtendoHomeLimitReached() {
@@ -204,13 +212,20 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     @Override
     public void useOutput(double output, TrapezoidProfile.State setpoint) {
 
-        if (m_extendoState != ExtendoState.stopped) {
+        //if (m_extendoState != ExtendoState.stopped) {
             // Calculate the feedforward from the setpoint
             double feedforward = m_feedforward.calculate(setpoint.position, setpoint.velocity);
             m_feedforwardVal = feedforward;
             double newOutput = output + feedforward;
             // Add the feedforward to the PID output to get the motor output
 
+            if (output < 0) {
+                m_extendoState = ExtendoState.retracting;
+            } else if (output > 0) {
+                m_extendoState = ExtendoState.extending;
+            } else {
+                m_extendoState = ExtendoState.stopped;
+            }
             // clamp the output to a sane range
             double val;
             if (newOutput < 0) {
@@ -219,12 +234,12 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
                 val = Math.min(kMotorVoltageLimit, newOutput);
             }
 
-            if (m_elevatorSubsystem.isSafeToExtendArm()) {
-                if (!((m_extendoState == ExtendoState.retracting) && isExtendoHomeLimitReached())) {
+            // if (m_elevatorSubsystem.isSafeToExtendArm()) {
+            //     if (!((m_extendoState == ExtendoState.retracting) && isExtendoHomeLimitReached())) {
                     m_extendoMotor.setVoltage(val);
-                }
-            }
-        }
+                // }
+            // }
+        //}
     }
 
     @Override
