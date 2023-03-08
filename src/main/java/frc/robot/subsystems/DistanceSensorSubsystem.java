@@ -9,7 +9,7 @@ import com.revrobotics.Rev2mDistanceSensor.Port;
 
 public class DistanceSensorSubsystem {
 
-    private Rev2mDistanceSensor m_ElevatorDistMxp;
+    //private Rev2mDistanceSensor m_ElevatorDistMxp;
     private Rev2mDistanceSensor m_ExtendoArmDistMxp;
 
     // private final int kI2CAddress;
@@ -36,7 +36,7 @@ public class DistanceSensorSubsystem {
 
         selectMuxPort(0x01);
 
-        setRev2Addr(0x29, Constants.ELEVATOR_DISTANCE_SENSOR_ADDRESS);
+        //setRev2Addr(0x29, Constants.ELEVATOR_DISTANCE_SENSOR_ADDRESS);
 
         selectMuxPort(0x02);
 
@@ -52,8 +52,8 @@ public class DistanceSensorSubsystem {
         // }
         // setRev2Addr(0x29, Constants.EXTENDO_ARM_DISTANCE_SENSOR_ADDRESS);
 
-        m_ElevatorDistMxp = new Rev2mDistanceSensor(Port.kMXP, Constants.ELEVATOR_DISTANCE_SENSOR_ADDRESS);
-        m_ElevatorDistMxp.setEnabled(true);
+        //m_ElevatorDistMxp = new Rev2mDistanceSensor(Port.kMXP, Constants.ELEVATOR_DISTANCE_SENSOR_ADDRESS);
+        //m_ElevatorDistMxp.setEnabled(true);
         // m_ElevatorDistMxp.setAutomaticMode(true);
 
         m_ExtendoArmDistMxp = new Rev2mDistanceSensor(Port.kMXP, Constants.EXTENDO_ARM_DISTANCE_SENSOR_ADDRESS);
@@ -84,9 +84,9 @@ public class DistanceSensorSubsystem {
         i2c.close();
     }
 
-    public Rev2mDistanceSensor getElevatorSensor() {
-        return m_ElevatorDistMxp;
-    }
+    // public Rev2mDistanceSensor getElevatorSensor() {
+    //     return m_ElevatorDistMxp;
+    // }
 
     public Rev2mDistanceSensor getExtendoArmSensor() {
         return m_ExtendoArmDistMxp;

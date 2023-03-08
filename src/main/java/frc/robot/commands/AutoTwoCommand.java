@@ -5,8 +5,10 @@ import java.util.HashMap;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.PrintCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants;
 import frc.robot.Constants.ArmDestination;
 import frc.robot.subsystems.DrivetrainSubsystem;
@@ -29,41 +31,28 @@ public class AutoTwoCommand extends SequentialCommandGroup {
         m_elevatorSubsystem = elevatorSubsystem;
         m_extendoSubsystem = extendoSubsystem;
         m_drivetrainSubsystem = drivetrainSubystem;
+        m_pneumaticSubsystem = pneumaticSubsystem;
 
         HashMap<String, Command> m_eventMap = new HashMap<>();
 
         addCommands(
-                new InstantCommand(() -> printStartCommand()),
-                new InstantCommand(m_drivetrainSubsystem::zeroGyroscope),
-                new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
-                // High Cone
+            new InstantCommand(() -> printStartCommand()),
+            new InstantCommand(m_drivetrainSubsystem::zeroGyroscope),
+            new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
+            new SequentialCommandGroup(
+                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.high),
+                new SetArmReachCommand(m_extendoSubsystem, ArmDestination.high),
+                new InstantCommand(() -> m_pneumaticSubsystem.openGripper())),
+            new ParallelCommandGroup(
                 new SequentialCommandGroup(
-                        new SetArmHeightCommand(m_elevatorSubsystem,
-                                ArmDestination.high),
-                        new SetArmReachCommand(m_extendoSubsystem,
-                                ArmDestination.high),
-                        new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
-                        new SetArmReachCommand(m_extendoSubsystem,
-                                ArmDestination.home),
-                        new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-                        new SetArmHeightCommand(m_elevatorSubsystem,
-                                ArmDestination.home)),
-                // Middle Cone
-                // new SequentialCommandGroup(
-                // new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.middle),
-                // new SetArmReachCommand(m_extendoSubsystem, ArmDestination.middle),
-                // new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
-                // new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
-                // new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-                // new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home)),
-                new FollowTrajectoryCommand(m_drivetrainSubsystem, "ChargingStation",
-                        m_eventMap,
-                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true),
-                new PrintCommand("Starting Balance"),
-                new BalanceCommand(m_drivetrainSubsystem),
-                new PrintCommand("Finished Balance"),
-                new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()),
-                new InstantCommand(() -> printEndCommand()));
+                    new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
+                    new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                    new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home)),
+                new FollowTrajectoryCommand(m_drivetrainSubsystem, "ChargingStation", m_eventMap,
+                        Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true)),
+            new BalanceCommand(m_drivetrainSubsystem),
+            new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()),
+            new InstantCommand(() -> printEndCommand()));
     }
 
     private void printStartCommand() {

@@ -9,13 +9,11 @@ public class BalanceCommand extends CommandBase{
 
     public BalanceCommand(DrivetrainSubsystem drivetrain){
         m_drivetrainSubsystem = drivetrain;
-
         addRequirements(m_drivetrainSubsystem);
     }
 
     @Override
     public void initialize() {
-
         System.out.println("BalanceCommand Command starting");
         m_drivetrainSubsystem.setDriveMotorStatusFramePeriod(10);
     }
@@ -24,8 +22,9 @@ public class BalanceCommand extends CommandBase{
     @Override
     public void execute() {
         double roll = m_drivetrainSubsystem.getRoll();
-        double speed = 0.05;
+        double speed = 0.1;
         System.out.println("Roll: " + roll);
+        System.out.println("Pitch: " + m_drivetrainSubsystem.getPitch());
 
         if(roll > 0){
             speed = -speed;
@@ -36,9 +35,7 @@ public class BalanceCommand extends CommandBase{
                 0.0,
                 0.0,
                 m_drivetrainSubsystem.getGyroscopeRotation()));
-
         m_drivetrainSubsystem.getEncoderCount();
-
     }
 
     // Called once the command ends or is interrupted.

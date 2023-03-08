@@ -27,7 +27,7 @@ public class RotateBotCommand extends CommandBase {
 
         System.out.println("RotateBotCommand Command starting");
 
-        if (m_degreesToTurn < 0.0 || m_degreesToTurn > 360.0) {
+        if (m_degreesToTurn < 0.0 || m_degreesToTurn > 360.0){
             System.out.println("ERROR: Degrees value passed into RotateBotCommand out of [0, 360]");
             m_degreesToTurn = 0.0;
         }
@@ -37,13 +37,15 @@ public class RotateBotCommand extends CommandBase {
     }
 
     @Override
-    public void execute() {
+    public void execute(){
         m_drivetrainSubsystem.drive(
                 ChassisSpeeds.fromFieldRelativeSpeeds(0.0,
                         0.0,
                         m_angularVelocity * m_drivetrainSubsystem.getRotationalAdjustment()
                                 * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-                        m_drivetrainSubsystem.getGyroscopeRotation()));
+                        m_drivetrainSubsystem.getGyroscopeRotation()
+                )
+        );
 
         // This method allows us to drive on the cart or blocks since it's ROV not FOV
         // m_drivetrainSubsystem.drive(

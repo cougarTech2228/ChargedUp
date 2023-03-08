@@ -72,7 +72,6 @@ public class DriveFwdRevCommand extends CommandBase {
                 0.0,
                 0.0,
                 m_drivetrainSubsystem.getGyroscopeRotation()));
-
         m_currentEncoderCount = m_drivetrainSubsystem.getEncoderCount();
     }
 
