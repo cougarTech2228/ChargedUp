@@ -29,7 +29,6 @@ import frc.robot.subsystems.ExtendoSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.subsystems.ShuffleboardSubsystem;
 import frc.robot.subsystems.ButtonBoardSubsystem;
-import frc.robot.subsystems.DistanceSensorSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 
 /**
@@ -55,15 +54,11 @@ public class RobotContainer {
 
     private final static LEDStripSubsystem m_ledStripSubsystem = new LEDStripSubsystem();
 
-    private final static DistanceSensorSubsystem m_distanceSensorSubsystem = new DistanceSensorSubsystem();
-
     private final static PneumaticSubsystem m_pneumaticSubsystem = new PneumaticSubsystem();
     
     private final static ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem(m_pneumaticSubsystem);
 
-    private final static ExtendoSubsystem m_extendoSubsystem = new ExtendoSubsystem(m_distanceSensorSubsystem,
-            m_elevatorSubsystem);
-
+    private final static ExtendoSubsystem m_extendoSubsystem = new ExtendoSubsystem();
 
     private final static ButtonBoardSubsystem m_buttonBoardSubsystem = new ButtonBoardSubsystem(m_elevatorSubsystem,
             m_extendoSubsystem, m_pneumaticSubsystem, m_drivetrainSubsystem);

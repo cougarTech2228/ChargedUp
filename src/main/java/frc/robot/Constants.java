@@ -81,9 +81,6 @@ public final class Constants {
     public static final int LOW_SIDE_ANALOG_PORT = 0;
     public static final int HIGH_SIDE_ANALOG_PORT = 1;
     public static final int PCM_CAN_ID = 5;
-    public static final int I2C_MUX_DIO = 2;
-    public static final int ELEVATOR_DISTANCE_SENSOR_ADDRESS = 0x22;
-    public static final int EXTENDO_ARM_DISTANCE_SENSOR_ADDRESS = 0x26;
 
     // Read left to right from corresponding driver station
     public enum AutoPosition {
