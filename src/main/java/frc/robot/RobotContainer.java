@@ -57,12 +57,13 @@ public class RobotContainer {
 
     private final static DistanceSensorSubsystem m_distanceSensorSubsystem = new DistanceSensorSubsystem();
 
-    private final static ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem(m_distanceSensorSubsystem);
+    private final static PneumaticSubsystem m_pneumaticSubsystem = new PneumaticSubsystem();
+    
+    private final static ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem(m_pneumaticSubsystem);
 
     private final static ExtendoSubsystem m_extendoSubsystem = new ExtendoSubsystem(m_distanceSensorSubsystem,
             m_elevatorSubsystem);
 
-    private final static PneumaticSubsystem m_pneumaticSubsystem = new PneumaticSubsystem();
 
     private final static ButtonBoardSubsystem m_buttonBoardSubsystem = new ButtonBoardSubsystem(m_elevatorSubsystem,
             m_extendoSubsystem, m_pneumaticSubsystem, m_drivetrainSubsystem);
@@ -108,14 +109,14 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
 
-        // new Trigger(m_controller::getXButton)
-        // .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.zeroGyroscope()));
+        new Trigger(m_controller::getXButton)
+        .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.zeroGyroscope()));
 
         new Trigger(m_controller::getBackButton)
                 .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()));
 
-        // new Trigger(m_controller::getBButton)
-        // .onTrue(new InstantCommand(() -> cancelAllCommands()));
+        new Trigger(m_controller::getBButton)
+        .onTrue(new InstantCommand(() -> cancelAllCommands()));
 
         new Trigger(m_controller::getLeftBumperPressed)
                 .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.setBoostMode(true)));

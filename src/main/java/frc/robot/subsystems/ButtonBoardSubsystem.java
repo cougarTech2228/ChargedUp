@@ -41,7 +41,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     private static DrivetrainSubsystem m_drivetrainSubsystem;
 
     private static final double FINE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM = 2.0;
-    private static final double COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM = 10.0;
+    private static final double COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE_CM = 5.0;
 
     private static final double FINE_INCREMENTAL_ARM_REACH_CHANGE_CM = 6.0;
     private static final double COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM = 10.0;

@@ -45,6 +45,8 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     // this is normal, and is fine so long as it moves the correct amount
     // in total.
 
+    private PneumaticSubsystem m_pneumaticSubsystem;
+
     private static final double kSVolts = 0.3;
     private static final double kGVolts = 0.7;
     private static final double kVVolt = 0;
@@ -67,7 +69,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     public static final double HEIGHT_LOW = 27;
     public static final double HEIGHT_STANDING_CONE = 20.8;
     public static final double HEIGHT_MIDDLE = 39;
-    public static final double HEIGHT_HIGH = 41;
+    public static final double HEIGHT_HIGH = 42;
     public static final double HEIGHT_SHELF = 37.5;
 
     private static final double HEIGHT_MAX = 45;
@@ -91,11 +93,12 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
         lowering
     };
 
-    public ElevatorSubsystem(DistanceSensorSubsystem distanceSensorSubsystem) {
+    public ElevatorSubsystem(PneumaticSubsystem pneumaticSubsystem) {
         super(pidController, 0);
 
         pidController.setTolerance(kPositionErrorTolerance);
 
+        m_pneumaticSubsystem = pneumaticSubsystem;
         m_elevatorDownLimit = new CT_DigitalInput(Constants.ELEVATOR_LOWER_LIMIT_DIO);
         m_elevatorUpLimit = new CT_DigitalInput(Constants.ELEVATOR_UPPER_LIMIT_DIO);
         m_elevatorMotor = new WPI_TalonFX(Constants.ELEVATOR_MOTOR_ID);
@@ -194,6 +197,8 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
         if (pidController.atGoal()) {
             stopElevator();
+            m_pneumaticSubsystem.closeBrake();
+            disable();
         }
     }
 
@@ -214,6 +219,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     }
 
     public void setElevatorPosition(double height) {
+        m_pneumaticSubsystem.openBrake();
         if (height > m_elevatorHeight) {
             m_elevatorState = ElevatorState.raising;
         } else if (height < m_elevatorHeight) {
