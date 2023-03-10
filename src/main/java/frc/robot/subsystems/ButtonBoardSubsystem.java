@@ -119,7 +119,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     }
 
     private JoystickButton getArmRetractButton() {
-        return new JoystickButton(m_joystick2, 4);
+        return new JoystickButton(m_joystick2, 6);
     }
 
     private JoystickButton getArmDownButton() {
@@ -127,7 +127,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     }
 
     private JoystickButton getArmExtendButton() {
-        return new JoystickButton(m_joystick2, 6);
+        return new JoystickButton(m_joystick2, 4);
     }
 
     private JoystickButton getOperationToggleSwitch() {
