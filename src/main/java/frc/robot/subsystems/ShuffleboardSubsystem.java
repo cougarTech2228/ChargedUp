@@ -51,7 +51,7 @@ public class ShuffleboardSubsystem extends SubsystemBase {
         m_chargedUpTab.addDouble("Arm Reach (cm):", new DoubleSupplier() {
             @Override
             public double getAsDouble() {
-                return RobotContainer.getExtendoSubsystem().getCurrentArmReachCm();
+                return RobotContainer.getExtendoSubsystem().getCurrentArmReach();
             };
         }).withSize(1, 1).withPosition(2, 1);
 

@@ -136,8 +136,9 @@ public class RobotContainer {
         // new Trigger(m_controller::getXButton)
         // .onTrue(new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home));
 
-        // new Trigger(m_controller::getYButton)
-        //         .onTrue(new InstantCommand(() -> m_pneumaticSubsystem.toggleBrake()));
+        // TODO - Get rid of this for drive practice/competition
+        new Trigger(m_controller::getYButton)
+                .onTrue(new InstantCommand(() -> m_extendoSubsystem.retractToHomePosition()));
 
         // PID TUNING DEBUG ---------------------
 

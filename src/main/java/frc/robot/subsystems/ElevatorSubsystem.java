@@ -27,7 +27,6 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     private DutyCycleEncoder m_elevatorEncoder;
     private double m_feedforwardVal = 0;
 
-    //private Rev2mDistanceSensor m_distMxp;
     private double m_elevatorHeight;
 
     // https://docs.wpilib.org/en/stable/docs/software/advanced-controls/introduction/tuning-vertical-arm.html
@@ -65,14 +64,12 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
     public static final double HEIGHT_HOME = 18.5;
     public static final double HEIGHT_LOW = 27;
-    public static final double HEIGHT_TRANSIT = 22.0;
-    public static final double HEIGHT_MIDDLE = 33;
-    public static final double HEIGHT_HIGH = 40;
-    public static final double HEIGHT_SHELF = 37.5;
+    public static final double HEIGHT_TRANSIT = 24.7;
+    public static final double HEIGHT_MIDDLE = 38.0;
+    public static final double HEIGHT_HIGH = 42;
+    public static final double HEIGHT_SHELF = 38.6;
 
     private static final double HEIGHT_MAX = 45;
-
-    private static final double kSafeToLeaveHomeHeight = HEIGHT_HOME + 5.0;
 
     private static final ProfiledPIDController pidController = new ProfiledPIDController(
             kP, kI, kD,
@@ -92,7 +89,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     };
 
     public ElevatorSubsystem(PneumaticSubsystem pneumaticSubsystem) {
-        super(pidController, 0);
+        super(pidController, 0); // TODO - should this be HEIGHT_HOME?
 
         pidController.setTolerance(kPositionErrorTolerance);
 
@@ -103,8 +100,6 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
         m_elevatorMotor.setNeutralMode(NeutralMode.Brake);
         m_elevatorMotor.setInverted(true);
         m_elevatorEncoder = new DutyCycleEncoder(6);
-
-        //m_distMxp = distanceSensorSubsystem.getElevatorSensor();
 
         m_sbTab = Shuffleboard.getTab("Elevator (Debug)");
 
@@ -119,6 +114,20 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
             @Override
             public boolean getAsBoolean() {
                 return isEnabled();
+            };
+        });
+
+        m_sbTab.addBoolean("Lower", new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return isElevatorLowerLimitReached();
+            };
+        });
+
+        m_sbTab.addBoolean("Upper", new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return isElevatorUpperLimitReached();
             };
         });
 
@@ -149,32 +158,23 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
                 return m_feedforwardVal;
             };
         });
-
-        m_sbTab.addBoolean("Low Limit", new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() {
-                return isElevatorLowerLimitReached();
-            };
-        });
     }
 
     @Override
     public void periodic() {
         super.periodic();
 
-        //if (m_distMxp.isEnabled() && m_distMxp.isRangeValid()) {
-            //m_elevatorHeight = m_distMxp.getRange(Unit.kMillimeters) / 10.0;
-            m_elevatorHeight = m_elevatorEncoder.getAbsolutePosition() *100;
+        m_elevatorHeight = m_elevatorEncoder.getAbsolutePosition() * 100;
 
-            // Boundary check the distance sensor's range values
-            if (m_elevatorHeight > HEIGHT_MAX) {
-                System.out.println("Elevator distance sensor exceeded max range limit");
-                m_elevatorHeight = HEIGHT_MAX;
-            } else if (m_elevatorHeight < HEIGHT_MIN) {
-                System.out.println("Elevator distance sensor exceeded min range limit");
-                m_elevatorHeight = HEIGHT_MIN;
-            }
-        //}
+
+        // Boundary check the distance sensor's range values
+        if (m_elevatorHeight > HEIGHT_MAX) {
+            System.out.println("Elevator distance sensor exceeded max range limit");
+            m_elevatorHeight = HEIGHT_MAX;
+        } else if (m_elevatorHeight < HEIGHT_MIN) {
+            System.out.println("Elevator distance sensor exceeded min range limit");
+            m_elevatorHeight = HEIGHT_MIN;
+        }
 
         if (DriverStation.isDisabled()) {
             pidController.setGoal(getMeasurement());
@@ -202,10 +202,6 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
     public boolean atGoal() {
         return pidController.atGoal();
-    }
-
-    public boolean isSafeToExtendArm() {
-        return (m_elevatorHeight >= kSafeToLeaveHomeHeight);
     }
 
     private void stopElevator() {

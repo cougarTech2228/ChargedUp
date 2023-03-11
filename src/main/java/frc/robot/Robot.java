@@ -68,10 +68,9 @@ public class Robot extends TimedRobot {
 
         RobotContainer.getDrivetrainSubsystem().stopMotors();
         RobotContainer.getDrivetrainSubsystem().setMotorsToCoast();
-
-        RobotContainer.getLEDStripSubsystem().resetStrip();
-
         RobotContainer.getPneumaticSubsystem().closeGripper();
+        RobotContainer.getPneumaticSubsystem().openBrake();
+        RobotContainer.getLEDStripSubsystem().resetStrip();
     }
 
     @Override
@@ -104,6 +103,8 @@ public class Robot extends TimedRobot {
     public void teleopInit() {
         RobotContainer.getDrivetrainSubsystem().setMotorsToCoast();
         RobotContainer.getDrivetrainSubsystem().primeDrivetrain();
+        RobotContainer.getDrivetrainSubsystem().setPathPlannerDriving(false);
+
         RobotContainer.cancelAllCommands();
         
         // This makes sure that the autonomous stops running when

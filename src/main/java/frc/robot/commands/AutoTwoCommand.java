@@ -37,18 +37,19 @@ public class AutoTwoCommand extends SequentialCommandGroup {
             new InstantCommand(() -> printStartCommand()),
             new InstantCommand(m_drivetrainSubsystem::zeroGyroscope),
             new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
-            new SequentialCommandGroup(
-                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.high),
-                new SetArmReachCommand(m_extendoSubsystem, ArmDestination.high),
-                new InstantCommand(() -> m_pneumaticSubsystem.openGripper())),
+            // new SequentialCommandGroup(
+            //     new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.high),
+            //     new SetArmReachCommand(m_extendoSubsystem, ArmDestination.high),
+            //     new InstantCommand(() -> m_pneumaticSubsystem.openGripper())),
             new ParallelCommandGroup(
-                new SequentialCommandGroup(
-                    new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
-                    new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-                    new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home)),
+                // new SequentialCommandGroup(
+                //     new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
+                //     new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                //     new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home)),
                 new FollowTrajectoryCommand(m_drivetrainSubsystem, "ChargingStation", m_eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true)),
             new BalanceCommand(m_drivetrainSubsystem),
+            new RotateBotCommand(1, 1, m_drivetrainSubsystem),
             new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()),
             new InstantCommand(() -> printEndCommand()));
     }

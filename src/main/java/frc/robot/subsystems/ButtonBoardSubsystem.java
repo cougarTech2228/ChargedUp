@@ -43,8 +43,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     private static final double FINE_INCREMENTAL_ARM_HEIGHT_CHANGE = 2.0;
     private static final double COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE = 5.0;
 
-    private static final double FINE_INCREMENTAL_ARM_REACH_CHANGE_CM = 6.0;
-    private static final double COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM = 10.0;
+    private static final double FINE_INCREMENTAL_ARM_REACH_CHANGE_CM = 30.0; // TODO - Change for encoder counts?
+    private static final double COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM = 60.0; // TODO - Change for encoder counts?
 
     public static final double FINE_STRAFE_DISTANCE_CM = 3.0;
     public static final double COARSE_STRAFE_DISTANCE_CM = 9.0;
@@ -275,13 +275,13 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new ConditionalCommand(
                         // True command
                         new InstantCommand(() -> {
-                            m_extendoSubsystem.goToDistanceCM(
-                                    m_extendoSubsystem.getCurrentArmReachCm() + FINE_INCREMENTAL_ARM_REACH_CHANGE_CM);
+                            m_extendoSubsystem.goToDistance(
+                                    m_extendoSubsystem.getCurrentArmReach() + FINE_INCREMENTAL_ARM_REACH_CHANGE_CM);
                         }),
                         // False command
                         new InstantCommand(() -> {
-                            m_extendoSubsystem.goToDistanceCM(
-                                    m_extendoSubsystem.getCurrentArmReachCm() + COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM);
+                            m_extendoSubsystem.goToDistance(
+                                    m_extendoSubsystem.getCurrentArmReach() + COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM);
                         }),
 
                         // variable
@@ -291,23 +291,29 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new ConditionalCommand(
                         // True command
                         new InstantCommand(() -> {
-                            m_extendoSubsystem.goToDistanceCM(
-                                    m_extendoSubsystem.getCurrentArmReachCm() - FINE_INCREMENTAL_ARM_REACH_CHANGE_CM);
+                            m_extendoSubsystem.goToDistance(
+                                    m_extendoSubsystem.getCurrentArmReach() - FINE_INCREMENTAL_ARM_REACH_CHANGE_CM);
                         }),
                         // False command
                         new InstantCommand(() -> {
-                            m_extendoSubsystem.goToDistanceCM(
-                                    m_extendoSubsystem.getCurrentArmReachCm() - COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM);
+                            m_extendoSubsystem.goToDistance(
+                                    m_extendoSubsystem.getCurrentArmReach() - COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM);
                         }),
 
                         // variable
                         this::isFineOperationMode));
 
         getArmShelfButton().onTrue(
-                new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmDestination.shelf));
+                new SequentialCommandGroup(
+                    new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmDestination.shelf),
+                    new InstantCommand(() -> m_pneumaticSubsystem.openGripper())
+                ));
 
         getArmTransitButton().onTrue(
-                new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmDestination.transit));
+                new SequentialCommandGroup(
+                        new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
+                        new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.transit)
+                ));
 
         getArmHomeButton().onTrue(
                 new SequentialCommandGroup(

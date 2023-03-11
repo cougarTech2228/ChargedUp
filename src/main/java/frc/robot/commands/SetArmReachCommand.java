@@ -22,18 +22,18 @@ public class SetArmReachCommand extends CommandBase {
         System.out.println("Initializing SetArmReachCommand");
 
         if (m_destination == Constants.ArmDestination.home) {
-            m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_HOME);
+            m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_HOME);
         } else if (m_destination == Constants.ArmDestination.low) {
-            m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_LOW);
+            m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_LOW);
         } else if (m_destination == Constants.ArmDestination.middle) {
-            m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_MIDDLE);
+            m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_MIDDLE);
         } else if (m_destination == Constants.ArmDestination.high) {
-            m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_HIGH);
+            m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_HIGH);
         } else if (m_destination == Constants.ArmDestination.shelf) {
-            m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_SHELF);
+            m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_SHELF);
         } else if (m_destination == Constants.ArmDestination.transit) {
-            m_extendoSubsystem.goToDistanceCM(ExtendoSubsystem.DISTANCE_TRANSIT);
-        }else {
+            m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_TRANSIT);
+        } else {
             System.out.println("SetArmHeightCommand - Invalid ArmDestination value");
         }
     }
@@ -45,7 +45,8 @@ public class SetArmReachCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
-        return (m_extendoSubsystem.atGoal());
+        return (m_extendoSubsystem.atGoal() ||
+                (m_extendoSubsystem.isExtendoHomeLimitReached() && m_extendoSubsystem.isStopped()));
     }
 
     @Override
