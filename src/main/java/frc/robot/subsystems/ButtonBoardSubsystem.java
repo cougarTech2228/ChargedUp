@@ -47,11 +47,11 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     private static final double COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM = 10.0;
 
     public static final double FINE_STRAFE_DISTANCE_CM = 3.0;
-    public static final double COARSE_STRAFE_DISTANCE_CM = 6.0;
+    public static final double COARSE_STRAFE_DISTANCE_CM = 9.0;
     private static final double STRAFE_SPEED = 0.1;
 
     private static final double FINE_DRIVE_DISTANCE_CM = 5.0;
-    private static final double COARSE_DRIVE_DISTANCE_CM = 10.0;
+    private static final double COARSE_DRIVE_DISTANCE_CM = 15.0;
     private static final double DRIVE_SPEED = 0.1;
 
     private static final double FINE_TURN_DEGREES = 2.0;
@@ -307,9 +307,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmDestination.shelf));
 
         getArmTransitButton().onTrue(
-                new SequentialCommandGroup(
-                        new SetArmReachCommand(m_extendoSubsystem, ArmDestination.tight),
-                        new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.preloaded_cone)));
+                new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmDestination.transit));
 
         getArmHomeButton().onTrue(
                 new SequentialCommandGroup(

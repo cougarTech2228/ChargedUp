@@ -65,9 +65,9 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
     public static final double HEIGHT_HOME = 18.5;
     public static final double HEIGHT_LOW = 27;
-    public static final double HEIGHT_STANDING_CONE = 20.8;
-    public static final double HEIGHT_MIDDLE = 39;
-    public static final double HEIGHT_HIGH = 42;
+    public static final double HEIGHT_TRANSIT = 22.0;
+    public static final double HEIGHT_MIDDLE = 33;
+    public static final double HEIGHT_HIGH = 40;
     public static final double HEIGHT_SHELF = 37.5;
 
     private static final double HEIGHT_MAX = 45;
