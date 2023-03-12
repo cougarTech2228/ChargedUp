@@ -29,7 +29,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private double m_currentArmReach;
 
     private static final double kSVolts = 0;
-    private static final double kGVolts = -0.9;
+    private static final double kGVolts = -0.5;
     private static final double kVVolt = 0;
     private static final double kAVolt = 0;
 
@@ -42,7 +42,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double kMaxAccelerationTicksPerSecSquared = 8;
     private static final double kMotorVoltageLimit = 12.0;
 
-    private static final double kPositionErrorTolerance = 4.0; // TODO - Is this appropriate for encoder counts?
+    private static final double kPositionErrorTolerance = 10.0; // TODO - Is this appropriate for encoder counts?
 
     private static final double MIN_DISTANCE = -50.0;
 
@@ -114,6 +114,13 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
             @Override
             public double getAsDouble() {
                 return m_controller.getGoal().position;
+            };
+        });
+
+        m_sbTab.addBoolean("At Goal", new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return atGoal();
             };
         });
 
