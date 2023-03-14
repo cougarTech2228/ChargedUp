@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 import frc.robot.subsystems.ExtendoSubsystem;
@@ -8,6 +9,8 @@ public class SetArmReachCommand extends CommandBase {
 
     private ExtendoSubsystem m_extendoSubsystem;
     private Constants.ArmDestination m_destination;
+    private long m_startTime;
+    private long m_timeout = 4;
 
     public SetArmReachCommand(ExtendoSubsystem extendoSubsystem,
             Constants.ArmDestination destination) {
@@ -20,6 +23,8 @@ public class SetArmReachCommand extends CommandBase {
     @Override
     public void initialize() {
         System.out.println("Initializing SetArmReachCommand");
+
+        m_startTime = RobotController.getFPGATime();
 
         if (m_destination == Constants.ArmDestination.home) {
             m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_HOME);
@@ -45,6 +50,12 @@ public class SetArmReachCommand extends CommandBase {
 
     @Override
     public boolean isFinished() {
+        long now = RobotController.getFPGATime();
+        if (  (now - m_startTime) > m_timeout * 1000000) {
+            System.out.println("command timeout");
+            return true;
+        }
+        
         return (m_extendoSubsystem.atGoal() ||
                 (m_extendoSubsystem.isExtendoHomeLimitReached() && m_extendoSubsystem.isStopped()));
     }
