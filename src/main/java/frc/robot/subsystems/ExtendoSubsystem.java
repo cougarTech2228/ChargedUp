@@ -47,7 +47,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double MIN_DISTANCE = -50.0;
 
     public static final double DISTANCE_TRANSIT = 12.5; // TODO
-    public static final double DISTANCE_HOME = -10.0; // TODO
+    public static final double DISTANCE_HOME = -30.0; // TODO
     public static final double DISTANCE_LOW = 160.0; // TODO
     public static final double DISTANCE_MIDDLE = 207.0; // TODO
     public static final double DISTANCE_HIGH = 798.0; // TODO
