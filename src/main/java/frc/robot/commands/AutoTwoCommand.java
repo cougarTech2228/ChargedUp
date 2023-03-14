@@ -46,7 +46,7 @@ public class AutoTwoCommand extends SequentialCommandGroup {
                 //     new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
                 //     new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
                 //     new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home)),
-                new FollowTrajectoryCommand(m_drivetrainSubsystem, "ChargingStation", m_eventMap,
+                new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto2_Sideways", m_eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true)),
             new BalanceCommand(m_drivetrainSubsystem),
             new RotateBotCommand(1, 1, m_drivetrainSubsystem),

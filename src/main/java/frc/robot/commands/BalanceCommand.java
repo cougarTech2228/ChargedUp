@@ -21,21 +21,25 @@ public class BalanceCommand extends CommandBase{
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double roll = m_drivetrainSubsystem.getRoll();
-        double speed = 0.1;
-        System.out.println("Roll: " + roll);
-        System.out.println("Pitch: " + m_drivetrainSubsystem.getPitch());
+        double pitch = m_drivetrainSubsystem.getPitch();
+        double speed = 0.05;
+        System.out.println("Roll: " + m_drivetrainSubsystem.getRoll() + "; Pitch: " + m_drivetrainSubsystem.getPitch() + "; Yaw: " + m_drivetrainSubsystem.getYaw());
 
-        if(roll > 0){
+        if(pitch < 0){
             speed = -speed;
         }
 
-        System.out.println("Drive: " + speed);
-        m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(speed * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-                0.0,
-                0.0,
-                m_drivetrainSubsystem.getGyroscopeRotation()));
-        m_drivetrainSubsystem.getEncoderCount();
+        if(!(Math.abs(m_drivetrainSubsystem.getPitch()) < 1.5)){
+            System.out.println("Drive: " + speed);
+            m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(speed * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
+                    0.0,
+                    0.0,
+                    m_drivetrainSubsystem.getGyroscopeRotation()));
+            m_drivetrainSubsystem.getEncoderCount();
+        } else{
+            m_drivetrainSubsystem.stopMotors();
+            m_drivetrainSubsystem.setMotorsToBrake();
+        }
     }
 
     // Called once the command ends or is interrupted.
@@ -53,6 +57,6 @@ public class BalanceCommand extends CommandBase{
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return (Math.abs(m_drivetrainSubsystem.getRoll()) < 2);
+        return false; //(Math.abs(m_drivetrainSubsystem.getPitch()) < 1.5);
     }
 }
