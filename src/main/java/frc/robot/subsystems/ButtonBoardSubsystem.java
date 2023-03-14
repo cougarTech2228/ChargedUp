@@ -43,8 +43,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     private static final double FINE_INCREMENTAL_ARM_HEIGHT_CHANGE = 2.0;
     private static final double COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE = 5.0;
 
-    private static final double FINE_INCREMENTAL_ARM_REACH_CHANGE_CM = 30.0; // TODO - Change for encoder counts?
-    private static final double COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM = 60.0; // TODO - Change for encoder counts?
+    private static final double FINE_INCREMENTAL_ARM_REACH_CHANGE_CM = 30.0; 
+    private static final double COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM = 60.0;
 
     public static final double FINE_STRAFE_DISTANCE_CM = 3.0;
     public static final double COARSE_STRAFE_DISTANCE_CM = 9.0;

@@ -42,18 +42,18 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double kMaxAccelerationTicksPerSecSquared = 8;
     private static final double kMotorVoltageLimit = 12.0;
 
-    private static final double kPositionErrorTolerance = 10.0; // TODO - Is this appropriate for encoder counts?
+    private static final double kPositionErrorTolerance = 10.0;
 
     private static final double MIN_DISTANCE = -50.0;
 
-    public static final double DISTANCE_TRANSIT = 12.5; // TODO
-    public static final double DISTANCE_HOME = -30.0; // TODO
-    public static final double DISTANCE_LOW = 160.0; // TODO
-    public static final double DISTANCE_MIDDLE = 207.0; // TODO
-    public static final double DISTANCE_HIGH = 798.0; // TODO
-    public static final double DISTANCE_SHELF = 12.5; // TODO
+    public static final double DISTANCE_TRANSIT = 12.5;
+    public static final double DISTANCE_HOME = -30.0;
+    public static final double DISTANCE_LOW = 160.0;
+    public static final double DISTANCE_MIDDLE = 207.0;
+    public static final double DISTANCE_HIGH = 798.0;
+    public static final double DISTANCE_SHELF = 12.5;
 
-    private static final double MAX_DISTANCE = 950.0; // TODO
+    private static final double MAX_DISTANCE = 950.0;
 
     private double m_feedforwardVal = 0;
 
@@ -77,7 +77,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     };
 
     public ExtendoSubsystem() {
-        super(pidController, 0); // TODO - should this be DISTANCE_HOME?
+        super(pidController, 0);
 
         pidController.setTolerance(kPositionErrorTolerance);
 
@@ -157,7 +157,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     public void periodic() {
         super.periodic();
 
-        m_currentArmReach = m_extendoMotor.getSelectedSensorPosition() / 100.0; // TODO - do we need to normalize this?
+        m_currentArmReach = m_extendoMotor.getSelectedSensorPosition() / 100.0;
         
 
         if (m_currentArmReach > MAX_DISTANCE) {

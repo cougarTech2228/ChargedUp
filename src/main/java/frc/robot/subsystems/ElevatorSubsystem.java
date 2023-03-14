@@ -89,7 +89,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     };
 
     public ElevatorSubsystem(PneumaticSubsystem pneumaticSubsystem) {
-        super(pidController, 0); // TODO - should this be HEIGHT_HOME?
+        super(pidController, 0);
 
         pidController.setTolerance(kPositionErrorTolerance);
 
