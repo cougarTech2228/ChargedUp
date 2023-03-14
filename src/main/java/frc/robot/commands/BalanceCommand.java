@@ -21,15 +21,15 @@ public class BalanceCommand extends CommandBase{
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        double pitch = m_drivetrainSubsystem.getPitch();
-        double speed = 0.05;
+        double roll = m_drivetrainSubsystem.getRoll();
+        double speed = 0.1;
         System.out.println("Roll: " + m_drivetrainSubsystem.getRoll() + "; Pitch: " + m_drivetrainSubsystem.getPitch() + "; Yaw: " + m_drivetrainSubsystem.getYaw());
 
-        if(pitch < 0){
+        if(roll > 0){
             speed = -speed;
         }
 
-        if(!(Math.abs(m_drivetrainSubsystem.getPitch()) < 1.5)){
+        if(!(Math.abs(roll) < 2)){
             System.out.println("Drive: " + speed);
             m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(speed * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
                     0.0,
@@ -57,6 +57,6 @@ public class BalanceCommand extends CommandBase{
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false; //(Math.abs(m_drivetrainSubsystem.getPitch()) < 1.5);
+        return (Math.abs(m_drivetrainSubsystem.getRoll()) < 1.5);
     }
 }
