@@ -180,6 +180,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
             pidController.setGoal(getMeasurement());
             disable();
             m_elevatorMotor.set(0);
+            m_elevatorMotor.setNeutralMode(NeutralMode.Coast);
             return;
         }
 

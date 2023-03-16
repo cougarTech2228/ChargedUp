@@ -47,7 +47,7 @@ public class AutoThreeCommand extends SequentialCommandGroup {
                     new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
                     new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
                     new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home)),
-                new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto3_Backwards", m_eventMap,
+                new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto3_NoReturn", m_eventMap,
                         4, 3, true)),
             new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()),
             new InstantCommand(() -> printEndCommand()));
