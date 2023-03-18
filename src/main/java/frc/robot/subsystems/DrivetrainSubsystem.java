@@ -113,8 +113,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private boolean m_isBoostModeSet; // Cranks the drive speed to the max
 
-    private static final double kXYNormalSpeed = 0.6;
-    private static final double kRotationalNormalSpeed = 0.25;
+    private static final double kXYNormalSpeed = 0.75;
+    private static final double kRotationalNormalSpeed = 0.4;
     private static final double kXYBoostSpeed = 1.0;
     private static final double kRotationalBoostSpeed = 0.5;
 
