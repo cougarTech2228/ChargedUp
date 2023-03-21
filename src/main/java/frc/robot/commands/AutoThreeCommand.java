@@ -7,8 +7,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.Constants;
 import frc.robot.Constants.ArmDestination;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -41,14 +39,18 @@ public class AutoThreeCommand extends SequentialCommandGroup {
             new SequentialCommandGroup(
                 new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.high),
                 new SetArmReachCommand(m_extendoSubsystem, ArmDestination.high),
-                new InstantCommand(() -> m_pneumaticSubsystem.openGripper())),
+                new InstantCommand(() -> m_pneumaticSubsystem.openGripper())
+            ),
             new ParallelCommandGroup(
                 new SequentialCommandGroup(
                     new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
                     new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-                    new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home)),
+                    new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                    new InstantCommand(() -> m_pneumaticSubsystem.openGripper())
+                ),
                 new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto3_NoReturn", m_eventMap,
-                        4, 3, true)),
+                        4, 3, true)
+            ),
             new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()),
             new InstantCommand(() -> printEndCommand()));
     }
