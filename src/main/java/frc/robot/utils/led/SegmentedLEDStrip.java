@@ -1,15 +1,20 @@
-package frc.robot.utils;
+package frc.robot.utils.led;
 
 import java.util.ArrayList;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj.util.Color;
-import frc.robot.utils.CT_LEDStrip.GlowColor;
-import frc.robot.utils.CT_LEDStrip.MovementType;
-import frc.robot.utils.CT_LEDStrip.Speed;
 
-public class CT_LEDStrip extends AddressableLED {
+public class SegmentedLEDStrip extends AddressableLED {
+
+    public enum StripEffect {
+        DoingNothing,
+        MovingColor,
+        SnakingColors,
+        Rainbow,
+        Glowing
+    }
 
     private final static double GLOW_MAX = 1;
     private final static double GLOW_MIN = 0.05;
@@ -21,21 +26,12 @@ public class CT_LEDStrip extends AddressableLED {
     private final static double INCREASE_VALUE = 0.0314;
 
     private AddressableLEDBuffer m_LEDBuffer;
-    private int m_rainbowFirstPixelHue = 0;
 
-    private int m_snakeLoopIndex = 0;
-    private int m_snakeCounter = 0;
+    private ArrayList<LEDBufferSegment> m_Segments = new ArrayList<>();
 
-    private int m_movingColorsCounter = 0;
-    private int m_movingColorIndex = 0;
-
-    private int m_glowCounter = 0;
-    private double m_glowIndex = 0;
-    private boolean m_isGlowReverse = false;
-
-    private ArrayList<LEDKey> patterns;
-    private int patternsIndex;
-
+    public void addSegment(LEDBufferSegment segment) {
+        m_Segments.add(segment);
+    }
     /**
      * Speed Values for Moving and Snake colors
      * Time values listed are calculated on 20ms clock
@@ -64,7 +60,7 @@ public class CT_LEDStrip extends AddressableLED {
     }
 
     /**
-     * Preset patterns that can be used in any of the CT_LEDStrip color methods.
+     * Preset patterns that can be used in any of the LEDStrip color methods.
      */
     public enum ColorPattern {
 
@@ -96,29 +92,6 @@ public class CT_LEDStrip extends AddressableLED {
         }
     }
 
-    protected enum MovementType {
-        /**
-         * Uses setColor()
-         */
-        Normal,
-        /**
-         * Uses doMovingColors()
-         */
-        Moving,
-        /**
-         * Uses doSnake()
-         */
-        Snake,
-        /**
-         * Uses doRainbow()
-         */
-        Rainbow,
-        /**
-         * Uses doGlow()
-         */
-        Glow
-    }
-
     /**
      * Due to the complexity of altering RGB values to simulate a glow,
      * the following preset colors are simple enough to use for a gradient
@@ -146,11 +119,11 @@ public class CT_LEDStrip extends AddressableLED {
     }
 
     /**
-     * Creates a default CT_LED instance where the LED length is the max.
+     * Creates a default SegmentedLEDStrip instance where the LED length is the max.
      * 
      * @param PWMPort the PWM port the LED Strip is connected.
      */
-    public CT_LEDStrip(int PWMPort) {
+    public SegmentedLEDStrip(int PWMPort) {
         this(PWMPort, 150); // 150 is the max amount of LEDS on a standard LED strip
     }
 
@@ -161,7 +134,7 @@ public class CT_LEDStrip extends AddressableLED {
      * @param length  the amount of individual LEDS that will be turned on and
      *                affected by color chanes.
      */
-    public CT_LEDStrip(int PWMPort, int length) {
+    public SegmentedLEDStrip(int PWMPort, int length) {
         super(PWMPort);
 
         m_LEDBuffer = new AddressableLEDBuffer(length);
@@ -169,24 +142,8 @@ public class CT_LEDStrip extends AddressableLED {
         setData(m_LEDBuffer);
         start();
 
-        patterns = new ArrayList<>();
-        patternsIndex = 0;
-    }
-
-    /**
-     * Resets all the moving color variables, allows the changing of speed for
-     * example.
-     */
-    public void reset() {
-        m_rainbowFirstPixelHue = 0;
-
-        m_snakeLoopIndex = 0;
-        m_snakeCounter = 0;
-
-        m_movingColorsCounter = 0;
-        m_movingColorIndex = 0;
-
-        m_glowCounter = 0;
+        // patterns = new ArrayList<>();
+        // patternsIndex = 0;
     }
 
     /**
@@ -209,6 +166,15 @@ public class CT_LEDStrip extends AddressableLED {
         }
     }
 
+    private LEDBufferSegment getSegmentFromName(String name) {
+        for (LEDBufferSegment ledBufferSegment : m_Segments) {
+            if (ledBufferSegment.name.equals(name)) {
+                return ledBufferSegment;
+            }
+        }
+        return null;
+    }
+
     /**
      * Sets the colors of the LED strip. Colors passed in will retain their order on
      * the LED strip.
@@ -222,13 +188,21 @@ public class CT_LEDStrip extends AddressableLED {
      * 
      * @param color the colors to be shown on the LED Strip.
      */
-    public void setColor(Color... color) {
+    public void setColor(String segmentName, Color... color) {
+        LEDBufferSegment segment = getSegmentFromName(segmentName);
+        if (segment == null) {
+            System.out.println("Error: no segment named '" + segmentName + "' found!");
+            return;
+        }
+        setColor(segment, color);
+    }
 
+    public void setColor(LEDBufferSegment segment, Color... color) {
         if (color.length > 0) {
 
             int colorIndex = 0;
 
-            for (int ledIndex = 0; ledIndex < m_LEDBuffer.getLength(); ledIndex++) {
+            for (int ledIndex = 0; ledIndex < segment.size; ledIndex++) {
 
                 if (colorIndex == color.length - 1) { // Cycles the colorIndex variable to rotate through the color
                                                       // array.
@@ -236,13 +210,38 @@ public class CT_LEDStrip extends AddressableLED {
                 } else {
                     colorIndex++;
                 }
-
-                m_LEDBuffer.setLED(ledIndex, color[colorIndex]);
-
+                segment.setLED(ledIndex, color[colorIndex]);
             }
-
-            setData(m_LEDBuffer);
         }
+    }
+
+    /**
+     * Render all of the LED segments into the full LED string
+     * Call this method from a periodic method.
+     */
+    public void renderString() {
+        for (LEDBufferSegment segment : m_Segments) {
+            switch (segment.m_stripEffect) {
+                case DoingNothing:
+                    break;
+                case Glowing:
+                    doGlow(segment, segment.glowColor);
+                    break;
+                case MovingColor:
+                    doMovingColors(segment, segment.speed, segment.colorPattern);
+                    break;
+                case Rainbow:
+                    doRainbow(segment);
+                    break;
+                case SnakingColors:
+                    doSnake(segment, segment.speed, segment.backgroundColor, segment.colorPattern );
+                    break;                
+            }
+            for (int ledIndex = 0; ledIndex < segment.size; ledIndex++) {
+                m_LEDBuffer.setLED(segment.start + ledIndex, segment.getLED(ledIndex));
+            }
+        }
+        setData(m_LEDBuffer);
     }
 
     /**
@@ -258,8 +257,8 @@ public class CT_LEDStrip extends AddressableLED {
      * 
      * @param colorPattern the preset color pattern to be shown on the led strip.
      */
-    public void setColor(ColorPattern colorPattern) {
-        this.setColor(colorPattern.getPattern());
+    public void setColor(String segmentName, ColorPattern colorPattern) {
+        this.setColor(segmentName, colorPattern.getPattern());
     }
 
     /**
@@ -271,21 +270,20 @@ public class CT_LEDStrip extends AddressableLED {
      *              color should be passed in or the method
      *              will not work.
      */
-    public void doMovingColors(Speed speed, Color... color) {
-
+    private void doMovingColors(LEDBufferSegment segment, Speed speed, Color... color) {
         if (color.length <= 1) {
             System.out
                     .println("Too little amount of colors passed in, pass in more colors or use the setColor method.");
             return;
         }
 
-        int colorLoopIndex = m_movingColorIndex;
+        int colorLoopIndex = segment.m_movingColorIndex;
 
         // Waits for the correct amount of loop iterations to complete.
-        if (hasWaited(speed, m_movingColorsCounter)) {
+        if (hasWaited(speed, segment.m_movingColorsCounter)) {
 
             // Loops through the whole LED strip.
-            for (int ledIndex = 0; ledIndex < m_LEDBuffer.getLength(); ledIndex++) {
+            for (int ledIndex = 0; ledIndex < segment.getLength(); ledIndex++) {
 
                 // Increment the color loop index
                 colorLoopIndex++;
@@ -296,26 +294,24 @@ public class CT_LEDStrip extends AddressableLED {
                     colorLoopIndex = 0;
                 }
 
-                m_LEDBuffer.setLED(ledIndex, color[colorLoopIndex]);
+                segment.setLED(ledIndex, color[colorLoopIndex]);
             }
 
             // Increment the color index so the color pattern is off by one on the next time
             // this method is run.
             // This gives the effect of the colors moving down the LED strip.
-            m_movingColorIndex++;
+            segment.m_movingColorIndex++;
 
             // Put the color index back to 0 if it excedes the amount of values in the
             // array.
-            if (m_movingColorIndex > (color.length - 1)) {
-                m_movingColorIndex = 0;
+            if (segment.m_movingColorIndex > (color.length - 1)) {
+                segment.m_movingColorIndex = 0;
             }
-            m_movingColorsCounter = 0;
+            segment.m_movingColorsCounter = 0;
 
         } else {
-            m_movingColorsCounter++;
+            segment.m_movingColorsCounter++;
         }
-
-        setData(m_LEDBuffer);
     }
 
     /**
@@ -325,8 +321,8 @@ public class CT_LEDStrip extends AddressableLED {
      * @param speed        the speed at which the snake will move.
      * @param colorPattern the preset color pattern to be shown on the led strip.
      */
-    public void doMovingColors(Speed speed, ColorPattern colorPattern) {
-        this.doMovingColors(speed, colorPattern.getPattern());
+    private void doMovingColors(LEDBufferSegment segment, Speed speed, ColorPattern colorPattern) {
+        this.doMovingColors(segment, speed, colorPattern.getPattern());
     }
 
     /**
@@ -341,8 +337,7 @@ public class CT_LEDStrip extends AddressableLED {
      *                          Length needs to be greater than 0 or the method will
      *                          not work.
      */
-    public void doSnake(Speed speed, Color backgroundColor, Color[] snakeColorPattern) {
-
+    private void doSnake(LEDBufferSegment segment, Speed speed, Color backgroundColor, Color[] snakeColorPattern) {
         if (snakeColorPattern.length == 0) {
             System.out.println(
                     "Snake length is zero, create a longer snake by making the snakeColorPattern array longer.");
@@ -350,19 +345,19 @@ public class CT_LEDStrip extends AddressableLED {
         }
 
         // Waits for the correct amount of loop iterations to complete.
-        if (hasWaited(speed, m_snakeCounter)) {
+        if (hasWaited(speed, segment.m_snakeCounter)) {
 
             // Loops through the whole LED strip.
-            for (int ledIndex = 0; ledIndex < m_LEDBuffer.getLength(); ledIndex++) {
+            for (int ledIndex = 0; ledIndex < segment.getLength(); ledIndex++) {
 
                 // Checks if the current led is the one that will start the snake.
-                if (ledIndex == m_snakeLoopIndex) {
+                if (ledIndex == segment.m_snakeLoopIndex) {
 
                     int endOfSnakeIndex = ledIndex + snakeColorPattern.length;
                     int currentColorIndex = 0;
 
                     // Loops through the entire snake.
-                    for (int snakeIndex = ledIndex; snakeIndex < m_LEDBuffer.getLength()
+                    for (int snakeIndex = ledIndex; snakeIndex < segment.getLength()
                             + snakeColorPattern.length; snakeIndex++) {
 
                         // If the current color index is outside the color array, that means the snake
@@ -375,11 +370,11 @@ public class CT_LEDStrip extends AddressableLED {
 
                         // Moves the new snake index back to the beginning when the snake goes over
                         // the end so it flows smoothly to the beginning again.
-                        if (snakeIndex > m_LEDBuffer.getLength() - 1) {
-                            newSnakeIndex -= m_LEDBuffer.getLength();
+                        if (snakeIndex > segment.getLength() - 1) {
+                            newSnakeIndex -= segment.getLength();
                         }
 
-                        m_LEDBuffer.setLED(newSnakeIndex, snakeColorPattern[currentColorIndex]);
+                        segment.setLED(newSnakeIndex, snakeColorPattern[currentColorIndex]);
                         currentColorIndex++;
 
                     }
@@ -388,24 +383,22 @@ public class CT_LEDStrip extends AddressableLED {
                     ledIndex = endOfSnakeIndex - 1;
 
                 } else {
-                    m_LEDBuffer.setLED(ledIndex, backgroundColor);
+                    segment.setLED(ledIndex, backgroundColor);
                 }
 
             }
-            m_snakeCounter = 0;
+            segment.m_snakeCounter = 0;
 
-            m_snakeLoopIndex++;
+            segment.m_snakeLoopIndex++;
 
             // Reset the snake loop index back to the beginning when it reaches the end.
-            if (m_snakeLoopIndex > m_LEDBuffer.getLength() - 1) {
-                m_snakeLoopIndex = 0;
+            if (segment.m_snakeLoopIndex > segment.getLength() - 1) {
+                segment.m_snakeLoopIndex = 0;
             }
 
         } else {
-            m_snakeCounter++;
+            segment.m_snakeCounter++;
         }
-
-        setData(m_LEDBuffer);
     }
 
     /**
@@ -418,8 +411,8 @@ public class CT_LEDStrip extends AddressableLED {
      *                        will travel over.
      * @param colorPattern    the preset color pattern to be shown on the led strip.
      */
-    public void doSnake(Speed speed, Color backgroundColor, ColorPattern pattern) {
-        this.doSnake(speed, backgroundColor, pattern.getPattern());
+    private void doSnake(LEDBufferSegment segment, Speed speed, Color backgroundColor, ColorPattern pattern) {
+        this.doSnake(segment, speed, backgroundColor, pattern.getPattern());
     }
 
     /**
@@ -428,29 +421,28 @@ public class CT_LEDStrip extends AddressableLED {
      * 
      * @param glowColor preset color
      */
-    public void doGlow(GlowColor glowColor) {
+    public void doGlow(LEDBufferSegment segment, GlowColor glowColor) {
+        if (hasWaited(Speed.Ludicrous, segment.m_glowCounter)) {
 
-        if (hasWaited(Speed.Ludicrous, m_glowCounter)) {
+            setGlowColor(segment, glowColor.getColorKey());
 
-            setGlowColor(glowColor.getColorKey());
-
-            if (!m_isGlowReverse) {
-                if (m_glowIndex < GLOW_MAX) {
-                    m_glowIndex += INCREASE_VALUE;
+            if (!segment.m_isGlowReverse) {
+                if (segment.m_glowIndex < GLOW_MAX) {
+                    segment. m_glowIndex += INCREASE_VALUE;
                 } else {
-                    m_isGlowReverse = true;
+                    segment.m_isGlowReverse = true;
                 }
             } else {
-                if (m_glowIndex > GLOW_MIN) {
-                    m_glowIndex -= INCREASE_VALUE;
+                if (segment.m_glowIndex > GLOW_MIN) {
+                    segment.m_glowIndex -= INCREASE_VALUE;
                 } else {
-                    m_isGlowReverse = false;
+                    segment.m_isGlowReverse = false;
                 }
             }
 
-            m_glowCounter = 0;
+            segment.m_glowCounter = 0;
         } else {
-            m_glowCounter++;
+            segment.m_glowCounter++;
         }
     }
 
@@ -458,31 +450,31 @@ public class CT_LEDStrip extends AddressableLED {
      * Sets the color with the glow index in the correct space to alter the color's
      * shade.
      */
-    private void setGlowColor(int colorKey) {
+    private void setGlowColor(LEDBufferSegment segment, int colorKey) {
         switch (colorKey) {
             case 0:
-                setColor(new Color(m_glowIndex, 0, 0));
+                setColor(segment, new Color(segment.m_glowIndex, 0, 0));
                 break;
             case 1:
-                setColor(new Color(0, m_glowIndex, 0));
+                setColor(segment, new Color(0, segment.m_glowIndex, 0));
                 break;
             case 2:
-                setColor(new Color(0, 0, m_glowIndex));
+                setColor(segment, new Color(0, 0, segment.m_glowIndex));
                 break;
             case 3:
-                setColor(new Color(m_glowIndex, m_glowIndex, 0));
+                setColor(segment, new Color(segment.m_glowIndex, segment.m_glowIndex, 0));
                 break;
             case 4:
-                setColor(new Color(m_glowIndex, 0, m_glowIndex));
+                setColor(segment, new Color(segment.m_glowIndex, 0, segment.m_glowIndex));
                 break;
             case 5:
-                setColor(new Color(0, m_glowIndex, m_glowIndex));
+                setColor(segment, new Color(0, segment.m_glowIndex, segment.m_glowIndex));
                 break;
             case 6:
-                setColor(new Color(m_glowIndex, m_glowIndex, m_glowIndex));
+                setColor(segment, new Color(segment.m_glowIndex, segment.m_glowIndex, segment.m_glowIndex));
                 break;
             default:
-                System.out.println("Error in CT_LEDStrip, unexpected glow color key found: " + colorKey);
+                System.out.println("Error in SegmentedLEDStrip, unexpected glow color key found: " + colorKey);
         }
     }
 
@@ -495,126 +487,19 @@ public class CT_LEDStrip extends AddressableLED {
      * https://docs.wpilib.org/en/stable/docs/software/actuators/addressable-leds.html
      * with a few modifcations to make it more readable and standard.
      */
-    public void doRainbow() {
+    public void doRainbow(LEDBufferSegment segment) {
         // For every pixel
-        for (int i = 0; i < m_LEDBuffer.getLength(); i++) {
+        for (int i = 0; i < segment.getLength(); i++) {
             // Calculate the hue - hue is easier for rainbows because the color
             // shape is a circle so only one value needs to precess
-            int hue = (m_rainbowFirstPixelHue + (i * 180 / m_LEDBuffer.getLength())) % 180;
+            int hue = (segment.m_rainbowFirstPixelHue + (i * 180 / segment.getLength())) % 180;
             // Set the value
-            m_LEDBuffer.setHSV(i, hue, 255, 128);
+            segment.setHSV(i, hue, 255, 128);
         }
 
         // Increase by to make the rainbow "move"
-        m_rainbowFirstPixelHue += 3;
+        segment.m_rainbowFirstPixelHue += 3;
         // Check bounds
-        m_rainbowFirstPixelHue %= 180;
-
-        setData(m_LEDBuffer);
-    }
-
-    /**
-     * Methods for adding patterns
-     */
-
-    public void addNormalPattern(String key, Color... colorPattern) {
-        patterns.add(new LEDKey(key, null, null, MovementType.Normal, null, colorPattern));
-    }
-
-    public void addMovingPattern(String key, Speed speed, Color... colorPattern) {
-        patterns.add(new LEDKey(key, speed, null, MovementType.Moving, null, colorPattern));
-    }
-
-    public void addSnakePattern(String key, Speed speed, Color backgroundColor, Color... colorPattern) {
-        patterns.add(new LEDKey(key, speed, backgroundColor, MovementType.Snake, null, colorPattern));
-    }
-
-    public void addRainbowPattern() {
-        patterns.add(new LEDKey("Rainbow", null, null, MovementType.Rainbow, null));
-    }
-
-    public void addGlowPattern(String key, GlowColor glowColor) {
-        patterns.add(new LEDKey(key, null, null, MovementType.Glow, glowColor));
-    }
-
-    /**
-     * Indexes the pattern list up or down
-     * 
-     * @param goRight if true, the index will be increased by 1. If false the index
-     *                will be decreased by 1
-     */
-    public void indexPattern(boolean goRight) {
-        reset();
-        if (goRight) {
-            if (patternsIndex == patterns.size() - 1) {
-                patternsIndex = 0;
-            } else {
-                patternsIndex++;
-            }
-        } else {
-            if (patternsIndex == 0) {
-                patternsIndex = patterns.size() - 1;
-            } else {
-                patternsIndex--;
-            }
-        }
-    }
-
-    /**
-     * Gets the current color pattern. This method should be called in a periodic to
-     * gain full effect.
-     * 
-     * @return the color method that will change the leds.
-     */
-    public Runnable getCurrentPattern() {
-        LEDKey curKey = patterns.get(patternsIndex);
-        MovementType movementType = curKey.movementType;
-        Speed speed = curKey.speed;
-        Color[] colorPattern = curKey.colorPattern;
-
-        if (movementType == MovementType.Normal) {
-            return () -> setColor(colorPattern);
-        } else if (movementType == MovementType.Moving) {
-            return () -> doMovingColors(speed, colorPattern);
-        } else if (movementType == MovementType.Snake) {
-            return () -> doSnake(speed, curKey.backgroundColor, colorPattern);
-        } else if (movementType == MovementType.Glow) {
-            return () -> doGlow(curKey.glowColor);
-        } else {
-            return () -> doRainbow();
-        }
-
-    }
-
-    /**
-     * Gets the key of the current pattern
-     * 
-     * @return the key first entered when the pattern was entered
-     */
-    public String getCurrentPatternString() {
-        return patterns.get(patternsIndex).key;
-    }
-}
-
-/**
- * The class that holds the key information for specific patterns
- */
-class LEDKey {
-
-    public Color[] colorPattern;
-    public Speed speed;
-    public Color backgroundColor;
-    public MovementType movementType;
-    public GlowColor glowColor;
-    public String key;
-
-    LEDKey(String key, Speed speed, Color backgroundColor, MovementType movementType, GlowColor glowColor,
-            Color... colorPattern) {
-        this.key = key;
-        this.glowColor = glowColor;
-        this.colorPattern = colorPattern;
-        this.speed = speed;
-        this.backgroundColor = backgroundColor;
-        this.movementType = movementType;
+        segment.m_rainbowFirstPixelHue %= 180;
     }
 }
