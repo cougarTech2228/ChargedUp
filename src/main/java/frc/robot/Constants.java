@@ -30,6 +30,13 @@ public final class Constants {
      */
     public static final double DRIVETRAIN_WHEELBASE_METERS = 0.810; // Measure and set wheelbase
 
+    // Based on a 4" swerve wheel
+    public final static double DRIVETRAIN_WHEEL_CIRCUMFERENCE_CM = 31.9278;
+
+    // Falcon ticks per rotation is 2048 * SDS Mk4i Gear Ratio of 6.75:1
+    // private final static double TICKS_PER_ROTATION = 2048.0 * 6.75; // 13824
+    public final static double DRIVETRAIN_TICKS_PER_ROTATION = 12900.00;
+
     // CAN ID Assignments
     // Since CAN messages are prioritized based on CAN ID, we are setting the CAN
 
@@ -48,7 +55,7 @@ public final class Constants {
 
     public static final int BACK_LEFT_MODULE_DRIVE_MOTOR_ID = 50; // Set back left drive motor ID
     public static final int BACK_LEFT_MODULE_STEER_MOTOR_ID = 51; // Set back left steer motor ID
-    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(294);
+    public static final double BACK_LEFT_MODULE_STEER_OFFSET = -Math.toRadians(204);
 
     public static final int BACK_RIGHT_MODULE_DRIVE_MOTOR_ID = 53; // Set back right drive motor ID
     public static final int BACK_RIGHT_MODULE_STEER_MOTOR_ID = 54; // Set back right steer motor ID
