@@ -83,7 +83,8 @@ public final class Constants {
     public static final double EXTENDO_MOTOR_SPEED = 0.75;
 
     public static final int GRIPPER_PCM_PORT = 0;
-    public static final int BRAKE_PCM_PORT = 1;
+    public static final int ELEVATOR_BRAKE_PCM_PORT = 1;
+    public static final int ARM_BRAKE_PCM_PORT = 2;
     public static final int LOW_SIDE_ANALOG_PORT = 0;
     public static final int HIGH_SIDE_ANALOG_PORT = 1;
     public static final int PCM_CAN_ID = 5;

@@ -319,7 +319,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                 new SequentialCommandGroup(
                         new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
                         new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
-                        new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home)));
+                        new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                        new InstantCommand(() -> m_pneumaticSubsystem.openGripper())));
 
         getArmLowButton().onTrue(
                 new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmDestination.low));

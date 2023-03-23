@@ -104,8 +104,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-    private static final double CLOSED_LOOP_RAMP = 0.5; // seconds
-    private static final double VOLTAGE_COMPENSATION_SATURATION = 11.0; // volts
+    private static final double CLOSED_LOOP_RAMP = 0.25; // seconds
+    private static final double VOLTAGE_COMPENSATION_SATURATION = 12.0; // volts
 
     private SwerveDriveOdometry m_odometry;
 
@@ -114,9 +114,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
     private boolean m_isBoostModeSet; // Cranks the drive speed to the max
 
     private static final double kXYNormalSpeed = 0.75;
-    private static final double kRotationalNormalSpeed = 0.4;
+    private static final double kRotationalNormalSpeed = 0.6;
     private static final double kXYBoostSpeed = 1.0;
-    private static final double kRotationalBoostSpeed = 0.5;
+    private static final double kRotationalBoostSpeed = 0.8;
 
     public DrivetrainSubsystem() {
         // ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");

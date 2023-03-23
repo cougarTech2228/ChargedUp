@@ -13,7 +13,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 public class PneumaticSubsystem extends SubsystemBase {
 
     private Solenoid m_gripper;
-    private Solenoid m_brake;
+    private Solenoid m_elevatorBrake;
+    private Solenoid m_armBrake;
 
     PneumaticHub m_pneumaticHub;
     private ShuffleboardTab m_sbTab;
@@ -22,7 +23,8 @@ public class PneumaticSubsystem extends SubsystemBase {
         m_pneumaticHub = new PneumaticHub(Constants.PCM_CAN_ID);
 
         m_gripper = m_pneumaticHub.makeSolenoid(Constants.GRIPPER_PCM_PORT);
-        m_brake = m_pneumaticHub.makeSolenoid(Constants.BRAKE_PCM_PORT);
+        m_elevatorBrake = m_pneumaticHub.makeSolenoid(Constants.ELEVATOR_BRAKE_PCM_PORT);
+        m_armBrake = m_pneumaticHub.makeSolenoid(Constants.ARM_BRAKE_PCM_PORT);
 
         m_sbTab = Shuffleboard.getTab("Pneumatics (Debug)");
 
@@ -60,22 +62,24 @@ public class PneumaticSubsystem extends SubsystemBase {
         return !m_gripper.get();
     }
 
-    public void openBrake() {
-        if (!brakeIsOpen()) {
-            System.out.println("Open Brake");
-            m_brake.set(true);
-        }
+    public void openElevatorBrake() {
+        System.out.println("Open Elevator Brake");
+        m_elevatorBrake.set(true);
     }
 
-    public void closeBrake() {
-        if (brakeIsOpen()) {
-            System.out.println("Close Brake");
-            m_brake.set(false);
-        }
+    public void closeElevatorBrake() {
+        System.out.println("Close Elevator Brake");
+        m_elevatorBrake.set(false);
     }
 
-    public boolean brakeIsOpen() {
-        return m_brake.get();
+    public void openArmBrake() {
+        System.out.println("Open Arm Brake");
+        m_armBrake.set(true);
+    }
+
+    public void closeArmBrake() {
+        System.out.println("Close Arm Brake");
+        m_armBrake.set(false);
     }
 
     public double getHighSidePressure() {
@@ -91,14 +95,6 @@ public class PneumaticSubsystem extends SubsystemBase {
             closeGripper();
         } else {
             openGripper();
-        }
-    }
-
-    public void toggleBrake() {
-        if (brakeIsOpen()) {
-            closeBrake();
-        } else {
-            openBrake();
         }
     }
 }

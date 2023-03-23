@@ -69,7 +69,7 @@ public class Robot extends TimedRobot {
         RobotContainer.getDrivetrainSubsystem().stopMotors();
         RobotContainer.getDrivetrainSubsystem().setMotorsToCoast();
         RobotContainer.getPneumaticSubsystem().closeGripper();
-        RobotContainer.getPneumaticSubsystem().openBrake();
+        RobotContainer.getPneumaticSubsystem().openElevatorBrake();
     }
 
     @Override

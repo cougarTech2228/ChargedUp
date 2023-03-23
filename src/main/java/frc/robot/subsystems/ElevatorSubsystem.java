@@ -196,7 +196,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
         if (pidController.atGoal()) {
             stopElevator();
-            m_pneumaticSubsystem.closeBrake();
+            m_pneumaticSubsystem.closeElevatorBrake();
             disable();
         }
     }
@@ -214,7 +214,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     }
 
     public void setElevatorPosition(double height) {
-        m_pneumaticSubsystem.openBrake();
+        m_pneumaticSubsystem.openElevatorBrake();
         if (height > m_elevatorHeight) {
             m_elevatorState = ElevatorState.raising;
         } else if (height < m_elevatorHeight) {

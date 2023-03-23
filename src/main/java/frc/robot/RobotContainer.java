@@ -58,7 +58,7 @@ public class RobotContainer {
     
     private final static ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem(m_pneumaticSubsystem);
 
-    private final static ExtendoSubsystem m_extendoSubsystem = new ExtendoSubsystem();
+    private final static ExtendoSubsystem m_extendoSubsystem = new ExtendoSubsystem(m_pneumaticSubsystem);
 
     private final static ButtonBoardSubsystem m_buttonBoardSubsystem = new ButtonBoardSubsystem(m_elevatorSubsystem,
             m_extendoSubsystem, m_pneumaticSubsystem, m_drivetrainSubsystem);

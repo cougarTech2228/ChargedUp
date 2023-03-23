@@ -20,6 +20,8 @@ import frc.robot.utils.CT_DigitalInput;
 
 public class ExtendoSubsystem extends ProfiledPIDSubsystem {
 
+    private PneumaticSubsystem m_pneumaticSubsystem;
+
     private WPI_TalonFX m_extendoMotor;
     private ShuffleboardTab m_sbTab;
 
@@ -38,8 +40,8 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double kD = 0.0;
     private static final double kDt = 0.2;
 
-    private static final double kMaxVelocityTicksPerSecond = 150;
-    private static final double kMaxAccelerationTicksPerSecSquared = 8;
+    private static final double kMaxVelocityTicksPerSecond = 200;
+    private static final double kMaxAccelerationTicksPerSecSquared = 20;
     private static final double kMotorVoltageLimit = 12.0;
 
     private static final double kPositionErrorTolerance = 10.0;
@@ -76,8 +78,10 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         retracting
     };
 
-    public ExtendoSubsystem() {
+    public ExtendoSubsystem(PneumaticSubsystem pneumaticSubsystem) {
         super(pidController, 0);
+
+        m_pneumaticSubsystem = pneumaticSubsystem;
 
         pidController.setTolerance(kPositionErrorTolerance);
 
@@ -192,6 +196,12 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
             m_extendoState = ExtendoState.stopped;
             System.out.println("Extendo home limit reached");
         }
+
+        if (pidController.atGoal()) {
+            stopExtending();
+            m_pneumaticSubsystem.closeArmBrake();
+            //disable();
+        }
     }
 
     public void resetSensorPosition() {
@@ -201,6 +211,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     public void retractToHomePosition() {
         // If the arm is safely high enough to reel in to its home position ...
         if (RobotContainer.getElevatorSubsystem().getMeasurement() >= ElevatorSubsystem.HEIGHT_HOME) {
+            m_pneumaticSubsystem.closeArmBrake();
             // Rewind the motor so until it hits the proximity sensor
             m_extendoMotor.set(-0.10);
         } else {
@@ -209,7 +220,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     }
 
     public void goToDistance(double distance) {
-
+        m_pneumaticSubsystem.closeArmBrake();
         // if (distance > m_currentArmReach) {
         //     m_extendoState = ExtendoState.extending;
         // } else if (distance < m_currentArmReach) {
@@ -237,6 +248,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
 
     private void stopExtending() {
         m_extendoMotor.stopMotor();
+        m_pneumaticSubsystem.closeArmBrake();
         m_extendoMotor.setNeutralMode(NeutralMode.Brake);
         //m_extendoState = ExtendoState.stopped;
         System.out.println("stopping extendo arm");
