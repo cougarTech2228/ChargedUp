@@ -4,6 +4,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
+import static frc.robot.Constants.DRIVETRAIN_WHEEL_CIRCUMFERENCE_CM;
+import static frc.robot.Constants.DRIVETRAIN_TICKS_PER_ROTATION;
+
 public class DriveFwdRevCommand extends CommandBase {
     private double m_distanceCM;
     private double m_speed;
@@ -12,13 +15,6 @@ public class DriveFwdRevCommand extends CommandBase {
     double m_currentEncoderCount;
     double m_startEncoderCount;
     double m_distanceInEncoderCounts;
-
-    // Based on a 4" swerve wheel
-    private final static double WHEEL_CIRCUMFERENCE_CM = 31.9278;
-
-    // Falcon ticks per rotation is 2048 * SDS Mk4i Gear Ratio of 6.75:1
-    // private final static double TICKS_PER_ROTATION = 2048.0 * 6.75; // 13824
-    private final static double TICKS_PER_ROTATION = 12900.00;
 
     // We need to increase the frequency of the encoder status messages
     // on the drive motors to get a consistently accurate 'distance
@@ -60,7 +56,7 @@ public class DriveFwdRevCommand extends CommandBase {
         // in order to try to get more accuracy in the encoder tick count
         m_drivetrainSubsystem.setDriveMotorStatusFramePeriod(FAST_STATUS_FRAME_PERIOD);
 
-        m_distanceInEncoderCounts = ((m_distanceCM / WHEEL_CIRCUMFERENCE_CM) * TICKS_PER_ROTATION);
+        m_distanceInEncoderCounts = ((m_distanceCM / DRIVETRAIN_WHEEL_CIRCUMFERENCE_CM) * DRIVETRAIN_TICKS_PER_ROTATION);
 
         m_currentEncoderCount = m_drivetrainSubsystem.getEncoderCount();
         m_startEncoderCount = m_currentEncoderCount;

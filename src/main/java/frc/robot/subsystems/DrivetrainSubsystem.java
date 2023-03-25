@@ -104,8 +104,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private ChassisSpeeds m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
 
-    private static final double CLOSED_LOOP_RAMP = 0.25; // seconds
-    private static final double VOLTAGE_COMPENSATION_SATURATION = 12.0; // volts
+    private static final double CLOSED_LOOP_RAMP = 0; // seconds
+    private static final double VOLTAGE_COMPENSATION_SATURATION = 12;//11.0; // volts
 
     private SwerveDriveOdometry m_odometry;
 
@@ -113,10 +113,10 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private boolean m_isBoostModeSet; // Cranks the drive speed to the max
 
-    private static final double kXYNormalSpeed = 0.75;
-    private static final double kRotationalNormalSpeed = 0.6;
+    private static final double kXYNormalSpeed = 1;//0.75;
+    private static final double kRotationalNormalSpeed = 0.4;
     private static final double kXYBoostSpeed = 1.0;
-    private static final double kRotationalBoostSpeed = 0.8;
+    private static final double kRotationalBoostSpeed = 0.6;
 
     public DrivetrainSubsystem() {
         // ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -210,8 +210,8 @@ public class DrivetrainSubsystem extends SubsystemBase {
         motor.configClosedloopRamp(CLOSED_LOOP_RAMP);
         motor.configVoltageCompSaturation(VOLTAGE_COMPENSATION_SATURATION);
         motor.enableVoltageCompensation(true);
-        motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 20, 25, 1.0));
-        motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 10, 15, 0.5));
+        motor.configStatorCurrentLimit(new StatorCurrentLimitConfiguration(true, 35, 40, 1.0));
+        motor.configSupplyCurrentLimit(new SupplyCurrentLimitConfiguration(true, 70, 75, 1.0));
     }
 
     // The following code is "inspired" from Team Spectrum 3847 to get swerve to
@@ -343,26 +343,15 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public void setMotorsToCoast() {
         // System.out.println("setMotorsToCoast");
-        // m_frontLeftDriveMotor.setNeutralMode(NeutralMode.Coast);
-        // m_frontRightDriveMotor.setNeutralMode(NeutralMode.Coast);
-        // m_backLeftDriveMotor.setNeutralMode(NeutralMode.Coast);
-        // m_backRightDriveMotor.setNeutralMode(NeutralMode.Coast);
+        m_frontLeftDriveMotor.setNeutralMode(NeutralMode.Coast);
+        m_frontRightDriveMotor.setNeutralMode(NeutralMode.Coast);
+        m_backLeftDriveMotor.setNeutralMode(NeutralMode.Coast);
+        m_backRightDriveMotor.setNeutralMode(NeutralMode.Coast);
 
-        // m_frontLeftSteerMotor.setNeutralMode(NeutralMode.Coast);
-        // m_frontRightSteerMotor.setNeutralMode(NeutralMode.Coast);
-        // m_backLeftSteerMotor.setNeutralMode(NeutralMode.Coast);
-        // m_backRightSteerMotor.setNeutralMode(NeutralMode.Coast);
-
-        ((TalonFX)m_frontRightModule.getDriveMotor()).setNeutralMode(NeutralMode.Coast);
-        ((TalonFX)m_frontRightModule.getSteerMotor()).setNeutralMode(NeutralMode.Coast);
-        ((TalonFX)m_frontLeftModule.getDriveMotor()).setNeutralMode(NeutralMode.Coast);
-        ((TalonFX)m_frontLeftModule.getSteerMotor()).setNeutralMode(NeutralMode.Coast);
-
-        ((TalonFX)m_backRightModule.getDriveMotor()).setNeutralMode(NeutralMode.Coast);
-        ((TalonFX)m_backRightModule.getSteerMotor()).setNeutralMode(NeutralMode.Coast);
-        ((TalonFX)m_backLeftModule.getDriveMotor()).setNeutralMode(NeutralMode.Coast);
-        ((TalonFX)m_backLeftModule.getSteerMotor()).setNeutralMode(NeutralMode.Coast);
-
+        m_frontLeftSteerMotor.setNeutralMode(NeutralMode.Coast);
+        m_frontRightSteerMotor.setNeutralMode(NeutralMode.Coast);
+        m_backLeftSteerMotor.setNeutralMode(NeutralMode.Coast);
+        m_backRightSteerMotor.setNeutralMode(NeutralMode.Coast);
     }
 
     public void setMotorsToBrake() {
@@ -417,6 +406,17 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     public Pose2d getPose() {
         return m_odometry.getPoseMeters();
+    }
+
+    // set the drive motors using raw voltage values and angles in radians
+    // note, if setPathPlannerDriving is not set, these values will get overridden in the periodic
+    public void driveRaw(double flVoltage, double frVoltage, double blVoltage, double brVoltage,
+                         double flAngle, double frAngle, double blAngle, double brAngle)
+    {
+        m_frontLeftModule.set(flVoltage, flAngle);
+        m_frontRightModule.set(frVoltage, frAngle);
+        m_backLeftModule.set(blVoltage, blAngle);
+        m_backRightModule.set(brVoltage, brAngle);
     }
 
     public void setModuleStates(SwerveModuleState[] states) {
