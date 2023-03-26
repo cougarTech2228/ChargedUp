@@ -52,9 +52,10 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     public static final double DISTANCE_HOME = -30.0;
     public static final double DISTANCE_LOW = 160.0;
     public static final double DISTANCE_MIDDLE = 230.0;
-    public static final double DISTANCE_HIGH = 875.0;
+    public static final double DISTANCE_HIGH = 840.0;
     public static final double DISTANCE_SHELF = 12.5;
     public static final double DISTANCE_CUBE = -30.0;
+    public static final double DISTANCE_CONE_FLOOR = 130;
 
     private static final double MAX_DISTANCE = 950.0;
 
@@ -241,6 +242,9 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     }
 
     public boolean atGoal() {
+        if ( (pidController.getGoal().position == DISTANCE_HOME) && isExtendoHomeLimitReached() ){
+            return true;
+        }
         return pidController.atGoal();
     }
 

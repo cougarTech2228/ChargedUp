@@ -22,27 +22,38 @@ public class SetArmReachCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        System.out.println("Initializing SetArmReachCommand");
+        System.out.println("Initializing SetArmReachCommand: " + m_destination);
 
         m_startTime = RobotController.getFPGATime();
+        double distance = ExtendoSubsystem.DISTANCE_HOME;
 
-        if (m_destination == Constants.ArmDestination.home) {
-            m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_HOME);
-        } else if (m_destination == Constants.ArmDestination.low) {
-            m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_LOW);
-        } else if (m_destination == Constants.ArmDestination.middle) {
-            m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_MIDDLE);
-        } else if (m_destination == Constants.ArmDestination.high) {
-            m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_HIGH);
-        } else if (m_destination == Constants.ArmDestination.shelf) {
-            m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_SHELF);
-        } else if (m_destination == Constants.ArmDestination.transit) {
-            m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_TRANSIT);
-        } else if (m_destination == Constants.ArmDestination.cube) {
-            m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_CUBE);
-        } else {
-            System.out.println("SetArmHeightCommand - Invalid ArmDestination value");
+        switch (m_destination) {
+            case cone_floor:
+                distance = ExtendoSubsystem.DISTANCE_CONE_FLOOR;
+                break;
+            case cube:
+                distance = ExtendoSubsystem.DISTANCE_CUBE;
+                break;
+            case high:
+                distance = ExtendoSubsystem.DISTANCE_HIGH;
+                break;
+            case home:
+                distance = ExtendoSubsystem.DISTANCE_HOME;
+                break;
+            case low:
+                distance = ExtendoSubsystem.DISTANCE_LOW;
+                break;
+            case middle:
+                distance = ExtendoSubsystem.DISTANCE_MIDDLE;
+                break;
+            case shelf:
+                distance = ExtendoSubsystem.DISTANCE_SHELF;
+                break;
+            case transit:
+                distance = ExtendoSubsystem.DISTANCE_TRANSIT;
+                break;
         }
+        m_extendoSubsystem.goToDistance(distance);
     }
 
     @Override
@@ -58,8 +69,7 @@ public class SetArmReachCommand extends CommandBase {
             return true;
         }
         
-        return (m_extendoSubsystem.atGoal() ||
-                (m_extendoSubsystem.isExtendoHomeLimitReached() && m_extendoSubsystem.isStopped()));
+        return m_extendoSubsystem.atGoal();
     }
 
     @Override

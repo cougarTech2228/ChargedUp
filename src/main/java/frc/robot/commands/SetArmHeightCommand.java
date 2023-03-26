@@ -19,25 +19,35 @@ public class SetArmHeightCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        System.out.println("Initializing SetArmHeightCommand");
-
-        if (m_destination == Constants.ArmDestination.home) {
-            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_HOME);
-        } else if (m_destination == Constants.ArmDestination.low) {
-            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_LOW);
-        } else if (m_destination == Constants.ArmDestination.middle) {
-            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_MIDDLE);
-        } else if (m_destination == Constants.ArmDestination.high) {
-            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_HIGH);
-        } else if (m_destination == Constants.ArmDestination.shelf) {
-            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_SHELF);
-        } else if (m_destination == Constants.ArmDestination.transit) {
-            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_TRANSIT);
-        } else if (m_destination == Constants.ArmDestination.cube) {
-            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_CUBE);
-        } else {
-            System.out.println("SetArmHeightCommand - Invalid ArmDestination value");
+        System.out.println("Initializing SetArmHeightCommand: " + m_destination);
+        double height = 0;
+        switch (m_destination) {
+            case cone_floor:
+                height = ElevatorSubsystem.HEIGHT_CONE_FLOOR;
+                break;
+            case cube:
+                height = ElevatorSubsystem.HEIGHT_CUBE;
+                break;
+            case high:
+                height = ElevatorSubsystem.HEIGHT_HIGH;
+                break;
+            case home:
+                height = ElevatorSubsystem.HEIGHT_HOME;
+                break;
+            case low:
+                height = ElevatorSubsystem.HEIGHT_LOW;
+                break;
+            case middle:
+                height = ElevatorSubsystem.HEIGHT_MIDDLE;
+                break;
+            case shelf:
+                height = ElevatorSubsystem.HEIGHT_SHELF;
+                break;
+            case transit:
+                height = ElevatorSubsystem.HEIGHT_TRANSIT;
+                break;
         }
+        m_elevatorSubsystem.setElevatorPosition(height);
     }
 
     @Override

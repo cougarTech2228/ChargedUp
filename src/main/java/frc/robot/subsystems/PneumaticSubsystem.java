@@ -64,22 +64,22 @@ public class PneumaticSubsystem extends SubsystemBase {
     }
 
     public void openElevatorBrake() {
-        System.out.println("Open Elevator Brake");
+        // System.out.println("Open Elevator Brake");
         m_elevatorBrake.set(true);
     }
 
     public void closeElevatorBrake() {
-        System.out.println("Close Elevator Brake");
+        // System.out.println("Close Elevator Brake");
         m_elevatorBrake.set(false);
     }
 
     public void openArmBrake() {
-        System.out.println("Open Arm Brake");
+        // System.out.println("Open Arm Brake");
         m_armBrake.set(true);
     }
 
     public void closeArmBrake() {
-        System.out.println("Close Arm Brake");
+        // System.out.println("Close Arm Brake");
         m_armBrake.set(false);
     }
 

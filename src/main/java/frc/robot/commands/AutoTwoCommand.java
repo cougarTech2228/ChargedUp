@@ -9,6 +9,7 @@ import frc.robot.Constants.ArmDestination;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtendoSubsystem;
+import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 
 public class AutoTwoCommand extends SequentialCommandGroup {
@@ -21,7 +22,8 @@ public class AutoTwoCommand extends SequentialCommandGroup {
 
     public AutoTwoCommand(ElevatorSubsystem elevatorSubsystem, ExtendoSubsystem extendoSubsystem,
             DrivetrainSubsystem drivetrainSubystem,
-            PneumaticSubsystem pneumaticSubsystem) {
+            PneumaticSubsystem pneumaticSubsystem,
+            LEDStripSubsystem ledStripSubsystem) {
 
         m_elevatorSubsystem = elevatorSubsystem;
         m_extendoSubsystem = extendoSubsystem;
@@ -68,7 +70,7 @@ public class AutoTwoCommand extends SequentialCommandGroup {
                     new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
                     new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home)
                 ),
-                new BalanceCommandEnhanced(drivetrainSubystem)
+                new BalanceCommandEnhanced(drivetrainSubystem, ledStripSubsystem)
             ),
             new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()),
             new InstantCommand(() -> printEndCommand())

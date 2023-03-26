@@ -154,7 +154,7 @@ public class RobotContainer {
                     m_pneumaticSubsystem);
         } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position2) {
             return new AutoTwoCommand(m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
-                    m_pneumaticSubsystem);
+                    m_pneumaticSubsystem, m_ledStripSubsystem);
         } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position3) {
             return new AutoThreeCommand(m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
                     m_pneumaticSubsystem);

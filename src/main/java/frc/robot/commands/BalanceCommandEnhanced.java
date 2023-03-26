@@ -26,7 +26,7 @@ public class BalanceCommandEnhanced extends CommandBase{
     private static final double GOING_BACK_FLAT_SPEED = .35;
     private static final double RAMP_ANGLE = 10;
 
-    private final double kP = 0.12;
+    private final double kP = 0.09;
     private final double kI = 0.00;
     private final double kD = 0.0;
 
@@ -48,8 +48,9 @@ public class BalanceCommandEnhanced extends CommandBase{
     private state m_currentState = state.GOING_BACK_FLAT;
     
     
-    public BalanceCommandEnhanced(DrivetrainSubsystem drivetrain){
+    public BalanceCommandEnhanced(DrivetrainSubsystem drivetrain, LEDStripSubsystem ledStripSubsystem){
         m_drivetrainSubsystem = drivetrain;
+        m_ledStripSubsystem = ledStripSubsystem;
         addRequirements(m_drivetrainSubsystem);
 
         m_pidController = new PIDController(kP, kI, kD);
@@ -88,7 +89,6 @@ public class BalanceCommandEnhanced extends CommandBase{
             case IDLE:
                 /// start of the match, bot is assumed to be lined up with the grid after placing a cone
                 stateTransition(state.GOING_OUT_FLAT);
-                // m_drivetrainSubsystem.setPathPlannerDriving(true);
                 break;
 
             case GOING_OUT_FLAT:
@@ -168,7 +168,6 @@ public class BalanceCommandEnhanced extends CommandBase{
                 */
 
                 double voltage = m_pidController.calculate(m_drivetrainSubsystem.getRoll());
-                // TODO: invert this?
                 voltage = MathUtil.clamp(voltage, -4, 4);
 
                 //System.out.println("Auto engage PID voltage: " + voltage);
@@ -193,6 +192,8 @@ public class BalanceCommandEnhanced extends CommandBase{
                             )
                         );
                         stateTransition(state.ENGAGED);
+                        m_drivetrainSubsystem.stopMotors();
+                        m_ledStripSubsystem.autoPretty();
                     }
                 } else {
                     System.out.println("roll: " + m_drivetrainSubsystem.getRoll());
@@ -202,43 +203,13 @@ public class BalanceCommandEnhanced extends CommandBase{
 
             case ENGAGED:
                 // we're done.
-                // m_drivetrainSubsystem.driveRaw(0, 0, 0, 0,
-                // Math.toRadians(45), Math.toRadians(-45),
-                // Math.toRadians(-45), Math.toRadians(45));
-                m_drivetrainSubsystem.stopMotors();
-                m_ledStripSubsystem.autoPretty();
                 break;
         }
-
-
-        // double roll = m_drivetrainSubsystem.getRoll();
-        // double speed = 0.1;
-        // System.out.println("Roll: " + m_drivetrainSubsystem.getRoll() + "; Pitch: " + m_drivetrainSubsystem.getPitch() + "; Yaw: " + m_drivetrainSubsystem.getYaw());
-
-        // if(roll > 0){
-        //     speed = -speed;
-        // }
-
-        // if(!(Math.abs(roll) < 2)){
-        //     System.out.println("Drive: " + speed);
-        //     m_drivetrainSubsystem.drive(ChassisSpeeds.fromFieldRelativeSpeeds(speed * DrivetrainSubsystem.MAX_VELOCITY_METERS_PER_SECOND,
-        //             0.0,
-        //             0.0,
-        //             m_drivetrainSubsystem.getGyroscopeRotation()));
-        //     m_drivetrainSubsystem.getEncoderCount();
-        // } else{
-        //     m_drivetrainSubsystem.stopMotors();
-        //     m_drivetrainSubsystem.setMotorsToBrake();
-        // }
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        // m_drivetrainSubsystem.setPathPlannerDriving(false);
-        //m_drivetrainSubsystem.stopMotors();
-        //m_drivetrainSubsystem.setMotorsToBrake();
-
         System.out.println("BalanceCommand finished");
     }
 

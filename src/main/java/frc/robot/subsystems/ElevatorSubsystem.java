@@ -65,10 +65,12 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     public static final double HEIGHT_HOME = 18.5;
     public static final double HEIGHT_LOW = 27;
     public static final double HEIGHT_TRANSIT = 24.7;
-    public static final double HEIGHT_MIDDLE = 37.0;
+    public static final double HEIGHT_MIDDLE = 37.5;
     public static final double HEIGHT_HIGH = 40;
     public static final double HEIGHT_SHELF = 38.6;
     public static final double HEIGHT_CUBE = 21.3;
+    public static final double HEIGHT_CONE_FLOOR = 20.2;
+
 
 
     private static final double HEIGHT_MAX = 45;
@@ -204,6 +206,9 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     }
 
     public boolean atGoal() {
+        if (pidController.getGoal().position == HEIGHT_HOME) {
+            return true;
+        }
         return pidController.atGoal();
     }
 

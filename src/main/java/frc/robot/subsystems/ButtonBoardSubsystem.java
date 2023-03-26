@@ -92,7 +92,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         return new JoystickButton(m_joystick1, 4);
     }
 
-    private JoystickButton getArmSensorGripButton() {
+    private JoystickButton getConeFloorButton() {
         return new JoystickButton(m_joystick1, 5);
     }
 
@@ -342,13 +342,28 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                             new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
                             new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmDestination.cube),
                             new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-                            new WaitCommand(.5),
+                            new WaitCommand(.35),
                             new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.transit)
                         ).schedule();
                     }
                 })
         );
-          
+        
+        getConeFloorButton().onTrue(
+            new InstantCommand(() -> {
+                if(m_elevatorSubsystem.getMeasurement() > 20){
+                    new SequentialCommandGroup(
+                        new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                        //new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmDestination.cone_floor),
+                        new SetArmReachCommand(m_extendoSubsystem, ArmDestination.cone_floor),
+                        new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.cone_floor),
+                        new InstantCommand(() -> m_pneumaticSubsystem.openGripper())
+                        // new WaitCommand(.35),
+                        // new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.transit)
+                    ).schedule();
+                }
+            })
+        );
         // getArmSensorGripButton().onTrue(
         //         new SensorGrabbing().end(true),
         //         new SensorGrabbing());
