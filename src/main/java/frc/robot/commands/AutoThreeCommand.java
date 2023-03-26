@@ -36,18 +36,18 @@ public class AutoThreeCommand extends SequentialCommandGroup {
             new InstantCommand(() -> printStartCommand()),
             new InstantCommand(m_drivetrainSubsystem::zeroGyroscope),
             new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
-            // new SequentialCommandGroup(
-            //     new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.high),
-            //     new SetArmReachCommand(m_extendoSubsystem, ArmDestination.high),
-            //     new InstantCommand(() -> m_pneumaticSubsystem.openGripper())
-            // ),
+            new SequentialCommandGroup(
+                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.high),
+                new SetArmReachCommand(m_extendoSubsystem, ArmDestination.high),
+                new InstantCommand(() -> m_pneumaticSubsystem.openGripper())
+            ),
             new ParallelCommandGroup(
-                // new SequentialCommandGroup(
-                //     new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
-                //     new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-                //     new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
-                //     new InstantCommand(() -> m_pneumaticSubsystem.openGripper())
-                // ),
+                new SequentialCommandGroup(
+                    new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
+                    new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                    new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                    new InstantCommand(() -> m_pneumaticSubsystem.openGripper())
+                ),
                 new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto3_NoReturn", m_eventMap,
                         4, 3, true)
             ),

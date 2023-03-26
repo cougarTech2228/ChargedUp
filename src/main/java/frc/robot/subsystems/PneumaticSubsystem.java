@@ -17,10 +17,13 @@ public class PneumaticSubsystem extends SubsystemBase {
     private Solenoid m_armBrake;
 
     PneumaticHub m_pneumaticHub;
+    LEDStripSubsystem m_ledStripSubsystem;
     private ShuffleboardTab m_sbTab;
 
-    public PneumaticSubsystem() {
+    public PneumaticSubsystem(LEDStripSubsystem ledStripSubsystem) {
         m_pneumaticHub = new PneumaticHub(Constants.PCM_CAN_ID);
+
+        m_ledStripSubsystem = ledStripSubsystem;
 
         m_gripper = m_pneumaticHub.makeSolenoid(Constants.GRIPPER_PCM_PORT);
         m_elevatorBrake = m_pneumaticHub.makeSolenoid(Constants.ELEVATOR_BRAKE_PCM_PORT);
@@ -45,17 +48,15 @@ public class PneumaticSubsystem extends SubsystemBase {
     }
 
     public void openGripper() {
-        if (!gripperIsOpen()) {
-            System.out.println("Open Gripper");
-            m_gripper.set(false);
-        }
+        System.out.println("Open Gripper");
+        m_gripper.set(false);
+        m_ledStripSubsystem.gripperLights(true);
     }
 
     public void closeGripper() {
-        if (gripperIsOpen()) {
-            System.out.println("Close Gripper");
-            m_gripper.set(true);
-        }
+        System.out.println("Close Gripper");
+        m_gripper.set(true);
+        m_ledStripSubsystem.gripperLights(false);
     }
 
     public boolean gripperIsOpen() {

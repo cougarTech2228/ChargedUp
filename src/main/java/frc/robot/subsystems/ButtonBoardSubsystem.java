@@ -3,13 +3,17 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.ConditionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmDestination;
 import frc.robot.commands.DriveFwdRevCommand;
 import frc.robot.commands.ParallelArmCommand;
 import frc.robot.commands.RotateBotCommand;
+import frc.robot.commands.SensorGrabbingCommand;
 import frc.robot.commands.SetArmHeightCommand;
 import frc.robot.commands.SetArmReachCommand;
 import frc.robot.commands.StrafeCommand;
@@ -88,7 +92,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         return new JoystickButton(m_joystick1, 4);
     }
 
-    private JoystickButton getArmTBD1Button() {
+    private JoystickButton getArmSensorGripButton() {
         return new JoystickButton(m_joystick1, 5);
     }
 
@@ -96,7 +100,7 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         return new JoystickButton(m_joystick1, 6);
     }
 
-    private JoystickButton getArmTBD2Button() {
+    private JoystickButton getPickUpCubeButton() {
         return new JoystickButton(m_joystick1, 7);
     }
 
@@ -330,6 +334,24 @@ public class ButtonBoardSubsystem extends SubsystemBase {
 
         getArmHighButton().onTrue(
                 new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmDestination.high));
+        
+        getPickUpCubeButton().onTrue(
+                new InstantCommand(() -> {
+                    if(m_elevatorSubsystem.getMeasurement() > 20){
+                        new SequentialCommandGroup(
+                            new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
+                            new ParallelArmCommand(m_extendoSubsystem, m_elevatorSubsystem, ArmDestination.cube),
+                            new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                            new WaitCommand(.5),
+                            new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.transit)
+                        ).schedule();
+                    }
+                })
+        );
+          
+        // getArmSensorGripButton().onTrue(
+        //         new SensorGrabbing().end(true),
+        //         new SensorGrabbing());
 
         // **********************************
         // Bot Rotation Handling

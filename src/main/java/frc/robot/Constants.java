@@ -70,7 +70,8 @@ public final class Constants {
         middle,
         low,
         home,
-        transit
+        transit,
+        cube
     }
 
     public static final int ELEVATOR_MOTOR_ID = 58;
@@ -88,6 +89,8 @@ public final class Constants {
     public static final int LOW_SIDE_ANALOG_PORT = 0;
     public static final int HIGH_SIDE_ANALOG_PORT = 1;
     public static final int PCM_CAN_ID = 5;
+
+    public static final int GRABBING_SENSOR_DIO = 4;
 
     // Read left to right from corresponding driver station
     public enum AutoPosition {

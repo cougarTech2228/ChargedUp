@@ -31,7 +31,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private double m_currentArmReach;
 
     private static final double kSVolts = 0;
-    private static final double kGVolts = -0.5;
+    private static final double kGVolts = 0; //-0.5;
     private static final double kVVolt = 0;
     private static final double kAVolt = 0;
 
@@ -44,16 +44,17 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double kMaxAccelerationTicksPerSecSquared = 20;
     private static final double kMotorVoltageLimit = 12.0;
 
-    private static final double kPositionErrorTolerance = 10.0;
+    private static final double kPositionErrorTolerance = 5.0;
 
     private static final double MIN_DISTANCE = -50.0;
 
     public static final double DISTANCE_TRANSIT = 12.5;
     public static final double DISTANCE_HOME = -30.0;
     public static final double DISTANCE_LOW = 160.0;
-    public static final double DISTANCE_MIDDLE = 207.0;
-    public static final double DISTANCE_HIGH = 798.0;
+    public static final double DISTANCE_MIDDLE = 230.0;
+    public static final double DISTANCE_HIGH = 875.0;
     public static final double DISTANCE_SHELF = 12.5;
+    public static final double DISTANCE_CUBE = -30.0;
 
     private static final double MAX_DISTANCE = 950.0;
 
@@ -193,6 +194,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         if (isExtendoHomeLimitReached() && (m_extendoState == ExtendoState.retracting)) {
             stopExtending();
             disable();
+            m_pneumaticSubsystem.closeArmBrake();
             m_extendoState = ExtendoState.stopped;
             System.out.println("Extendo home limit reached");
         }
@@ -200,7 +202,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         if (pidController.atGoal()) {
             stopExtending();
             m_pneumaticSubsystem.closeArmBrake();
-            //disable();
+            disable();
         }
     }
 
@@ -220,7 +222,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     }
 
     public void goToDistance(double distance) {
-        m_pneumaticSubsystem.closeArmBrake();
+        m_pneumaticSubsystem.openArmBrake();
         // if (distance > m_currentArmReach) {
         //     m_extendoState = ExtendoState.extending;
         // } else if (distance < m_currentArmReach) {
@@ -251,6 +253,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         m_pneumaticSubsystem.closeArmBrake();
         m_extendoMotor.setNeutralMode(NeutralMode.Brake);
         //m_extendoState = ExtendoState.stopped;
+        disable();
         System.out.println("stopping extendo arm");
     }
 

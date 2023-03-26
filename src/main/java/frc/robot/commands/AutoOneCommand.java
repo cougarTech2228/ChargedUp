@@ -39,20 +39,20 @@ public class AutoOneCommand extends SequentialCommandGroup {
             new InstantCommand(() -> printStartCommand()),
             new InstantCommand(m_drivetrainSubsystem::zeroGyroscope),
             new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
-            // new SequentialCommandGroup(
-            //     new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-            //     new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.high),
-            //     new SetArmReachCommand(m_extendoSubsystem, ArmDestination.high),
-            //     new WaitCommand(0.25)
-            // ),
+            new SequentialCommandGroup(
+                new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.high),
+                new SetArmReachCommand(m_extendoSubsystem, ArmDestination.high),
+                new WaitCommand(0.25)
+            ),
             new ParallelCommandGroup(
-                // new SequentialCommandGroup(
-                //     new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
-                //     new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
-                //     new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-                //     new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
-                //     new InstantCommand(() -> m_pneumaticSubsystem.openGripper())
-                // ),
+                new SequentialCommandGroup(
+                    new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
+                    new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
+                    new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                    new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                    new InstantCommand(() -> m_pneumaticSubsystem.openGripper())
+                ),
                 new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
                 new FollowTrajectoryCommand(m_drivetrainSubsystem, "auto1_NoReturn", m_eventMap,
                         Constants.MAX_AUTO_VELOCITY, Constants.MAX_AUTO_ACCELERATION, true)

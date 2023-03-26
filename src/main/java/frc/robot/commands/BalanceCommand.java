@@ -3,9 +3,12 @@ package frc.robot.commands;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.LEDStripSubsystem;
+import frc.robot.utils.led.LEDBufferSegment;
 
 public class BalanceCommand extends CommandBase{
     private DrivetrainSubsystem m_drivetrainSubsystem;
+    private LEDStripSubsystem m_ledStripSubsystem;
 
     public BalanceCommand(DrivetrainSubsystem drivetrain){
         m_drivetrainSubsystem = drivetrain;
@@ -50,6 +53,8 @@ public class BalanceCommand extends CommandBase{
 
         // Return the status frame period back to its original value
         m_drivetrainSubsystem.setDriveMotorStatusFramePeriod(20);
+
+        m_ledStripSubsystem.autoPretty();
 
         System.out.println("BalanceCommand finished");
     }

@@ -33,6 +33,8 @@ public class SetArmHeightCommand extends CommandBase {
             m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_SHELF);
         } else if (m_destination == Constants.ArmDestination.transit) {
             m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_TRANSIT);
+        } else if (m_destination == Constants.ArmDestination.cube) {
+            m_elevatorSubsystem.setElevatorPosition(ElevatorSubsystem.HEIGHT_CUBE);
         } else {
             System.out.println("SetArmHeightCommand - Invalid ArmDestination value");
         }

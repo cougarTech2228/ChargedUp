@@ -5,6 +5,7 @@ import edu.wpi.first.wpilibj.util.Color;
 
 import frc.robot.utils.led.SegmentedLEDStrip.ColorPattern;
 import frc.robot.utils.led.SegmentedLEDStrip.GlowColor;
+import frc.robot.utils.led.SegmentedLEDStrip.PercentDirection;
 import frc.robot.utils.led.SegmentedLEDStrip.Speed;
 import frc.robot.utils.led.SegmentedLEDStrip.StripEffect;
 
@@ -29,6 +30,10 @@ public class LEDBufferSegment extends AddressableLEDBuffer{
     public double m_glowIndex = 0;
     public GlowColor glowColor;
     public boolean m_isGlowReverse = false;
+
+    public int m_percent;
+    public Color m_color;
+    public PercentDirection m_percentDirection;
 
     public StripEffect m_stripEffect = StripEffect.DoingNothing;
     /**
@@ -82,4 +87,10 @@ public class LEDBufferSegment extends AddressableLEDBuffer{
         m_glowCounter = 0;
     }
 
+    public void doPercent(int percent, Color color, PercentDirection direction){
+        m_percent = percent;
+        m_color = color;
+        m_percentDirection = direction;
+        m_stripEffect = StripEffect.Percent;
+    }
 }

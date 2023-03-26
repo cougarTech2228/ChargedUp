@@ -54,7 +54,7 @@ public class RobotContainer {
 
     private final static LEDStripSubsystem m_ledStripSubsystem = new LEDStripSubsystem();
 
-    private final static PneumaticSubsystem m_pneumaticSubsystem = new PneumaticSubsystem();
+    private final static PneumaticSubsystem m_pneumaticSubsystem = new PneumaticSubsystem(m_ledStripSubsystem);
     
     private final static ElevatorSubsystem m_elevatorSubsystem = new ElevatorSubsystem(m_pneumaticSubsystem);
 
@@ -190,6 +190,14 @@ public class RobotContainer {
         return value;
     }
 
+    public static boolean isEndgame(){
+        if(DriverStation.isTeleop() && DriverStation.getMatchTime() <= 30){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     public static DrivetrainSubsystem getDrivetrainSubsystem() {
         return m_drivetrainSubsystem;
     }
@@ -214,7 +222,12 @@ public class RobotContainer {
         return m_extendoSubsystem;
     }
 
+    public static ShuffleboardSubsystem getShuffleboardSubsystem(){
+        return m_shuffleboardSubsystem;
+    }
+
     public static PowerDistribution getPDH() {
         return m_pdh;
     }
+
 }

@@ -13,7 +13,13 @@ public class SegmentedLEDStrip extends AddressableLED {
         MovingColor,
         SnakingColors,
         Rainbow,
-        Glowing
+        Glowing,
+        Percent
+    }
+
+    public enum PercentDirection {
+        FromStart,
+        FromEnd
     }
 
     private final static double GLOW_MAX = 1;
@@ -28,6 +34,10 @@ public class SegmentedLEDStrip extends AddressableLED {
     private AddressableLEDBuffer m_LEDBuffer;
 
     private ArrayList<LEDBufferSegment> m_Segments = new ArrayList<>();
+
+    public void clearSegments() {
+        m_Segments.clear();
+    }
 
     public void addSegment(LEDBufferSegment segment) {
         m_Segments.add(segment);
@@ -501,5 +511,12 @@ public class SegmentedLEDStrip extends AddressableLED {
         segment.m_rainbowFirstPixelHue += 3;
         // Check bounds
         segment.m_rainbowFirstPixelHue %= 180;
+    }
+
+    public void printSegments(){
+        System.out.println("Length: " + m_Segments.size());
+        for (LEDBufferSegment segment : m_Segments) {
+            System.out.println(segment.name + ", " + segment.m_stripEffect);
+        }        
     }
 }

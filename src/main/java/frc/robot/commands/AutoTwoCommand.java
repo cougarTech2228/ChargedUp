@@ -4,6 +4,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ArmDestination;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -53,17 +54,20 @@ public class AutoTwoCommand extends SequentialCommandGroup {
             new InstantCommand(() -> printStartCommand()),
             new InstantCommand(m_drivetrainSubsystem::zeroGyroscope),
             new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
-            // new SequentialCommandGroup(
-            //     new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.high),
-            //     new SetArmReachCommand(m_extendoSubsystem, ArmDestination.high),
-            //     new InstantCommand(() -> m_pneumaticSubsystem.openGripper())
-            // ),
+            new SequentialCommandGroup(
+                new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                new WaitCommand(.25),
+                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.high),
+                new SetArmReachCommand(m_extendoSubsystem, ArmDestination.high),
+                new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
+                new WaitCommand(.25)
+            ),
             new ParallelCommandGroup(
-                // new SequentialCommandGroup(
-                //     new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
-                //     new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-                //     new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home)
-                // ),
+                new SequentialCommandGroup(
+                    new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
+                    new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                    new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home)
+                ),
                 new BalanceCommandEnhanced(drivetrainSubystem)
             ),
             new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()),

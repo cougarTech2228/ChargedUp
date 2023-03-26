@@ -58,16 +58,18 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     private static final double kMaxAcceleration = 1.0;
 
     private static final double kMotorVoltageLimit = 12;
-    private static final double kPositionErrorTolerance = 1.0;
+    private static final double kPositionErrorTolerance = .2;
 
     private static final double HEIGHT_MIN = 15;
 
     public static final double HEIGHT_HOME = 18.5;
     public static final double HEIGHT_LOW = 27;
     public static final double HEIGHT_TRANSIT = 24.7;
-    public static final double HEIGHT_MIDDLE = 38.0;
-    public static final double HEIGHT_HIGH = 42;
+    public static final double HEIGHT_MIDDLE = 37.0;
+    public static final double HEIGHT_HIGH = 40;
     public static final double HEIGHT_SHELF = 38.6;
+    public static final double HEIGHT_CUBE = 21.3;
+
 
     private static final double HEIGHT_MAX = 45;
 

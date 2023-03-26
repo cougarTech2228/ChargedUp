@@ -22,10 +22,13 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.DriverStation;
-
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
+import frc.robot.RobotContainer;
 
 public class DrivetrainSubsystem extends SubsystemBase {
     /**
@@ -113,10 +116,11 @@ public class DrivetrainSubsystem extends SubsystemBase {
 
     private boolean m_isBoostModeSet; // Cranks the drive speed to the max
 
-    private static final double kXYNormalSpeed = 1;//0.75;
-    private static final double kRotationalNormalSpeed = 0.4;
+    private static double kXYNormalSpeed = 1;//0.75;
+    private static double kRotationalNormalSpeed = 0.4;
     private static final double kXYBoostSpeed = 1.0;
     private static final double kRotationalBoostSpeed = 0.6;
+
 
     public DrivetrainSubsystem() {
         // ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -465,6 +469,9 @@ public class DrivetrainSubsystem extends SubsystemBase {
         if(DriverStation.isDisabled()){
             setMotorsToCoast();
         }
+
+        kXYNormalSpeed = RobotContainer.getShuffleboardSubsystem().getSpeedSlider();
+        kRotationalNormalSpeed = kXYNormalSpeed * 0.4;
 
         // if (DriverStation.getMatchTime() < 30.0 && getRoll() < -2.0 || getRoll() >
         // 2.0){

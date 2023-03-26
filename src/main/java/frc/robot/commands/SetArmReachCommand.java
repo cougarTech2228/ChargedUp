@@ -10,7 +10,7 @@ public class SetArmReachCommand extends CommandBase {
     private ExtendoSubsystem m_extendoSubsystem;
     private Constants.ArmDestination m_destination;
     private long m_startTime;
-    private long m_timeout = 4;
+    private long m_timeout = 3;
 
     public SetArmReachCommand(ExtendoSubsystem extendoSubsystem,
             Constants.ArmDestination destination) {
@@ -38,6 +38,8 @@ public class SetArmReachCommand extends CommandBase {
             m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_SHELF);
         } else if (m_destination == Constants.ArmDestination.transit) {
             m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_TRANSIT);
+        } else if (m_destination == Constants.ArmDestination.cube) {
+            m_extendoSubsystem.goToDistance(ExtendoSubsystem.DISTANCE_CUBE);
         } else {
             System.out.println("SetArmHeightCommand - Invalid ArmDestination value");
         }

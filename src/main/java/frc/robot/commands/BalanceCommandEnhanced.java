@@ -5,16 +5,18 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DrivetrainSubsystem;
+import frc.robot.subsystems.LEDStripSubsystem;
 
 import static frc.robot.Constants.DRIVETRAIN_WHEEL_CIRCUMFERENCE_CM;
 import static frc.robot.Constants.DRIVETRAIN_TICKS_PER_ROTATION;
 
 public class BalanceCommandEnhanced extends CommandBase{
     private DrivetrainSubsystem m_drivetrainSubsystem;
+    private LEDStripSubsystem m_ledStripSubsystem;
 
     private double m_encoderCountStart;
 
-    private static final double GOING_OUT_FLAT_SPEED = -.35;
+    private static final double GOING_OUT_FLAT_SPEED = -.3;
     private static final double GOING_OUT_CLIMB_SPEED = -.2;
     private static final double GOING_OUT_DECENDING_SPEED = -.2;
     private static final double GOING_OUT_EXITING_COMMUNITY_SPEED = -.2;
@@ -51,7 +53,7 @@ public class BalanceCommandEnhanced extends CommandBase{
         addRequirements(m_drivetrainSubsystem);
 
         m_pidController = new PIDController(kP, kI, kD);
-        m_pidController.setTolerance(4);
+        m_pidController.setTolerance(3.5);
     }
 
     @Override
@@ -204,6 +206,7 @@ public class BalanceCommandEnhanced extends CommandBase{
                 // Math.toRadians(45), Math.toRadians(-45),
                 // Math.toRadians(-45), Math.toRadians(45));
                 m_drivetrainSubsystem.stopMotors();
+                m_ledStripSubsystem.autoPretty();
                 break;
         }
 

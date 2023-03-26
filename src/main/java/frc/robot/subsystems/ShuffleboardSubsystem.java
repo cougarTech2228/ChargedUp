@@ -1,8 +1,10 @@
 package frc.robot.subsystems;
 
+import java.util.Map;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -13,6 +15,7 @@ import frc.robot.RobotContainer;
 public class ShuffleboardSubsystem extends SubsystemBase {
 
     private static ShuffleboardTab m_chargedUpTab;
+    private GenericEntry m_speedSlider;
 
     private static SendableChooser<Constants.AutoPosition> m_positionChooser = new SendableChooser<>();
 
@@ -53,6 +56,10 @@ public class ShuffleboardSubsystem extends SubsystemBase {
             };
         }).withSize(1, 1).withPosition(2, 1);
 
+        m_speedSlider = m_chargedUpTab.add("Max Speed", 1)
+            .withWidget(BuiltInWidgets.kNumberSlider).withProperties(Map.of("min", 0, "max", 1)).getEntry();
+        
+
         // HttpCamera httpCamera = new HttpCamera("DriverVision", "http://wpilibpi.local:1181/stream.mjpg");
         // CameraServer.addCamera(httpCamera);
         // m_chargedUpTab.add(httpCamera).withWidget(BuiltInWidgets.kCameraStream)
@@ -62,6 +69,10 @@ public class ShuffleboardSubsystem extends SubsystemBase {
 
     public Constants.AutoPosition getAutoPosition() {
         return m_positionChooser.getSelected();
+    }
+
+    public double getSpeedSlider(){
+        return m_speedSlider.get().getDouble();
     }
 
     @Override
