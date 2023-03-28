@@ -58,7 +58,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     private static final double kMaxAcceleration = 1.0;
 
     private static final double kMotorVoltageLimit = 12;
-    private static final double kPositionErrorTolerance = .2;
+    private static final double kPositionErrorTolerance = .4;
 
     private static final double HEIGHT_MIN = 15;
 
@@ -68,10 +68,11 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     public static final double HEIGHT_MIDDLE = 37.5;
     public static final double HEIGHT_HIGH = 40;
     public static final double HEIGHT_SHELF = 38.6;
-    public static final double HEIGHT_CUBE = 21.3;
+    public static final double HEIGHT_CUBE = 21.8;
     public static final double HEIGHT_CONE_FLOOR = 20.2;
 
-
+    public static final double FINE_INCREMENTAL_ARM_HEIGHT_CHANGE = 1.0;
+    public static final double COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE = 3.0;
 
     private static final double HEIGHT_MAX = 45;
 
@@ -173,10 +174,10 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
 
         // Boundary check the distance sensor's range values
         if (m_elevatorHeight > HEIGHT_MAX) {
-            System.out.println("Elevator distance sensor exceeded max range limit");
+            //System.out.println("Elevator distance sensor exceeded max range limit");
             m_elevatorHeight = HEIGHT_MAX;
         } else if (m_elevatorHeight < HEIGHT_MIN) {
-            System.out.println("Elevator distance sensor exceeded min range limit");
+            //System.out.println("Elevator distance sensor exceeded min range limit");
             m_elevatorHeight = HEIGHT_MIN;
         }
 
@@ -206,7 +207,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     }
 
     public boolean atGoal() {
-        if (pidController.getGoal().position == HEIGHT_HOME) {
+        if (pidController.getGoal().position == HEIGHT_HOME && isElevatorLowerLimitReached()) {
             return true;
         }
         return pidController.atGoal();

@@ -456,6 +456,31 @@ public class DrivetrainSubsystem extends SubsystemBase {
         m_isBoostModeSet = boostModeSet;
     }
 
+    /**
+     * set the wheels to lock position:
+     *            /   \
+     *            \   /
+     */
+    public void lockWheels() {
+        System.out.println("lock Wheels");
+        // Rotate the wheels
+        drive(
+            ChassisSpeeds.fromFieldRelativeSpeeds(0.0,
+                    0.0,
+                    0.1 * getRotationalAdjustment() * MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
+                    getGyroscopeRotation()
+            )
+        );
+
+        // We must issue the command stright to the motors here, or else it won't really do anything
+        // until the next periodic
+        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+        setModuleStates(states);
+
+        // Tell the motors to stop on the next periodic
+        stopMotors();
+    }
+
     @Override
     public void periodic() {
 

@@ -44,12 +44,6 @@ public class ButtonBoardSubsystem extends SubsystemBase {
     private static PneumaticSubsystem m_pneumaticSubsystem;
     private static DrivetrainSubsystem m_drivetrainSubsystem;
 
-    private static final double FINE_INCREMENTAL_ARM_HEIGHT_CHANGE = 2.0;
-    private static final double COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE = 5.0;
-
-    private static final double FINE_INCREMENTAL_ARM_REACH_CHANGE_CM = 30.0; 
-    private static final double COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM = 60.0;
-
     public static final double FINE_STRAFE_DISTANCE_CM = 3.0;
     public static final double COARSE_STRAFE_DISTANCE_CM = 9.0;
     private static final double STRAFE_SPEED = 0.1;
@@ -248,12 +242,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         // True command
                         new InstantCommand(() -> {
                             m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
-                                    + FINE_INCREMENTAL_ARM_HEIGHT_CHANGE);
+                                    + ElevatorSubsystem.FINE_INCREMENTAL_ARM_HEIGHT_CHANGE);
                         }),
                         // False command
                         new InstantCommand(() -> {
                             m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
-                                    + COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE);
+                                    + ElevatorSubsystem.COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE);
                         }),
 
                         // variable
@@ -264,12 +258,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         // True command
                         new InstantCommand(() -> {
                             m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
-                                    - FINE_INCREMENTAL_ARM_HEIGHT_CHANGE);
+                                    - ElevatorSubsystem.FINE_INCREMENTAL_ARM_HEIGHT_CHANGE);
                         }),
                         // False command
                         new InstantCommand(() -> {
                             m_elevatorSubsystem.setElevatorPosition(m_elevatorSubsystem.getMeasurement()
-                                    - COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE);
+                                    - ElevatorSubsystem.COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE);
                         }),
 
                         // variable
@@ -280,12 +274,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         // True command
                         new InstantCommand(() -> {
                             m_extendoSubsystem.goToDistance(
-                                    m_extendoSubsystem.getCurrentArmReach() + FINE_INCREMENTAL_ARM_REACH_CHANGE_CM);
+                                    m_extendoSubsystem.getCurrentArmReach() + ExtendoSubsystem.FINE_INCREMENTAL_ARM_REACH_CHANGE_CM);
                         }),
                         // False command
                         new InstantCommand(() -> {
                             m_extendoSubsystem.goToDistance(
-                                    m_extendoSubsystem.getCurrentArmReach() + COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM);
+                                    m_extendoSubsystem.getCurrentArmReach() + ExtendoSubsystem.COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM);
                         }),
 
                         // variable
@@ -296,12 +290,12 @@ public class ButtonBoardSubsystem extends SubsystemBase {
                         // True command
                         new InstantCommand(() -> {
                             m_extendoSubsystem.goToDistance(
-                                    m_extendoSubsystem.getCurrentArmReach() - FINE_INCREMENTAL_ARM_REACH_CHANGE_CM);
+                                    m_extendoSubsystem.getCurrentArmReach() - ExtendoSubsystem.FINE_INCREMENTAL_ARM_REACH_CHANGE_CM);
                         }),
                         // False command
                         new InstantCommand(() -> {
                             m_extendoSubsystem.goToDistance(
-                                    m_extendoSubsystem.getCurrentArmReach() - COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM);
+                                    m_extendoSubsystem.getCurrentArmReach() - ExtendoSubsystem.COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM);
                         }),
 
                         // variable

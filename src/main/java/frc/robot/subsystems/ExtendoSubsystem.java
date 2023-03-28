@@ -49,13 +49,16 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
     private static final double MIN_DISTANCE = -50.0;
 
     public static final double DISTANCE_TRANSIT = 12.5;
-    public static final double DISTANCE_HOME = -30.0;
+    public static final double DISTANCE_HOME = -50.0;
     public static final double DISTANCE_LOW = 160.0;
     public static final double DISTANCE_MIDDLE = 230.0;
     public static final double DISTANCE_HIGH = 840.0;
     public static final double DISTANCE_SHELF = 12.5;
-    public static final double DISTANCE_CUBE = -30.0;
+    public static final double DISTANCE_CUBE = DISTANCE_HOME;
     public static final double DISTANCE_CONE_FLOOR = 130;
+
+    public static final double FINE_INCREMENTAL_ARM_REACH_CHANGE_CM = 30.0; 
+    public static final double COARSE_INCREMENTAL_ARM_REACH_CHANGE_CM = 60.0;
 
     private static final double MAX_DISTANCE = 950.0;
 
@@ -167,10 +170,10 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         
 
         if (m_currentArmReach > MAX_DISTANCE) {
-            System.out.println("Extendo distance sensor exceeded max range limit");
+            //System.out.println("Extendo distance sensor exceeded max range limit");
             m_currentArmReach = MAX_DISTANCE;
         } else if (m_currentArmReach < MIN_DISTANCE) {
-            System.out.println("Extendo distance sensor exceeded min range limit");
+            //System.out.println("Extendo distance sensor exceeded min range limit");
             m_currentArmReach = MIN_DISTANCE;
         }
 
@@ -258,7 +261,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         m_extendoMotor.setNeutralMode(NeutralMode.Brake);
         //m_extendoState = ExtendoState.stopped;
         disable();
-        System.out.println("stopping extendo arm");
+        //System.out.println("stopping extendo arm");
     }
 
     public boolean isExtendoHomeLimitReached() {

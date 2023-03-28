@@ -28,9 +28,11 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtendoSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.subsystems.ShuffleboardSubsystem;
+import frc.robot.utils.Logger.Level;
 import frc.robot.subsystems.ButtonBoardSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 
+import static frc.robot.utils.Logger.Log;
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -118,6 +120,10 @@ public class RobotContainer {
 
         new Trigger(m_controller::getLeftBumperReleased)
                 .onTrue(new InstantCommand(() -> m_drivetrainSubsystem.setBoostMode(false)));
+        
+        new Trigger(m_controller::getRightBumperPressed).onTrue( new InstantCommand(() -> {
+            m_drivetrainSubsystem.lockWheels();
+        }));
 
         new Trigger(m_controller::getAButton)
                 .onTrue(
@@ -159,7 +165,7 @@ public class RobotContainer {
             return new AutoThreeCommand(m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
                     m_pneumaticSubsystem);
         } else {
-            System.out.println("Invalid position received from Shufflboard");
+            Log(Level.ERROR, "Invalid position received from Shufflboard");
             return null;
         }
     }
