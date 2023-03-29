@@ -133,12 +133,12 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
             };
         });
 
-        m_sbTab.addDouble("PID output", new DoubleSupplier() {
-            @Override
-            public double getAsDouble() {
-                return m_extendoMotor.getMotorOutputVoltage();
-            };
-        });
+        // m_sbTab.addDouble("PID output", new DoubleSupplier() {
+        //     @Override
+        //     public double getAsDouble() {
+        //         return m_extendoMotor.getMotorOutputVoltage();
+        //     };
+        // });
 
         m_sbTab.addDouble("Current Distance:", new DoubleSupplier() {
             @Override

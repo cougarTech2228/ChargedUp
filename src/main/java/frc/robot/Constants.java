@@ -97,7 +97,9 @@ public final class Constants {
     public enum AutoPosition {
         Position1,
         Position2,
-        Position3
+        Position2_Out,
+        Position3,
+        ConeOnly
     }
 
     public static final double MAX_AUTO_VELOCITY = 3.0;

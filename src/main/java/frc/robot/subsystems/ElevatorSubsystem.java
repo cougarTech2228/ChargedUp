@@ -66,7 +66,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     public static final double HEIGHT_LOW = 27;
     public static final double HEIGHT_TRANSIT = 24.7;
     public static final double HEIGHT_MIDDLE = 37.5;
-    public static final double HEIGHT_HIGH = 40;
+    public static final double HEIGHT_HIGH = 40.5;
     public static final double HEIGHT_SHELF = 38.6;
     public static final double HEIGHT_CUBE = 21.8;
     public static final double HEIGHT_CONE_FLOOR = 20.2;
@@ -143,12 +143,12 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
             };
         });
 
-        m_sbTab.addDouble("PID output", new DoubleSupplier() {
-            @Override
-            public double getAsDouble() {
-                return m_elevatorMotor.getMotorOutputVoltage();
-            };
-        });
+        // m_sbTab.addDouble("PID output", new DoubleSupplier() {
+        //     @Override
+        //     public double getAsDouble() {
+        //         return m_elevatorMotor.getMotorOutputVoltage();
+        //     };
+        // });
 
         m_sbTab.addDouble("Current Height:", new DoubleSupplier() {
             @Override

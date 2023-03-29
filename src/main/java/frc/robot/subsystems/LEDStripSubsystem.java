@@ -1,6 +1,7 @@
 package frc.robot.subsystems;
 
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.utils.led.SegmentedLEDStrip;
@@ -36,7 +37,11 @@ public class LEDStripSubsystem extends SubsystemBase {
         chassis_segment = new LEDBufferSegment("chassis",68, 82 );
         //chassis_segment.doMovingColors(Speed.Slow, ColorPattern.Patriotic);
 
-        
+        if (DriverStation.getAlliance() == Alliance.Blue) {
+            chassis_segment.doGlow(SegmentedLEDStrip.GlowColor.Blue);
+        } else if (DriverStation.getAlliance() == Alliance.Red) {
+            chassis_segment.doGlow(SegmentedLEDStrip.GlowColor.Red);
+        }
         
         m_ledStrip.addSegment(left_upright_segment);
         m_ledStrip.addSegment(top_segment);

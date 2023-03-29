@@ -28,7 +28,9 @@ public class ShuffleboardSubsystem extends SubsystemBase {
 
         m_positionChooser.setDefaultOption("Position 1", Constants.AutoPosition.Position1);
         m_positionChooser.addOption("Position 2", Constants.AutoPosition.Position2);
+        m_positionChooser.addOption("Position 2 - Out and Back", Constants.AutoPosition.Position2_Out);
         m_positionChooser.addOption("Position 3", Constants.AutoPosition.Position3);
+        m_positionChooser.addOption("Cone Only", Constants.AutoPosition.ConeOnly);
 
         m_chargedUpTab.add("Auto: Field Position", m_positionChooser)
                 .withWidget(BuiltInWidgets.kSplitButtonChooser)

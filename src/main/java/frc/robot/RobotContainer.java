@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ArmDestination;
+import frc.robot.commands.AutoConeOnlyCommand;
 import frc.robot.commands.AutoOneCommand;
 import frc.robot.commands.AutoThreeCommand;
 import frc.robot.commands.AutoTwoCommand;
@@ -28,11 +29,9 @@ import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.ExtendoSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.subsystems.ShuffleboardSubsystem;
-import frc.robot.utils.Logger.Level;
 import frc.robot.subsystems.ButtonBoardSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 
-import static frc.robot.utils.Logger.Log;
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a
@@ -159,13 +158,18 @@ public class RobotContainer {
             return new AutoOneCommand(m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
                     m_pneumaticSubsystem);
         } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position2) {
-            return new AutoTwoCommand(m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
+            return new AutoTwoCommand(false, m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
+                    m_pneumaticSubsystem, m_ledStripSubsystem);
+        } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position2_Out) {
+            return new AutoTwoCommand(true, m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
                     m_pneumaticSubsystem, m_ledStripSubsystem);
         } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.Position3) {
             return new AutoThreeCommand(m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem,
                     m_pneumaticSubsystem);
+        } else if (m_shuffleboardSubsystem.getAutoPosition() == Constants.AutoPosition.ConeOnly) {
+            return new AutoConeOnlyCommand(m_elevatorSubsystem, m_extendoSubsystem, m_drivetrainSubsystem, m_pneumaticSubsystem);
         } else {
-            Log(Level.ERROR, "Invalid position received from Shufflboard");
+            System.out.println("Invalid position received from Shufflboard");
             return null;
         }
     }

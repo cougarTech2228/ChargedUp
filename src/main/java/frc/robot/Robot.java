@@ -11,8 +11,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.DrivetrainSubsystem;
 
-import static frc.robot.utils.Logger.Log;
-
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to
@@ -101,17 +99,9 @@ public class Robot extends TimedRobot {
     /** This function is called periodically during autonomous. */
     @Override
     public void autonomousPeriodic() {
-        if (DriverStation.isFMSAttached() && DriverStation.getMatchTime() < 1) {
-            Log("End of Auto!");
-            DrivetrainSubsystem dt = RobotContainer.getDrivetrainSubsystem();
-            dt.drive(
-                ChassisSpeeds.fromFieldRelativeSpeeds(0.0,
-                        0.0,
-                        0.1 * dt.getRotationalAdjustment()
-                                * DrivetrainSubsystem.MAX_ANGULAR_VELOCITY_RADIANS_PER_SECOND,
-                        dt.getGyroscopeRotation()
-                )
-            );
+        if (DriverStation.getMatchTime() < 1) {
+            System.out.println("End of Auto!");
+            RobotContainer.getDrivetrainSubsystem().lockWheels();
         }
     }
 

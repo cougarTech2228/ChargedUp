@@ -12,7 +12,7 @@ import frc.robot.subsystems.ExtendoSubsystem;
 import frc.robot.subsystems.LEDStripSubsystem;
 import frc.robot.subsystems.PneumaticSubsystem;
 
-public class AutoTwoCommand extends SequentialCommandGroup {
+public class AutoConeOnlyCommand extends SequentialCommandGroup {
 
     private double m_startTime = 0;
     private static ElevatorSubsystem m_elevatorSubsystem;
@@ -20,10 +20,10 @@ public class AutoTwoCommand extends SequentialCommandGroup {
     private static DrivetrainSubsystem m_drivetrainSubsystem;
     private static PneumaticSubsystem m_pneumaticSubsystem;
 
-    public AutoTwoCommand(boolean goOutAndBack, ElevatorSubsystem elevatorSubsystem, ExtendoSubsystem extendoSubsystem,
+    public AutoConeOnlyCommand(ElevatorSubsystem elevatorSubsystem,
+            ExtendoSubsystem extendoSubsystem,
             DrivetrainSubsystem drivetrainSubystem,
-            PneumaticSubsystem pneumaticSubsystem,
-            LEDStripSubsystem ledStripSubsystem) {
+            PneumaticSubsystem pneumaticSubsystem) {
 
         m_elevatorSubsystem = elevatorSubsystem;
         m_extendoSubsystem = extendoSubsystem;
@@ -42,14 +42,12 @@ public class AutoTwoCommand extends SequentialCommandGroup {
                 new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
                 new WaitCommand(.25)
             ),
-            new ParallelCommandGroup(
-                new SequentialCommandGroup(
-                    new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
-                    new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-                    new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
-                    new InstantCommand(() -> m_pneumaticSubsystem.openGripper())
-                ),
-                new BalanceCommandEnhanced(goOutAndBack, drivetrainSubystem, ledStripSubsystem)
+
+            new SequentialCommandGroup(
+                new SetArmReachCommand(m_extendoSubsystem, ArmDestination.home),
+                new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
+                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.home),
+                new InstantCommand(() -> m_pneumaticSubsystem.openGripper())
             ),
             new InstantCommand(() -> m_drivetrainSubsystem.reverseGyroscope()),
             new InstantCommand(() -> printEndCommand())
