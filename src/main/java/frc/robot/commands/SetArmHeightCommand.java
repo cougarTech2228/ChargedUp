@@ -46,6 +46,9 @@ public class SetArmHeightCommand extends CommandBase {
             case transit:
                 height = ElevatorSubsystem.HEIGHT_TRANSIT;
                 break;
+            case auto_high:
+                height = ElevatorSubsystem.HEIGHT_AUTO_HIGH;
+                break;
         }
         m_elevatorSubsystem.setElevatorPosition(height);
     }

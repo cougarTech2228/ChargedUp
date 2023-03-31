@@ -72,7 +72,8 @@ public final class Constants {
         home,
         transit,
         cube,
-        cone_floor
+        cone_floor,
+        auto_high
     }
 
     public static final int ELEVATOR_MOTOR_ID = 58;

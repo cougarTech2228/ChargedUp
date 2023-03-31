@@ -16,6 +16,13 @@ public class PneumaticSubsystem extends SubsystemBase {
     private Solenoid m_elevatorBrake;
     private Solenoid m_armBrake;
 
+    private enum BrakeState {
+        unknown,
+        closed,
+        open
+    }
+    private BrakeState m_armBrakeState = BrakeState.unknown;
+
     PneumaticHub m_pneumaticHub;
     LEDStripSubsystem m_ledStripSubsystem;
     private ShuffleboardTab m_sbTab;
@@ -49,13 +56,13 @@ public class PneumaticSubsystem extends SubsystemBase {
 
     public void openGripper() {
         System.out.println("Open Gripper");
-        m_gripper.set(false);
+        m_gripper.set(true);
         m_ledStripSubsystem.gripperLights(true);
     }
 
     public void closeGripper() {
         System.out.println("Close Gripper");
-        m_gripper.set(true);
+        m_gripper.set(false);
         m_ledStripSubsystem.gripperLights(false);
     }
 
@@ -74,13 +81,24 @@ public class PneumaticSubsystem extends SubsystemBase {
     }
 
     public void openArmBrake() {
-        // System.out.println("Open Arm Brake");
-        m_armBrake.set(true);
+        System.out.println("Open Arm Brake: " + m_armBrakeState);
+        if (m_armBrakeState != BrakeState.open) {
+            m_armBrakeState = BrakeState.open;
+            m_armBrake.set(true);
+        }
     }
 
     public void closeArmBrake() {
-        // System.out.println("Close Arm Brake");
-        m_armBrake.set(false);
+       System.out.println("Close Arm Brake: " + m_armBrakeState);
+        //m_armBrake.set(true);
+        if (m_armBrakeState != BrakeState.closed) {
+            m_armBrakeState = BrakeState.closed;
+            m_armBrake.set(false);
+        }
+    }
+
+    public void toggleArmBrake() {
+        m_armBrake.toggle();
     }
 
     public double getHighSidePressure() {
@@ -92,10 +110,7 @@ public class PneumaticSubsystem extends SubsystemBase {
     }
 
     public void toggleGripper() {
-        if (gripperIsOpen()) {
-            closeGripper();
-        } else {
-            openGripper();
-        }
+        System.out.println("gripper toggle");
+        m_gripper.toggle();
     }
 }

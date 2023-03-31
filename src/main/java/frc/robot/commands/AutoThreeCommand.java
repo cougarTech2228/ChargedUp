@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.ArmDestination;
 import frc.robot.subsystems.DrivetrainSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -37,8 +38,9 @@ public class AutoThreeCommand extends SequentialCommandGroup {
             new InstantCommand(m_drivetrainSubsystem::zeroGyroscope),
             new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
             new SequentialCommandGroup(
-                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.high),
+                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.auto_high),
                 new SetArmReachCommand(m_extendoSubsystem, ArmDestination.high),
+                new WaitCommand(.25),
                 new InstantCommand(() -> m_pneumaticSubsystem.openGripper())
             ),
             new ParallelCommandGroup(

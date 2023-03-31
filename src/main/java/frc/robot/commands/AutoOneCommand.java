@@ -41,7 +41,7 @@ public class AutoOneCommand extends SequentialCommandGroup {
             new InstantCommand(m_drivetrainSubsystem::setMotorsToBrake),
             new SequentialCommandGroup(
                 new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
-                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.high),
+                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.auto_high),
                 new SetArmReachCommand(m_extendoSubsystem, ArmDestination.high),
                 new WaitCommand(0.25)
             ),

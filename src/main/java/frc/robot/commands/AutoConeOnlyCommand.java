@@ -37,8 +37,9 @@ public class AutoConeOnlyCommand extends SequentialCommandGroup {
             new SequentialCommandGroup(
                 new InstantCommand(() -> m_pneumaticSubsystem.closeGripper()),
                 new WaitCommand(.25),
-                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.high),
+                new SetArmHeightCommand(m_elevatorSubsystem, ArmDestination.auto_high),
                 new SetArmReachCommand(m_extendoSubsystem, ArmDestination.high),
+                new WaitCommand(.25),
                 new InstantCommand(() -> m_pneumaticSubsystem.openGripper()),
                 new WaitCommand(.25)
             ),

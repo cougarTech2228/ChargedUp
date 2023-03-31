@@ -183,7 +183,7 @@ public class BalanceCommandEnhanced extends CommandBase{
                     voltage += voltage_ff;
                 } else if (voltage < 1) {
                     //voltage -= voltage_ff;
-                    voltage = -1.075;
+                    voltage = -1.175;
                 }
 
                 System.out.println( "Auto engage PID voltage: " + voltage);

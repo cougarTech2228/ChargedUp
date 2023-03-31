@@ -70,6 +70,7 @@ public class ElevatorSubsystem extends ProfiledPIDSubsystem {
     public static final double HEIGHT_SHELF = 38.6;
     public static final double HEIGHT_CUBE = 21.8;
     public static final double HEIGHT_CONE_FLOOR = 20.2;
+    public static final double HEIGHT_AUTO_HIGH = 40.8;
 
     public static final double FINE_INCREMENTAL_ARM_HEIGHT_CHANGE = 1.0;
     public static final double COARSE_INCREMENTAL_ARM_HEIGHT_CHANGE = 3.0;

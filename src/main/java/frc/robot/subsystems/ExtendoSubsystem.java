@@ -206,7 +206,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         if (pidController.atGoal()) {
             stopExtending();
             m_pneumaticSubsystem.closeArmBrake();
-            disable();
+            //disable();
         }
     }
 
@@ -260,7 +260,7 @@ public class ExtendoSubsystem extends ProfiledPIDSubsystem {
         m_pneumaticSubsystem.closeArmBrake();
         m_extendoMotor.setNeutralMode(NeutralMode.Brake);
         //m_extendoState = ExtendoState.stopped;
-        disable();
+        //disable();
         //System.out.println("stopping extendo arm");
     }
 
