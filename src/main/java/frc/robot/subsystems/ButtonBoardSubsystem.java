@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.RobotContainer;
 import frc.robot.Constants.ArmDestination;
+import frc.robot.commands.AcquirerCommand;
 import frc.robot.commands.DriveFwdRevCommand;
 import frc.robot.commands.ParallelArmCommand;
 import frc.robot.commands.RotateBotCommand;
@@ -132,7 +133,11 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         return new JoystickButton(m_joystick2, 7);
     }
 
-    private JoystickButton getToggleGripperButton() {
+    // private JoystickButton getToggleGripperButton() {
+    //     return new JoystickButton(m_joystick2, 8);
+    // }
+
+    private JoystickButton getAcquirerButton() {
         return new JoystickButton(m_joystick2, 8);
     }
 
@@ -231,9 +236,8 @@ public class ButtonBoardSubsystem extends SubsystemBase {
         // **********************************
         // Gripper Button Handling
         // **********************************
-        getToggleGripperButton().onTrue(
-                new InstantCommand(() -> m_pneumaticSubsystem.toggleGripper()));
-
+        // getToggleGripperButton().onTrue(
+        //         new InstantCommand(() -> m_pneumaticSubsystem.toggleGripper()));
         // **********************************
         // Arm Button Handling
         // **********************************

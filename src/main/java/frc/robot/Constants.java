@@ -62,6 +62,8 @@ public final class Constants {
     public static final double BACK_RIGHT_MODULE_STEER_OFFSET = -Math.toRadians(211); 
     public static final int DRIVETRAIN_PIGEON_ID = 61; // Set Pigeon ID
 
+    public static final int ACQUIRER_LEFT_ID = 21;
+    public static final int ACQUIRER_RIGHT_ID = 22;
     // arm stuff
 
     public enum ArmDestination {
